@@ -1,17 +1,22 @@
 package main
 
 import (
-	"errors"
 	"fmt"
+	"os"
 	"strings"
 
+	"github.com/cloudfoundry/cli/cf/terminal"
 	"github.com/cloudfoundry/cli/plugin"
+	"github.com/hpcloud/cf-plugin-usb/config"
 	"github.com/hpcloud/cf-plugin-usb/httpclient"
 )
 
 const brokerName string = "usb"
 
+var target string
+
 type UsbPlugin struct {
+	ui         terminal.UI
 	httpClient httpclient.HttpClient
 }
 
@@ -20,23 +25,58 @@ func main() {
 }
 
 func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
-
-	brokerMgmtUrl, err := serviceBrokerUrl(cliConnection)
-	if err != nil {
-		fmt.Println("ERROR:", err)
+	if !usbBrokerExist(cliConnection) {
+		fmt.Println("ERROR: No USB on this deployment")
+		return
 	}
 
-	sslDisabled, err := cliConnection.IsSSLDisabled()
-	if err != nil {
-		fmt.Println("ERROR:", err)
+	argLength := len(args)
+
+	c.ui = terminal.NewUI(os.Stdin, terminal.NewTeePrinter())
+
+	// except command to set target
+	if !(args[1] == "target" && argLength == 3) {
+		target, err := config.GetTarget()
+		if target == "" {
+			fmt.Println("Usb management target not set. Use cf usb target <usb-mgmt-endpoint> to set the target")
+			return
+		}
+		if err != nil {
+			fmt.Println("ERROR:", err)
+		}
+
+		sslDisabled, err := cliConnection.IsSSLDisabled()
+		if err != nil {
+			fmt.Println("ERROR:", err)
+		}
+
+		c.httpClient = httpclient.NewHttpClient(target, sslDisabled)
 	}
 
-	c.httpClient = httpclient.NewHttpClient(brokerMgmtUrl, sslDisabled)
-
-	// Ensure that we called the command usb info command
 	switch args[1] {
+	case "target":
+		fmt.Println("Running the usb target command")
+
+		if argLength == 2 {
+			target, err := config.GetTarget()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+			}
+
+			fmt.Printf("Usb management target: %s", target)
+		} else if argLength == 3 {
+			target = args[2]
+
+			err := config.SetTarget(target)
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+
+			fmt.Printf("Usb management target set to: %s", target)
+		}
 	case "info":
-		fmt.Println("Running the usb plugin info command")
+		fmt.Println("Running the usb info command")
 
 		token, err := cliConnection.AccessToken()
 		if err != nil {
@@ -51,7 +91,6 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		}
 
 		fmt.Printf("result: %s", string(getInfoResp))
-
 	case "drivers":
 		fmt.Println("Not implemented")
 
@@ -61,7 +100,12 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		}
 
 		fmt.Printf("token: %s", token)
+
+		// ask user to add an input
+		//value := c.ui.Ask("Value")
 	}
+
+	fmt.Println(terminal.ColorizeBold("OK", 32))
 }
 
 func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
@@ -86,11 +130,17 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 				},
 			},
 			plugin.Command{
+				Name:     "usb target",
+				HelpText: "Gets or sets usb management endpoint",
+
+				UsageDetails: plugin.Usage{
+					Usage: "usb target <usb-mgmt-endpoint>\n   cf usb target <usb-mgmt-endpoint>",
+				},
+			},
+			plugin.Command{
 				Name:     "usb info",
 				HelpText: "Usb plugin token command text",
 
-				// UsageDetails is optional
-				// It is used to show help of usage of each command
 				UsageDetails: plugin.Usage{
 					Usage: "usb token\n   cf usb token",
 				},
@@ -107,7 +157,7 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 	}
 }
 
-func serviceBrokerUrl(cliConnection plugin.CliConnection) (string, error) {
+func usbBrokerExist(cliConnection plugin.CliConnection) bool {
 	brokers, err := cliConnection.CliCommandWithoutTerminalOutput("service-brokers")
 	if err != nil {
 		fmt.Println("ERROR:", err)
@@ -116,8 +166,9 @@ func serviceBrokerUrl(cliConnection plugin.CliConnection) (string, error) {
 	for _, a := range brokers {
 		fields := strings.Fields(a)
 		if fields[0] == brokerName {
-			return fields[1], nil
+			return true
 		}
 	}
-	return "", errors.New("No such broker")
+
+	return false
 }
