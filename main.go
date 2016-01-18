@@ -3,15 +3,13 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/cloudfoundry/cli/cf/terminal"
 	"github.com/cloudfoundry/cli/plugin"
 	"github.com/hpcloud/cf-plugin-usb/config"
 	"github.com/hpcloud/cf-plugin-usb/httpclient"
+	"github.com/hpcloud/cf-plugin-usb/info"
 )
-
-const brokerName string = "usb"
 
 var target string
 
@@ -25,11 +23,6 @@ func main() {
 }
 
 func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
-	if !usbBrokerExist(cliConnection) {
-		fmt.Println("ERROR: No USB on this deployment")
-		return
-	}
-
 	argLength := len(args)
 
 	c.ui = terminal.NewUI(os.Stdin, terminal.NewTeePrinter())
@@ -43,11 +36,13 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		}
 		if err != nil {
 			fmt.Println("ERROR:", err)
+			return
 		}
 
 		sslDisabled, err := cliConnection.IsSSLDisabled()
 		if err != nil {
 			fmt.Println("ERROR:", err)
+			return
 		}
 
 		c.httpClient = httpclient.NewHttpClient(target, sslDisabled)
@@ -55,15 +50,14 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 	switch args[1] {
 	case "target":
-		fmt.Println("Running the usb target command")
-
 		if argLength == 2 {
 			target, err := config.GetTarget()
 			if err != nil {
 				fmt.Println("ERROR:", err)
+				return
 			}
 
-			fmt.Printf("Usb management target: %s", target)
+			fmt.Println("Usb management target: " + target)
 		} else if argLength == 3 {
 			target = args[2]
 
@@ -73,33 +67,32 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 
-			fmt.Printf("Usb management target set to: %s", target)
+			fmt.Println("Usb management target set to: " + target)
 		}
 	case "info":
-		fmt.Println("Running the usb info command")
-
 		token, err := cliConnection.AccessToken()
 		if err != nil {
 			fmt.Println("ERROR:", err)
+			return
 		}
 
-		getInfoReq := httpclient.Request{Verb: "GET", ApiUrl: "/info", Authorization: token, StatusCode: 200}
+		info := info.NewInfo(c.httpClient, token)
 
-		getInfoResp, err := c.httpClient.Request(getInfoReq)
+		infoResp, err := info.GetInfo()
 		if err != nil {
 			fmt.Println("ERROR:", err)
+			return
 		}
 
-		fmt.Printf("result: %s", string(getInfoResp))
+		fmt.Println("info response: " + infoResp)
 	case "drivers":
-		fmt.Println("Not implemented")
-
 		token, err := cliConnection.AccessToken()
 		if err != nil {
 			fmt.Println("ERROR:", err)
+			return
 		}
 
-		fmt.Printf("token: %s", token)
+		fmt.Println("token: " + token)
 
 		// ask user to add an input
 		//value := c.ui.Ask("Value")
@@ -117,8 +110,8 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 			Build: 0,
 		},
 		MinCliVersion: plugin.VersionType{
-			Major: 6,
-			Minor: 7,
+			Major: 1,
+			Minor: 0,
 			Build: 0,
 		},
 		Commands: []plugin.Command{
@@ -155,20 +148,4 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 			},
 		},
 	}
-}
-
-func usbBrokerExist(cliConnection plugin.CliConnection) bool {
-	brokers, err := cliConnection.CliCommandWithoutTerminalOutput("service-brokers")
-	if err != nil {
-		fmt.Println("ERROR:", err)
-	}
-
-	for _, a := range brokers {
-		fields := strings.Fields(a)
-		if fields[0] == brokerName {
-			return true
-		}
-	}
-
-	return false
 }
