@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/url"
 	"os"
 	"strconv"
@@ -14,6 +16,9 @@ import (
 	"github.com/go-swagger/go-swagger/strfmt"
 	"github.com/hpcloud/cf-plugin-usb/config"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+
+	"github.com/hpcloud/cf-plugin-usb/lib/models"
+	"github.com/hpcloud/cf-plugin-usb/lib/schema"
 )
 
 var target string
@@ -98,6 +103,96 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		}
 
 		fmt.Println("info response: " + infoResp.Payload.Version)
+	case "create-instance":
+		token, err := cliConnection.AccessToken()
+		if err != nil {
+			fmt.Println("ERROR:", err)
+			return
+		}
+		var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+		if argLength == 6 {
+			driverName := args[2]
+			instanceName := args[3]
+			method := args[4]
+			configValue := args[5]
+
+			if method == "configFile" {
+				fileContent, err := ioutil.ReadFile(configValue)
+				if err != nil {
+					fmt.Println("ERROR - reading configuration file", err)
+					return
+				}
+				configValue = string(fileContent)
+			}
+
+			fmt.Println(fmt.Sprintf("Creating instance %s for driver %s using %s with value %s", instanceName, driverName, method, configValue))
+
+			var targetDriver *models.Driver = getDriverByName(c.httpClient, bearer, driverName)
+
+			var driverConfig map[string]interface{}
+
+			if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
+				println("Invalid JSON format", err.Error())
+			}
+
+			newDriver := models.DriverInstance{
+				Name:          instanceName,
+				DriverID:      *targetDriver.ID,
+				Configuration: driverConfig,
+			}
+
+			createRes, err := c.httpClient.CreateDriverInstance(&operations.CreateDriverInstanceParams{&newDriver}, bearer)
+			if err != nil {
+				fmt.Println("ERROR - create instance:", err)
+				return
+			}
+			fmt.Println("New driver instance created. ID:" + *createRes.Payload.ID)
+		} else {
+			if argLength == 4 {
+				driverName := args[2]
+				instanceName := args[3]
+				var targetDriver *models.Driver = getDriverByName(c.httpClient, bearer, driverName)
+
+				if targetDriver == nil {
+					println("Driver not found")
+					return
+				}
+				fmt.Println(targetDriver)
+				configSchema, err := c.httpClient.GetDriverSchema(&operations.GetDriverSchemaParams{DriverID: *targetDriver.ID}, bearer)
+				if err != nil {
+					fmt.Println("ERROR:", err)
+					return
+				}
+				schemaParser := schema.NewSchemaParser(c.ui)
+
+				configValue, err := schemaParser.ParseSchema(string(configSchema.Payload))
+				if err != nil {
+					fmt.Println("ERROR:", err)
+					return
+				}
+				var driverConfig map[string]interface{}
+
+				if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
+					println("Invalid JSON format", err.Error())
+				}
+
+				newDriver := models.DriverInstance{
+					Name:          instanceName,
+					DriverID:      *targetDriver.ID,
+					Configuration: driverConfig,
+				}
+
+				createRes, err := c.httpClient.CreateDriverInstance(&operations.CreateDriverInstanceParams{&newDriver}, bearer)
+				if err != nil {
+					fmt.Println("ERROR - create instance:", err)
+					return
+				}
+				fmt.Println("New driver instance created. ID:" + *createRes.Payload.ID)
+			} else {
+				fmt.Println("Usage cf usb create-instance [driverName] [instanceName] configValue/configFile [jsonValue/filePath]")
+				return
+			}
+		}
 	case "drivers":
 		token, err := cliConnection.AccessToken()
 		if err != nil {
@@ -157,6 +252,15 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 					Usage: "usb token\n   cf usb token",
 				},
 			},
+			plugin.Command{
+				Name:     "usb create-instance",
+				HelpText: "Usb plugin create driver instance command",
+
+				UsageDetails: plugin.Usage{
+					Usage: "usb create-instance [driverName] [instanceName] configValue/configFile [jsonValue/filePath]",
+				},
+			},
+
 			plugin.Command{
 				Name:     "usb drivers",
 				HelpText: "List existing drivers",
