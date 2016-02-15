@@ -12,7 +12,7 @@ import (
 // NewGetInfoParams creates a new GetInfoParams object
 // with the default values initialized.
 func NewGetInfoParams() *GetInfoParams {
-
+	var ()
 	return &GetInfoParams{}
 }
 

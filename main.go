@@ -103,6 +103,32 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		}
 
 		fmt.Println("info response: " + infoResp.Payload.Version)
+	case "create-driver":
+		if argLength == 4 {
+			var driver models.Driver
+			driver.DriverType = args[2]
+			driver.Name = args[3]
+
+			token, err := cliConnection.AccessToken()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+
+			params := operations.NewCreateDriverParams()
+
+			params.Driver = &driver
+
+			response, err := c.httpClient.CreateDriver(params, bearer)
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			fmt.Println("Driver created with ID:", *response.Payload.ID)
+		} else {
+			fmt.Println("Usage: create-driver [driver-type] [driver-name]")
+		}
 	case "create-instance":
 		token, err := cliConnection.AccessToken()
 		if err != nil {
@@ -260,7 +286,14 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 					Usage: "usb create-instance [driverName] [instanceName] configValue/configFile [jsonValue/filePath]",
 				},
 			},
+			plugin.Command{
+				Name:     "usb create-driver",
+				HelpText: "Usb plugin create driver command",
 
+				UsageDetails: plugin.Usage{
+					Usage: "usb create-instance [driverType] [driverName]",
+				},
+			},
 			plugin.Command{
 				Name:     "usb drivers",
 				HelpText: "List existing drivers",

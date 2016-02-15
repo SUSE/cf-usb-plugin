@@ -11,15 +11,13 @@ import (
 	"github.com/go-swagger/go-swagger/httpkit"
 	"github.com/go-swagger/go-swagger/strfmt"
 
-	//	"github.com/hpcloud/cf-plugin-usb/lib/models"
+	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
-// GetDriverSchemaReader is a Reader for the GetDriverSchema structure.
 type GetDriverSchemaReader struct {
 	formats strfmt.Registry
 }
 
-// ReadResponse reads a server response into the recieved o.
 func (o *GetDriverSchemaReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -54,12 +52,12 @@ func NewGetDriverSchemaOK() *GetDriverSchemaOK {
 	return &GetDriverSchemaOK{}
 }
 
-/*GetDriverSchemaOK handles this case with default header values.
+/*GetDriverSchemaOK
 
 OK
 */
 type GetDriverSchemaOK struct {
-	Payload string
+	Payload models.DriverSchema
 }
 
 func (o *GetDriverSchemaOK) Error() string {
@@ -81,7 +79,7 @@ func NewGetDriverSchemaNotFound() *GetDriverSchemaNotFound {
 	return &GetDriverSchemaNotFound{}
 }
 
-/*GetDriverSchemaNotFound handles this case with default header values.
+/*GetDriverSchemaNotFound
 
 Not Found
 */
@@ -102,7 +100,7 @@ func NewGetDriverSchemaInternalServerError() *GetDriverSchemaInternalServerError
 	return &GetDriverSchemaInternalServerError{}
 }
 
-/*GetDriverSchemaInternalServerError handles this case with default header values.
+/*GetDriverSchemaInternalServerError
 
 Unexpected error
 */

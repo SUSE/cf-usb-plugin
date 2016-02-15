@@ -14,12 +14,10 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
-// GetServiceReader is a Reader for the GetService structure.
 type GetServiceReader struct {
 	formats strfmt.Registry
 }
 
-// ReadResponse reads a server response into the recieved o.
 func (o *GetServiceReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -54,7 +52,7 @@ func NewGetServiceOK() *GetServiceOK {
 	return &GetServiceOK{}
 }
 
-/*GetServiceOK handles this case with default header values.
+/*GetServiceOK
 
 Sucessfull response
 */
@@ -83,7 +81,7 @@ func NewGetServiceNotFound() *GetServiceNotFound {
 	return &GetServiceNotFound{}
 }
 
-/*GetServiceNotFound handles this case with default header values.
+/*GetServiceNotFound
 
 Not Found
 */
@@ -104,7 +102,7 @@ func NewGetServiceInternalServerError() *GetServiceInternalServerError {
 	return &GetServiceInternalServerError{}
 }
 
-/*GetServiceInternalServerError handles this case with default header values.
+/*GetServiceInternalServerError
 
 Unexpected error
 */

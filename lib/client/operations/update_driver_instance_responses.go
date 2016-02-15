@@ -14,12 +14,10 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
-// UpdateDriverInstanceReader is a Reader for the UpdateDriverInstance structure.
 type UpdateDriverInstanceReader struct {
 	formats strfmt.Registry
 }
 
-// ReadResponse reads a server response into the recieved o.
 func (o *UpdateDriverInstanceReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -61,7 +59,7 @@ func NewUpdateDriverInstanceOK() *UpdateDriverInstanceOK {
 	return &UpdateDriverInstanceOK{}
 }
 
-/*UpdateDriverInstanceOK handles this case with default header values.
+/*UpdateDriverInstanceOK
 
 Sucessfull response
 */
@@ -90,7 +88,7 @@ func NewUpdateDriverInstanceNotFound() *UpdateDriverInstanceNotFound {
 	return &UpdateDriverInstanceNotFound{}
 }
 
-/*UpdateDriverInstanceNotFound handles this case with default header values.
+/*UpdateDriverInstanceNotFound
 
 Not Found
 */
@@ -111,7 +109,7 @@ func NewUpdateDriverInstanceConflict() *UpdateDriverInstanceConflict {
 	return &UpdateDriverInstanceConflict{}
 }
 
-/*UpdateDriverInstanceConflict handles this case with default header values.
+/*UpdateDriverInstanceConflict
 
 Conflict
 */
@@ -132,7 +130,7 @@ func NewUpdateDriverInstanceInternalServerError() *UpdateDriverInstanceInternalS
 	return &UpdateDriverInstanceInternalServerError{}
 }
 
-/*UpdateDriverInstanceInternalServerError handles this case with default header values.
+/*UpdateDriverInstanceInternalServerError
 
 Unexpected error
 */

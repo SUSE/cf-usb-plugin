@@ -12,12 +12,10 @@ import (
 	"github.com/go-swagger/go-swagger/strfmt"
 )
 
-// PingDriverInstanceReader is a Reader for the PingDriverInstance structure.
 type PingDriverInstanceReader struct {
 	formats strfmt.Registry
 }
 
-// ReadResponse reads a server response into the recieved o.
 func (o *PingDriverInstanceReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -52,7 +50,7 @@ func NewPingDriverInstanceOK() *PingDriverInstanceOK {
 	return &PingDriverInstanceOK{}
 }
 
-/*PingDriverInstanceOK handles this case with default header values.
+/*PingDriverInstanceOK
 
 OK
 */
@@ -73,7 +71,7 @@ func NewPingDriverInstanceNotFound() *PingDriverInstanceNotFound {
 	return &PingDriverInstanceNotFound{}
 }
 
-/*PingDriverInstanceNotFound handles this case with default header values.
+/*PingDriverInstanceNotFound
 
 Not Found
 */
@@ -94,7 +92,7 @@ func NewPingDriverInstanceInternalServerError() *PingDriverInstanceInternalServe
 	return &PingDriverInstanceInternalServerError{}
 }
 
-/*PingDriverInstanceInternalServerError handles this case with default header values.
+/*PingDriverInstanceInternalServerError
 
 Unexpected error
 */

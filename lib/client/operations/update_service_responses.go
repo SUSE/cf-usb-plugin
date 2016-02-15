@@ -14,12 +14,10 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
-// UpdateServiceReader is a Reader for the UpdateService structure.
 type UpdateServiceReader struct {
 	formats strfmt.Registry
 }
 
-// ReadResponse reads a server response into the recieved o.
 func (o *UpdateServiceReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -61,7 +59,7 @@ func NewUpdateServiceOK() *UpdateServiceOK {
 	return &UpdateServiceOK{}
 }
 
-/*UpdateServiceOK handles this case with default header values.
+/*UpdateServiceOK
 
 Sucessfull response
 */
@@ -90,7 +88,7 @@ func NewUpdateServiceNotFound() *UpdateServiceNotFound {
 	return &UpdateServiceNotFound{}
 }
 
-/*UpdateServiceNotFound handles this case with default header values.
+/*UpdateServiceNotFound
 
 Not Found
 */
@@ -111,7 +109,7 @@ func NewUpdateServiceConflict() *UpdateServiceConflict {
 	return &UpdateServiceConflict{}
 }
 
-/*UpdateServiceConflict handles this case with default header values.
+/*UpdateServiceConflict
 
 Conflict
 */
@@ -132,7 +130,7 @@ func NewUpdateServiceInternalServerError() *UpdateServiceInternalServerError {
 	return &UpdateServiceInternalServerError{}
 }
 
-/*UpdateServiceInternalServerError handles this case with default header values.
+/*UpdateServiceInternalServerError
 
 Unexpected error
 */

@@ -14,12 +14,10 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
-// GetAllDialsReader is a Reader for the GetAllDials structure.
 type GetAllDialsReader struct {
 	formats strfmt.Registry
 }
 
-// ReadResponse reads a server response into the recieved o.
 func (o *GetAllDialsReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -47,7 +45,7 @@ func NewGetAllDialsOK() *GetAllDialsOK {
 	return &GetAllDialsOK{}
 }
 
-/*GetAllDialsOK handles this case with default header values.
+/*GetAllDialsOK
 
 Sucessfull response
 */
@@ -74,7 +72,7 @@ func NewGetAllDialsInternalServerError() *GetAllDialsInternalServerError {
 	return &GetAllDialsInternalServerError{}
 }
 
-/*GetAllDialsInternalServerError handles this case with default header values.
+/*GetAllDialsInternalServerError
 
 Unexpected error
 */

@@ -11,15 +11,13 @@ import (
 	"github.com/go-swagger/go-swagger/httpkit"
 	"github.com/go-swagger/go-swagger/strfmt"
 
-	//	"github.com/hpcloud/cf-plugin-usb/lib/models"
+	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
-// GetDialSchemaReader is a Reader for the GetDialSchema structure.
 type GetDialSchemaReader struct {
 	formats strfmt.Registry
 }
 
-// ReadResponse reads a server response into the recieved o.
 func (o *GetDialSchemaReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -54,12 +52,12 @@ func NewGetDialSchemaOK() *GetDialSchemaOK {
 	return &GetDialSchemaOK{}
 }
 
-/*GetDialSchemaOK handles this case with default header values.
+/*GetDialSchemaOK
 
 OK
 */
 type GetDialSchemaOK struct {
-	Payload string
+	Payload models.DialSchema
 }
 
 func (o *GetDialSchemaOK) Error() string {
@@ -81,7 +79,7 @@ func NewGetDialSchemaNotFound() *GetDialSchemaNotFound {
 	return &GetDialSchemaNotFound{}
 }
 
-/*GetDialSchemaNotFound handles this case with default header values.
+/*GetDialSchemaNotFound
 
 Not Found
 */
@@ -102,7 +100,7 @@ func NewGetDialSchemaInternalServerError() *GetDialSchemaInternalServerError {
 	return &GetDialSchemaInternalServerError{}
 }
 
-/*GetDialSchemaInternalServerError handles this case with default header values.
+/*GetDialSchemaInternalServerError
 
 Unexpected error
 */

@@ -12,7 +12,7 @@ import (
 // NewGetDriversParams creates a new GetDriversParams object
 // with the default values initialized.
 func NewGetDriversParams() *GetDriversParams {
-
+	var ()
 	return &GetDriversParams{}
 }
 

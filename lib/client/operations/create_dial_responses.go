@@ -14,12 +14,10 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
-// CreateDialReader is a Reader for the CreateDial structure.
 type CreateDialReader struct {
 	formats strfmt.Registry
 }
 
-// ReadResponse reads a server response into the recieved o.
 func (o *CreateDialReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -47,7 +45,7 @@ func NewCreateDialCreated() *CreateDialCreated {
 	return &CreateDialCreated{}
 }
 
-/*CreateDialCreated handles this case with default header values.
+/*CreateDialCreated
 
 Sucessfull response
 */
@@ -76,7 +74,7 @@ func NewCreateDialInternalServerError() *CreateDialInternalServerError {
 	return &CreateDialInternalServerError{}
 }
 
-/*CreateDialInternalServerError handles this case with default header values.
+/*CreateDialInternalServerError
 
 Unexpected error
 */

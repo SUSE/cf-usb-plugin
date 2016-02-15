@@ -14,12 +14,10 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
-// CreateDriverInstanceReader is a Reader for the CreateDriverInstance structure.
 type CreateDriverInstanceReader struct {
 	formats strfmt.Registry
 }
 
-// ReadResponse reads a server response into the recieved o.
 func (o *CreateDriverInstanceReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -54,7 +52,7 @@ func NewCreateDriverInstanceCreated() *CreateDriverInstanceCreated {
 	return &CreateDriverInstanceCreated{}
 }
 
-/*CreateDriverInstanceCreated handles this case with default header values.
+/*CreateDriverInstanceCreated
 
 Instance created
 */
@@ -83,7 +81,7 @@ func NewCreateDriverInstanceConflict() *CreateDriverInstanceConflict {
 	return &CreateDriverInstanceConflict{}
 }
 
-/*CreateDriverInstanceConflict handles this case with default header values.
+/*CreateDriverInstanceConflict
 
 Conflict
 */
@@ -104,7 +102,7 @@ func NewCreateDriverInstanceInternalServerError() *CreateDriverInstanceInternalS
 	return &CreateDriverInstanceInternalServerError{}
 }
 
-/*CreateDriverInstanceInternalServerError handles this case with default header values.
+/*CreateDriverInstanceInternalServerError
 
 Unexpected error
 */

@@ -14,12 +14,10 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
-// GetServicePlansReader is a Reader for the GetServicePlans structure.
 type GetServicePlansReader struct {
 	formats strfmt.Registry
 }
 
-// ReadResponse reads a server response into the recieved o.
 func (o *GetServicePlansReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -47,7 +45,7 @@ func NewGetServicePlansOK() *GetServicePlansOK {
 	return &GetServicePlansOK{}
 }
 
-/*GetServicePlansOK handles this case with default header values.
+/*GetServicePlansOK
 
 Sucessfull response
 */
@@ -74,7 +72,7 @@ func NewGetServicePlansInternalServerError() *GetServicePlansInternalServerError
 	return &GetServicePlansInternalServerError{}
 }
 
-/*GetServicePlansInternalServerError handles this case with default header values.
+/*GetServicePlansInternalServerError
 
 Unexpected error
 */

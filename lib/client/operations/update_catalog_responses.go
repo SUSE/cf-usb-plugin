@@ -12,12 +12,10 @@ import (
 	"github.com/go-swagger/go-swagger/strfmt"
 )
 
-// UpdateCatalogReader is a Reader for the UpdateCatalog structure.
 type UpdateCatalogReader struct {
 	formats strfmt.Registry
 }
 
-// ReadResponse reads a server response into the recieved o.
 func (o *UpdateCatalogReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -45,7 +43,7 @@ func NewUpdateCatalogOK() *UpdateCatalogOK {
 	return &UpdateCatalogOK{}
 }
 
-/*UpdateCatalogOK handles this case with default header values.
+/*UpdateCatalogOK
 
 Successful response
 */
@@ -66,7 +64,7 @@ func NewUpdateCatalogInternalServerError() *UpdateCatalogInternalServerError {
 	return &UpdateCatalogInternalServerError{}
 }
 
-/*UpdateCatalogInternalServerError handles this case with default header values.
+/*UpdateCatalogInternalServerError
 
 Unexpected error
 */
