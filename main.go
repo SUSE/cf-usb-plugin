@@ -1,21 +1,31 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/url"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/cloudfoundry/cli/cf/terminal"
 	"github.com/cloudfoundry/cli/plugin"
+	swaggerclient "github.com/go-swagger/go-swagger/client"
+	httptransport "github.com/go-swagger/go-swagger/httpkit/client"
+	"github.com/go-swagger/go-swagger/strfmt"
 	"github.com/hpcloud/cf-plugin-usb/config"
-	"github.com/hpcloud/cf-plugin-usb/httpclient"
-	"github.com/hpcloud/cf-plugin-usb/info"
+	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+
+	"github.com/hpcloud/cf-plugin-usb/lib/models"
+	"github.com/hpcloud/cf-plugin-usb/lib/schema"
 )
 
 var target string
 
 type UsbPlugin struct {
 	ui         terminal.UI
-	httpClient httpclient.HttpClient
+	httpClient *operations.Client
 }
 
 func main() {
@@ -39,13 +49,23 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			return
 		}
 
-		sslDisabled, err := cliConnection.IsSSLDisabled()
+		/*sslDisabled, err := cliConnection.IsSSLDisabled()
 		if err != nil {
 			fmt.Println("ERROR:", err)
 			return
+		}*/
+		u, err := url.Parse(target)
+		if err != nil {
+			fmt.Println("ERROR :", err)
+			return
 		}
+		transport := httptransport.New(u.Host, "/", []string{u.Scheme})
 
-		c.httpClient = httpclient.NewHttpClient(target, sslDisabled)
+		debug, _ := strconv.ParseBool(os.Getenv("CF_TRACE"))
+
+		transport.Debug = debug
+
+		c.httpClient = operations.New(transport, strfmt.Default)
 	}
 
 	switch args[1] {
@@ -75,16 +95,130 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			fmt.Println("ERROR:", err)
 			return
 		}
+		var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+		infoResp, err := c.httpClient.GetInfo(operations.NewGetInfoParams(), bearer)
+		if err != nil {
+			fmt.Println("ERROR:", err.Error())
+			return
+		}
 
-		info := info.NewInfo(c.httpClient, token)
+		fmt.Println("info response: " + infoResp.Payload.Version)
+	case "create-driver":
+		if argLength == 4 {
+			var driver models.Driver
+			driver.DriverType = args[2]
+			driver.Name = args[3]
 
-		infoResp, err := info.GetInfo()
+			token, err := cliConnection.AccessToken()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+
+			params := operations.NewCreateDriverParams()
+
+			params.Driver = &driver
+
+			response, err := c.httpClient.CreateDriver(params, bearer)
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			fmt.Println("Driver created with ID:", *response.Payload.ID)
+		} else {
+			fmt.Println("Usage: create-driver [driver-type] [driver-name]")
+		}
+	case "create-instance":
+		token, err := cliConnection.AccessToken()
 		if err != nil {
 			fmt.Println("ERROR:", err)
 			return
 		}
+		var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+		if argLength == 6 {
+			driverName := args[2]
+			instanceName := args[3]
+			method := args[4]
+			configValue := args[5]
 
-		fmt.Println("info response: " + infoResp)
+			if method == "configFile" {
+				fileContent, err := ioutil.ReadFile(configValue)
+				if err != nil {
+					fmt.Println("ERROR - reading configuration file", err)
+					return
+				}
+				configValue = string(fileContent)
+			}
+
+			fmt.Println(fmt.Sprintf("Creating instance %s for driver %s using %s with value %s", instanceName, driverName, method, configValue))
+
+			var targetDriver *models.Driver = getDriverByName(c.httpClient, bearer, driverName)
+
+			var driverConfig map[string]interface{}
+
+			if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
+				println("Invalid JSON format", err.Error())
+			}
+
+			newDriver := models.DriverInstance{
+				Name:          instanceName,
+				DriverID:      *targetDriver.ID,
+				Configuration: driverConfig,
+			}
+
+			createRes, err := c.httpClient.CreateDriverInstance(&operations.CreateDriverInstanceParams{&newDriver}, bearer)
+			if err != nil {
+				fmt.Println("ERROR - create instance:", err)
+				return
+			}
+			fmt.Println("New driver instance created. ID:" + *createRes.Payload.ID)
+		} else {
+			if argLength == 4 {
+				driverName := args[2]
+				instanceName := args[3]
+				var targetDriver *models.Driver = getDriverByName(c.httpClient, bearer, driverName)
+
+				if targetDriver == nil {
+					println("Driver not found")
+					return
+				}
+				fmt.Println(targetDriver)
+				configSchema, err := c.httpClient.GetDriverSchema(&operations.GetDriverSchemaParams{DriverID: *targetDriver.ID}, bearer)
+				if err != nil {
+					fmt.Println("ERROR:", err)
+					return
+				}
+				schemaParser := schema.NewSchemaParser(c.ui)
+
+				configValue, err := schemaParser.ParseSchema(string(configSchema.Payload))
+				if err != nil {
+					fmt.Println("ERROR:", err)
+					return
+				}
+				var driverConfig map[string]interface{}
+
+				if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
+					println("Invalid JSON format", err.Error())
+				}
+
+				newDriver := models.DriverInstance{
+					Name:          instanceName,
+					DriverID:      *targetDriver.ID,
+					Configuration: driverConfig,
+				}
+
+				createRes, err := c.httpClient.CreateDriverInstance(&operations.CreateDriverInstanceParams{&newDriver}, bearer)
+				if err != nil {
+					fmt.Println("ERROR - create instance:", err)
+					return
+				}
+				fmt.Println("New driver instance created. ID:" + *createRes.Payload.ID)
+			} else {
+				fmt.Println("Usage cf usb create-instance [driverName] [instanceName] configValue/configFile [jsonValue/filePath]")
+				return
+			}
+		}
 	case "drivers":
 		token, err := cliConnection.AccessToken()
 		if err != nil {
@@ -92,13 +226,19 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			return
 		}
 
-		fmt.Println("token: " + token)
-
-		// ask user to add an input
-		//value := c.ui.Ask("Value")
+		var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+		resp, err := c.httpClient.GetDrivers(operations.NewGetDriversParams(), bearer)
+		if err != nil {
+			fmt.Println("ERROR:", err)
+		}
+		if resp != nil {
+			table := terminal.NewTable(c.ui, []string{"Id", "Name", "Type"})
+			for _, driver := range resp.Payload {
+				table.Add(*driver.ID, driver.Name, driver.DriverType)
+			}
+			table.Print()
+		}
 	}
-
-	fmt.Println(terminal.ColorizeBold("OK", 32))
 }
 
 func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
@@ -136,6 +276,22 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 
 				UsageDetails: plugin.Usage{
 					Usage: "usb token\n   cf usb token",
+				},
+			},
+			plugin.Command{
+				Name:     "usb create-instance",
+				HelpText: "Usb plugin create driver instance command",
+
+				UsageDetails: plugin.Usage{
+					Usage: "usb create-instance [driverName] [instanceName] configValue/configFile [jsonValue/filePath]",
+				},
+			},
+			plugin.Command{
+				Name:     "usb create-driver",
+				HelpText: "Usb plugin create driver command",
+
+				UsageDetails: plugin.Usage{
+					Usage: "usb create-instance [driverType] [driverName]",
 				},
 			},
 			plugin.Command{
