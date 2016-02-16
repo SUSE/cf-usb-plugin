@@ -129,6 +129,34 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		} else {
 			fmt.Println("Usage: create-driver [driver-type] [driver-name]")
 		}
+	case "delete-driver":
+		if argLength == 3 {
+			token, err := cliConnection.AccessToken()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+
+			driver := getDriverByName(c.httpClient, bearer, args[2])
+
+			if driver == nil {
+				fmt.Println("Driver not found")
+				return
+			}
+			params := operations.NewDeleteDriverParams()
+			params.DriverID = *driver.ID
+
+			_, err = c.httpClient.DeleteDriver(params, bearer)
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			fmt.Println("Driver deleted:", *driver.ID)
+		} else {
+			fmt.Println("Usage: delete-driver [driver-name]")
+		}
+
 	case "create-instance":
 		token, err := cliConnection.AccessToken()
 		if err != nil {
@@ -355,7 +383,15 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 				HelpText: "Usb plugin create driver command",
 
 				UsageDetails: plugin.Usage{
-					Usage: "usb create-instance [driverType] [driverName]",
+					Usage: "usb create-driver [driverType] [driverName]",
+				},
+			},
+			plugin.Command{
+				Name:     "usb delete-driver",
+				HelpText: "Usb plugin delete driver command",
+
+				UsageDetails: plugin.Usage{
+					Usage: "usb delete-driver [driverName]",
 				},
 			},
 			plugin.Command{
