@@ -42,6 +42,7 @@ swagger generate client -f $GOPATH/src/github.com/hpcloud/cf-usb/swagger-spec/ap
  -O getDial \
  -O updateDial \
  -O deleteDial \
- -O getDriver
+ -O getDriver \
+ -O uploadDriver
 
 popd

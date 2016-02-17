@@ -104,7 +104,15 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 		fmt.Println("info response: " + infoResp.Payload.Version)
 	case "create-driver":
-		if argLength == 4 {
+		if argLength == 4 || argLength == 5 {
+
+			if argLength == 5 {
+				if _, err := os.Stat(args[4]); err != nil {
+					fmt.Println("ERROR:", err)
+					return
+				}
+			}
+
 			var driver models.Driver
 			driver.DriverType = args[2]
 			driver.Name = args[3]
@@ -126,8 +134,40 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 			fmt.Println("Driver created with ID:", *response.Payload.ID)
+
+			filePath := ""
+			if argLength == 5 {
+				filePath = args[4]
+
+				sha, err := getFileSha(filePath)
+				if err != nil {
+					fmt.Println("ERROR: ", err)
+					return
+				}
+
+				file, err := os.Open(filePath)
+				if err != nil {
+					fmt.Println("ERROR: ", err)
+					return
+				}
+
+				var uploadParams operations.UploadDriverParams
+
+				uploadParams.DriverID = *response.Payload.ID
+				uploadParams.File = *file
+				uploadParams.Sha = sha
+
+				_, err = c.httpClient.UploadDriver(&uploadParams, bearer)
+				if err != nil {
+					fmt.Println("ERROR:", err)
+					return
+				}
+				fmt.Println("Uploaded driver bits from:", filePath)
+			}
 		} else {
-			fmt.Println("Usage: create-driver [driver-type] [driver-name]")
+			fmt.Println("ERROR: Invalid number of arguments")
+			fmt.Println("Usage: create-driver [driver-type] [driver-name] [driver-bits-path]")
+			return
 		}
 	case "create-instance":
 		token, err := cliConnection.AccessToken()

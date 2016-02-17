@@ -14,10 +14,12 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
+// GetDriverInstanceReader is a Reader for the GetDriverInstance structure.
 type GetDriverInstanceReader struct {
 	formats strfmt.Registry
 }
 
+// ReadResponse reads a server response into the recieved o.
 func (o *GetDriverInstanceReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -52,7 +54,7 @@ func NewGetDriverInstanceOK() *GetDriverInstanceOK {
 	return &GetDriverInstanceOK{}
 }
 
-/*GetDriverInstanceOK
+/*GetDriverInstanceOK handles this case with default header values.
 
 OK
 */
@@ -81,7 +83,7 @@ func NewGetDriverInstanceNotFound() *GetDriverInstanceNotFound {
 	return &GetDriverInstanceNotFound{}
 }
 
-/*GetDriverInstanceNotFound
+/*GetDriverInstanceNotFound handles this case with default header values.
 
 Not Found
 */
@@ -102,7 +104,7 @@ func NewGetDriverInstanceInternalServerError() *GetDriverInstanceInternalServerE
 	return &GetDriverInstanceInternalServerError{}
 }
 
-/*GetDriverInstanceInternalServerError
+/*GetDriverInstanceInternalServerError handles this case with default header values.
 
 Unexpected error
 */

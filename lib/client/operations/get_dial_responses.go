@@ -14,10 +14,12 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
+// GetDialReader is a Reader for the GetDial structure.
 type GetDialReader struct {
 	formats strfmt.Registry
 }
 
+// ReadResponse reads a server response into the recieved o.
 func (o *GetDialReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -52,7 +54,7 @@ func NewGetDialOK() *GetDialOK {
 	return &GetDialOK{}
 }
 
-/*GetDialOK
+/*GetDialOK handles this case with default header values.
 
 Sucessfull response
 */
@@ -81,7 +83,7 @@ func NewGetDialNotFound() *GetDialNotFound {
 	return &GetDialNotFound{}
 }
 
-/*GetDialNotFound
+/*GetDialNotFound handles this case with default header values.
 
 Not Found
 */
@@ -102,7 +104,7 @@ func NewGetDialInternalServerError() *GetDialInternalServerError {
 	return &GetDialInternalServerError{}
 }
 
-/*GetDialInternalServerError
+/*GetDialInternalServerError handles this case with default header values.
 
 Unexpected error
 */
