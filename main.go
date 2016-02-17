@@ -403,6 +403,66 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 		}
+	case "update-service":
+		if argLength == 3 {
+			token, err := cliConnection.AccessToken()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+
+			instanceName := args[2]
+
+			instance := getDriverInstanceByName(c.httpClient, bearer, instanceName)
+			if instance == nil {
+				fmt.Println("Driver instance not found")
+				return
+			}
+
+			params := operations.NewUpdateServiceParams()
+			params.ServiceID = *instance.Service
+
+			var service models.Service
+			service.DriverInstanceID = *instance.ID
+			bindable := true
+			bind := c.ui.Ask("Is service bindable?[Y/n]")
+			if strings.ToLower(strings.Trim(bind, " ")) == "n" {
+				bindable = false
+			}
+			service.Bindable = &bindable
+
+			service.Name = c.ui.Ask("Service name")
+			if service.Name == "" {
+				fmt.Println("ERROR: Empty service name provided")
+				return
+			}
+			desc := c.ui.Ask("Service description")
+			if desc == "" {
+				fmt.Println("ERROR: Empty service description provided")
+				return
+			}
+			service.Description = &desc
+			tags := c.ui.Ask("Tags (comma separated)")
+			if tags == "" {
+				fmt.Println("ERROR: Empty tags array provided")
+				return
+			}
+			service.Tags = strings.Split(tags, ",")
+
+			params.Service = &service
+
+			response, err := c.httpClient.UpdateService(params, bearer)
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			fmt.Println("Updated service with ID:", *response.Payload.ID)
+		} else {
+			fmt.Println("Usage: cf usb update-service [instanceName]")
+			return
+		}
+
 	case "dials":
 		if argLength == 3 {
 			token, err := cliConnection.AccessToken()
@@ -581,7 +641,14 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 					Usage: "usb update-instance [driverName] [instanceName]  configValue/configFile [jsonValue/filePath]",
 				},
 			},
+			plugin.Command{
+				Name:     "usb update-service",
+				HelpText: "Usb plugin update service command",
 
+				UsageDetails: plugin.Usage{
+					Usage: "usb update-service [instanceName]",
+				},
+			},
 			plugin.Command{
 				Name:     "usb delete-driver",
 				HelpText: "Usb plugin delete driver command",
