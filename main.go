@@ -504,7 +504,80 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			fmt.Println("Usage: cf usb update-service [instanceName]")
 			return
 		}
+	case "update-service-plan":
+		if argLength == 4 {
+			instanceName := args[2]
+			planName := args[3]
+			token, err := cliConnection.AccessToken()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
 
+			instance := getDriverInstanceByName(c.httpClient, bearer, instanceName)
+			if instance == nil {
+				fmt.Println("Driver instance not found")
+				return
+			}
+			params := operations.NewGetAllDialsParams()
+			params.DriverInstanceID = instance.ID
+
+			dials, err := c.httpClient.GetAllDials(params, bearer)
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			var oldPlan models.Plan
+
+			for _, dial := range dials.Payload {
+				plan, err := c.httpClient.GetServicePlan(&operations.GetServicePlanParams{PlanID: *dial.Plan}, bearer)
+				if err != nil {
+					fmt.Println("ERROR - get service plan", err)
+				}
+				if plan.Payload.Name == planName {
+					oldPlan = *plan.Payload
+					break
+				}
+			}
+			if oldPlan.ID == nil {
+				fmt.Println("Plan not found")
+				return
+			}
+			planParams := operations.NewUpdateServicePlanParams()
+			planParams.PlanID = *oldPlan.ID
+			planParams.Plan = &oldPlan
+
+			planParams.Plan.Name = c.ui.Ask("Plan name")
+			if planParams.Plan.Name == "" {
+				fmt.Println("Plan name cannot be empty")
+				return
+			}
+
+			desc := c.ui.Ask("Plan description")
+			if desc == "" {
+				fmt.Println("Plan description cannot be empty")
+				return
+			}
+			planParams.Plan.Description = &desc
+
+			free := true
+			f := c.ui.Ask("Is plan free?[Y/n]")
+			if strings.ToLower(strings.Trim(f, " ")) == "n" {
+				free = false
+			}
+			planParams.Plan.Free = &free
+
+			response, err := c.httpClient.UpdateServicePlan(planParams, bearer)
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			fmt.Println("Updated plan with ID:", response.Payload.ID)
+		} else {
+			fmt.Println("Usage: cf usb update-service-plan [instanceName] [planName]")
+			return
+		}
 	case "dials":
 		if argLength == 3 {
 			token, err := cliConnection.AccessToken()
