@@ -17,6 +17,7 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/config"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 
+	"github.com/hpcloud/cf-plugin-usb/commands"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 	"github.com/hpcloud/cf-plugin-usb/lib/schema"
 )
@@ -90,21 +91,21 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			fmt.Println("Usb management target set to: " + target)
 		}
 	case "info":
-		token, err := cliConnection.AccessToken()
+		bearer, err := commands.GetBearerToken(cliConnection)
 		if err != nil {
 			fmt.Println("ERROR:", err)
 			return
 		}
-		var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
-		infoResp, err := c.httpClient.GetInfo(operations.NewGetInfoParams(), bearer)
+
+		infoResp, err := commands.NewInfoCommands(c.httpClient).GetInfo(bearer)
 		if err != nil {
-			fmt.Println("ERROR:", err.Error())
+			fmt.Println("ERROR:", err)
 			return
 		}
 
-		fmt.Println("Broker API version: " + infoResp.Payload.BrokerAPIVersion)
+		fmt.Println("Broker API version: " + infoResp.BrokerAPIVersion)
 
-		fmt.Println("USB version: " + infoResp.Payload.UsbVersion)
+		fmt.Println("USB version: " + infoResp.UsbVersion)
 	case "create-driver":
 		if argLength == 4 || argLength == 5 {
 
