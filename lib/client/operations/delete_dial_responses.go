@@ -12,10 +12,12 @@ import (
 	"github.com/go-swagger/go-swagger/strfmt"
 )
 
+// DeleteDialReader is a Reader for the DeleteDial structure.
 type DeleteDialReader struct {
 	formats strfmt.Registry
 }
 
+// ReadResponse reads a server response into the recieved o.
 func (o *DeleteDialReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -50,7 +52,7 @@ func NewDeleteDialNoContent() *DeleteDialNoContent {
 	return &DeleteDialNoContent{}
 }
 
-/*DeleteDialNoContent
+/*DeleteDialNoContent handles this case with default header values.
 
 Sucessfull response
 */
@@ -71,7 +73,7 @@ func NewDeleteDialNotFound() *DeleteDialNotFound {
 	return &DeleteDialNotFound{}
 }
 
-/*DeleteDialNotFound
+/*DeleteDialNotFound handles this case with default header values.
 
 Not Found
 */
@@ -92,7 +94,7 @@ func NewDeleteDialInternalServerError() *DeleteDialInternalServerError {
 	return &DeleteDialInternalServerError{}
 }
 
-/*DeleteDialInternalServerError
+/*DeleteDialInternalServerError handles this case with default header values.
 
 Unexpected error
 */

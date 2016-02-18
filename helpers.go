@@ -1,7 +1,12 @@
 package main
 
 import (
+	"crypto/sha1"
+	"encoding/base64"
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 
 	swaggerclient "github.com/go-swagger/go-swagger/client"
@@ -46,4 +51,20 @@ func getDriverInstanceByName(client *operations.Client, authHeader swaggerclient
 	}
 
 	return nil
+}
+
+func getFileSha(filePath string) (string, error) {
+	f, err := os.Open(filePath)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	sha1 := sha1.New()
+	_, err = io.Copy(sha1, f)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.StdEncoding.EncodeToString(sha1.Sum(nil)), nil
 }

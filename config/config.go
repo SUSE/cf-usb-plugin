@@ -1,12 +1,19 @@
 package config
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/cloudfoundry/cli/cf/configuration/config_helpers"
 )
+
+type ConfigInterface interface {
+	GetTarget() (string, error)
+	SetTarget(string) error
+}
 
 func GetTarget() (target string, err error) {
 	jsonConf, err := ioutil.ReadFile(getUsbConfigFile())
@@ -25,6 +32,10 @@ func GetTarget() (target string, err error) {
 }
 
 func SetTarget(target string) (err error) {
+	if !strings.Contains(target, "http") {
+		target = fmt.Sprintf("https://%[1]s", target)
+	}
+
 	file, err := os.OpenFile(getUsbConfigFile(), os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		return err

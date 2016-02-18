@@ -12,10 +12,12 @@ import (
 	"github.com/go-swagger/go-swagger/strfmt"
 )
 
+// DeleteDriverReader is a Reader for the DeleteDriver structure.
 type DeleteDriverReader struct {
 	formats strfmt.Registry
 }
 
+// ReadResponse reads a server response into the recieved o.
 func (o *DeleteDriverReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -50,7 +52,7 @@ func NewDeleteDriverNoContent() *DeleteDriverNoContent {
 	return &DeleteDriverNoContent{}
 }
 
-/*DeleteDriverNoContent
+/*DeleteDriverNoContent handles this case with default header values.
 
 Driver deleted
 */
@@ -71,7 +73,7 @@ func NewDeleteDriverNotFound() *DeleteDriverNotFound {
 	return &DeleteDriverNotFound{}
 }
 
-/*DeleteDriverNotFound
+/*DeleteDriverNotFound handles this case with default header values.
 
 Not Found
 */
@@ -92,7 +94,7 @@ func NewDeleteDriverInternalServerError() *DeleteDriverInternalServerError {
 	return &DeleteDriverInternalServerError{}
 }
 
-/*DeleteDriverInternalServerError
+/*DeleteDriverInternalServerError handles this case with default header values.
 
 Unexpected error
 */

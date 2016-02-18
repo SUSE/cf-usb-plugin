@@ -14,10 +14,12 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
+// GetDriverSchemaReader is a Reader for the GetDriverSchema structure.
 type GetDriverSchemaReader struct {
 	formats strfmt.Registry
 }
 
+// ReadResponse reads a server response into the recieved o.
 func (o *GetDriverSchemaReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -52,7 +54,7 @@ func NewGetDriverSchemaOK() *GetDriverSchemaOK {
 	return &GetDriverSchemaOK{}
 }
 
-/*GetDriverSchemaOK
+/*GetDriverSchemaOK handles this case with default header values.
 
 OK
 */
@@ -79,7 +81,7 @@ func NewGetDriverSchemaNotFound() *GetDriverSchemaNotFound {
 	return &GetDriverSchemaNotFound{}
 }
 
-/*GetDriverSchemaNotFound
+/*GetDriverSchemaNotFound handles this case with default header values.
 
 Not Found
 */
@@ -100,7 +102,7 @@ func NewGetDriverSchemaInternalServerError() *GetDriverSchemaInternalServerError
 	return &GetDriverSchemaInternalServerError{}
 }
 
-/*GetDriverSchemaInternalServerError
+/*GetDriverSchemaInternalServerError handles this case with default header values.
 
 Unexpected error
 */

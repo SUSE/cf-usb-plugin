@@ -14,10 +14,12 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
+// GetInfoReader is a Reader for the GetInfo structure.
 type GetInfoReader struct {
 	formats strfmt.Registry
 }
 
+// ReadResponse reads a server response into the recieved o.
 func (o *GetInfoReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -45,7 +47,7 @@ func NewGetInfoOK() *GetInfoOK {
 	return &GetInfoOK{}
 }
 
-/*GetInfoOK
+/*GetInfoOK handles this case with default header values.
 
 Successful response
 */
@@ -74,7 +76,7 @@ func NewGetInfoInternalServerError() *GetInfoInternalServerError {
 	return &GetInfoInternalServerError{}
 }
 
-/*GetInfoInternalServerError
+/*GetInfoInternalServerError handles this case with default header values.
 
 Unexpected error
 */

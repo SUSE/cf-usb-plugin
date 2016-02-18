@@ -14,10 +14,12 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
+// UpdateDialReader is a Reader for the UpdateDial structure.
 type UpdateDialReader struct {
 	formats strfmt.Registry
 }
 
+// ReadResponse reads a server response into the recieved o.
 func (o *UpdateDialReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -52,7 +54,7 @@ func NewUpdateDialOK() *UpdateDialOK {
 	return &UpdateDialOK{}
 }
 
-/*UpdateDialOK
+/*UpdateDialOK handles this case with default header values.
 
 Sucessfull response
 */
@@ -81,7 +83,7 @@ func NewUpdateDialNotFound() *UpdateDialNotFound {
 	return &UpdateDialNotFound{}
 }
 
-/*UpdateDialNotFound
+/*UpdateDialNotFound handles this case with default header values.
 
 Not Found
 */
@@ -102,7 +104,7 @@ func NewUpdateDialInternalServerError() *UpdateDialInternalServerError {
 	return &UpdateDialInternalServerError{}
 }
 
-/*UpdateDialInternalServerError
+/*UpdateDialInternalServerError handles this case with default header values.
 
 Unexpected error
 */

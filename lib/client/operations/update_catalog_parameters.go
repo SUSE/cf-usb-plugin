@@ -12,7 +12,7 @@ import (
 // NewUpdateCatalogParams creates a new UpdateCatalogParams object
 // with the default values initialized.
 func NewUpdateCatalogParams() *UpdateCatalogParams {
-	var ()
+
 	return &UpdateCatalogParams{}
 }
 

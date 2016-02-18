@@ -14,10 +14,12 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
+// GetServiceByInstanceIDReader is a Reader for the GetServiceByInstanceID structure.
 type GetServiceByInstanceIDReader struct {
 	formats strfmt.Registry
 }
 
+// ReadResponse reads a server response into the recieved o.
 func (o *GetServiceByInstanceIDReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
 	switch response.Code() {
 
@@ -45,7 +47,7 @@ func NewGetServiceByInstanceIDOK() *GetServiceByInstanceIDOK {
 	return &GetServiceByInstanceIDOK{}
 }
 
-/*GetServiceByInstanceIDOK
+/*GetServiceByInstanceIDOK handles this case with default header values.
 
 Sucessfull response
 */
@@ -74,7 +76,7 @@ func NewGetServiceByInstanceIDInternalServerError() *GetServiceByInstanceIDInter
 	return &GetServiceByInstanceIDInternalServerError{}
 }
 
-/*GetServiceByInstanceIDInternalServerError
+/*GetServiceByInstanceIDInternalServerError handles this case with default header values.
 
 Unexpected error
 */
