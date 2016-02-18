@@ -129,6 +129,34 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		} else {
 			fmt.Println("Usage: create-driver [driver-type] [driver-name]")
 		}
+	case "delete-driver":
+		if argLength == 3 {
+			token, err := cliConnection.AccessToken()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+
+			driver := getDriverByName(c.httpClient, bearer, args[2])
+
+			if driver == nil {
+				fmt.Println("Driver not found")
+				return
+			}
+			params := operations.NewDeleteDriverParams()
+			params.DriverID = *driver.ID
+
+			_, err = c.httpClient.DeleteDriver(params, bearer)
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			fmt.Println("Driver deleted:", *driver.ID)
+		} else {
+			fmt.Println("Usage: delete-driver [driver-name]")
+		}
+
 	case "create-instance":
 		token, err := cliConnection.AccessToken()
 		if err != nil {
@@ -219,6 +247,301 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 		}
+	case "delete-instance":
+		if argLength == 3 {
+			name := args[2]
+
+			token, err := cliConnection.AccessToken()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+
+			instance := getDriverInstanceByName(c.httpClient, bearer, name)
+
+			params := operations.NewDeleteDriverInstanceParams()
+			params.DriverInstanceID = *instance.ID
+
+			response, err := c.httpClient.DeleteDriverInstance(params, bearer)
+			if err != nil {
+				fmt.Println("ERROR:", err.Error())
+			}
+			fmt.Println("Deleted driver instance response -", response)
+		} else {
+			fmt.Println("Usage cf usb delete-instance [instanceName]")
+		}
+	case "update-driver":
+		if argLength == 4 {
+			oldName := args[2]
+			newName := args[3]
+
+			token, err := cliConnection.AccessToken()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+
+			driver := getDriverByName(c.httpClient, bearer, oldName)
+
+			driver.Name = newName
+			params := operations.NewUpdateDriverParams()
+			params.DriverID = *driver.ID
+			params.Driver = driver
+			response, err := c.httpClient.UpdateDriver(params, bearer)
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			fmt.Println("Driver updated:", response.Payload.Name)
+		} else {
+			fmt.Println("Usage: update-driver [old-driver-name] [new-driver-name]")
+		}
+	case "update-instance":
+		token, err := cliConnection.AccessToken()
+		if err != nil {
+			fmt.Println("ERROR:", err)
+			return
+		}
+		var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+		if argLength == 6 {
+			driverName := args[2]
+			instanceName := args[3]
+			method := args[4]
+			configValue := args[5]
+			var targetDriver *models.Driver = getDriverByName(c.httpClient, bearer, driverName)
+
+			if targetDriver == nil {
+				println("Driver not found")
+				return
+			}
+
+			if method == "configFile" {
+				fileContent, err := ioutil.ReadFile(configValue)
+				if err != nil {
+					fmt.Println("ERROR - reading configuration file", err)
+					return
+				}
+				configValue = string(fileContent)
+			}
+
+			fmt.Println(fmt.Sprintf("Updating instance %s using %s with value %s", instanceName, method, configValue))
+
+			oldinstance := getDriverInstanceByName(c.httpClient, bearer, instanceName)
+			if oldinstance == nil {
+				println("Driver instance not found")
+				return
+			}
+			var driverConfig map[string]interface{}
+
+			if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
+				println("Invalid JSON format", err.Error())
+			}
+
+			oldinstance.Configuration = driverConfig
+			params := operations.NewUpdateDriverInstanceParams()
+			params.DriverConfig = oldinstance
+			params.DriverInstanceID = *oldinstance.ID
+			params.DriverConfig.DriverID = *targetDriver.ID
+
+			updateRes, err := c.httpClient.UpdateDriverInstance(params, bearer)
+			if err != nil {
+				fmt.Println("ERROR - update instance:", err)
+				return
+			}
+			fmt.Println("Driver instance updated. ID:" + *updateRes.Payload.ID)
+		} else {
+			if argLength == 4 {
+				driverName := args[2]
+				instanceName := args[3]
+				var targetDriver *models.Driver = getDriverByName(c.httpClient, bearer, driverName)
+
+				if targetDriver == nil {
+					println("Driver not found")
+					return
+				}
+
+				oldinstance := getDriverInstanceByName(c.httpClient, bearer, instanceName)
+				if oldinstance == nil {
+					println("Driver instance not found")
+					return
+				}
+
+				configSchema, err := c.httpClient.GetDriverSchema(&operations.GetDriverSchemaParams{DriverID: *targetDriver.ID}, bearer)
+				if err != nil {
+					fmt.Println("ERROR:", err)
+					return
+				}
+				schemaParser := schema.NewSchemaParser(c.ui)
+
+				configValue, err := schemaParser.ParseSchema(string(configSchema.Payload))
+				if err != nil {
+					fmt.Println("ERROR:", err)
+					return
+				}
+				var driverConfig map[string]interface{}
+
+				if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
+					println("Invalid JSON format", err.Error())
+				}
+
+				oldinstance.Configuration = driverConfig
+				params := operations.NewUpdateDriverInstanceParams()
+				params.DriverConfig = oldinstance
+				params.DriverInstanceID = *oldinstance.ID
+				params.DriverConfig.DriverID = *targetDriver.ID
+
+				updateRes, err := c.httpClient.UpdateDriverInstance(params, bearer)
+				if err != nil {
+					fmt.Println("ERROR - update instance:", err)
+					return
+				}
+				fmt.Println("Driver instance updated. ID:" + *updateRes.Payload.ID)
+			} else {
+				fmt.Println("Usage: cf usb update-instance [driverName] [instanceName] configValue/configFile [jsonValue/filePath]")
+				return
+			}
+		}
+	case "update-service":
+		if argLength == 3 {
+			token, err := cliConnection.AccessToken()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+
+			instanceName := args[2]
+
+			instance := getDriverInstanceByName(c.httpClient, bearer, instanceName)
+			if instance == nil {
+				fmt.Println("Driver instance not found")
+				return
+			}
+
+			params := operations.NewUpdateServiceParams()
+			params.ServiceID = *instance.Service
+
+			var service models.Service
+			service.DriverInstanceID = *instance.ID
+			bindable := true
+			bind := c.ui.Ask("Is service bindable?[Y/n]")
+			if strings.ToLower(strings.Trim(bind, " ")) == "n" {
+				bindable = false
+			}
+			service.Bindable = &bindable
+
+			service.Name = c.ui.Ask("Service name")
+			if service.Name == "" {
+				fmt.Println("ERROR: Empty service name provided")
+				return
+			}
+			desc := c.ui.Ask("Service description")
+			if desc == "" {
+				fmt.Println("ERROR: Empty service description provided")
+				return
+			}
+			service.Description = &desc
+			tags := c.ui.Ask("Tags (comma separated)")
+			if tags == "" {
+				fmt.Println("ERROR: Empty tags array provided")
+				return
+			}
+			service.Tags = strings.Split(tags, ",")
+
+			params.Service = &service
+
+			response, err := c.httpClient.UpdateService(params, bearer)
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			fmt.Println("Updated service with ID:", *response.Payload.ID)
+		} else {
+			fmt.Println("Usage: cf usb update-service [instanceName]")
+			return
+		}
+
+	case "dials":
+		if argLength == 3 {
+			token, err := cliConnection.AccessToken()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+
+			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+			instance := getDriverInstanceByName(c.httpClient, bearer, args[2])
+			if instance == nil {
+				fmt.Println("Driver instance not found")
+				return
+			}
+			params := operations.NewGetAllDialsParams()
+			params.DriverInstanceID = instance.ID
+
+			dials, err := c.httpClient.GetAllDials(params, bearer)
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+			for _, dial := range dials.Payload {
+				fmt.Println("Dial configuration:\t", dial.Configuration)
+				fmt.Println("Dial ID:\t\t", *dial.ID)
+				fmt.Println("Plan ID:\t\t", *dial.Plan)
+
+				plan, err := c.httpClient.GetServicePlan(&operations.GetServicePlanParams{PlanID: *dial.Plan}, bearer)
+				if err != nil {
+					fmt.Println("ERROR - getting plan", err)
+				}
+				fmt.Println("Plan:\t\t\t Name:", plan.Payload.Name, "; Description:", *plan.Payload.Description)
+				fmt.Println("")
+			}
+		} else {
+			fmt.Println("Usage: cf usb dials [instanceName]")
+			return
+		}
+	case "instances":
+		if argLength == 3 {
+
+			token, err := cliConnection.AccessToken()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+
+			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+			driver := getDriverByName(c.httpClient, bearer, args[2])
+			if driver == nil {
+				fmt.Println("ERROR: Driver not found")
+			} else {
+				params := operations.NewGetDriverInstancesParams()
+				params.DriverID = *driver.ID
+				response, err := c.httpClient.GetDriverInstances(params, bearer)
+				if err != nil {
+					fmt.Println("ERROR:", err)
+					return
+				}
+				if response != nil {
+					for _, di := range response.Payload {
+						fmt.Println("Driver Instance Name:\t", di.Name)
+						fmt.Println("Driver Instance Id:\t", *di.ID)
+						fmt.Println("Configuration:\t\t", di.Configuration)
+						fmt.Println("Dials:\t\t\t", len(di.Dials))
+						service, err := c.httpClient.GetServiceByInstanceID(&operations.GetServiceByInstanceIDParams{DriverInstanceID: *di.ID}, bearer)
+						if err != nil {
+							fmt.Println("ERROR:", err)
+						}
+
+						fmt.Println("Service:\t\t", "Name:", service.Payload.Name, "; Bindable:", *service.Payload.Bindable, "; Tags:", service.Payload.Tags)
+						fmt.Println("")
+					}
+				}
+			}
+
+		} else {
+			fmt.Println("Usage cf usb instances [driverName]")
+		}
 	case "drivers":
 		token, err := cliConnection.AccessToken()
 		if err != nil {
@@ -287,11 +610,51 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 				},
 			},
 			plugin.Command{
+				Name:     "usb delete-instance",
+				HelpText: "Usb plugin delete driver instance command",
+
+				UsageDetails: plugin.Usage{
+					Usage: "usb delete-instance [instanceName]",
+				},
+			},
+			plugin.Command{
 				Name:     "usb create-driver",
 				HelpText: "Usb plugin create driver command",
 
 				UsageDetails: plugin.Usage{
-					Usage: "usb create-instance [driverType] [driverName]",
+					Usage: "usb create-driver [driverType] [driverName]",
+				},
+			},
+			plugin.Command{
+				Name:     "usb update-driver",
+				HelpText: "Usb plugin update driver command",
+
+				UsageDetails: plugin.Usage{
+					Usage: "usb update-driver [oldDriverName] [newDriverName]",
+				},
+			},
+			plugin.Command{
+				Name:     "usb update-instance",
+				HelpText: "Usb plugin update driver instance command",
+
+				UsageDetails: plugin.Usage{
+					Usage: "usb update-instance [driverName] [instanceName]  configValue/configFile [jsonValue/filePath]",
+				},
+			},
+			plugin.Command{
+				Name:     "usb update-service",
+				HelpText: "Usb plugin update service command",
+
+				UsageDetails: plugin.Usage{
+					Usage: "usb update-service [instanceName]",
+				},
+			},
+			plugin.Command{
+				Name:     "usb delete-driver",
+				HelpText: "Usb plugin delete driver command",
+
+				UsageDetails: plugin.Usage{
+					Usage: "usb delete-driver [driverName]",
 				},
 			},
 			plugin.Command{
@@ -300,6 +663,22 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 
 				UsageDetails: plugin.Usage{
 					Usage: "usb drivers\n   cf usb drivers",
+				},
+			},
+			plugin.Command{
+				Name:     "usb instances",
+				HelpText: "List existing driver instances",
+
+				UsageDetails: plugin.Usage{
+					Usage: "usb instances  [driverName]",
+				},
+			},
+			plugin.Command{
+				Name:     "usb dials",
+				HelpText: "List existing dials for instance",
+
+				UsageDetails: plugin.Usage{
+					Usage: "usb dials  [instanceName]",
 				},
 			},
 		},
