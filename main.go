@@ -102,7 +102,9 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			return
 		}
 
-		fmt.Println("info response: " + infoResp.Payload.Version)
+		fmt.Println("Broker API version: " + infoResp.Payload.BrokerAPIVersion)
+
+		fmt.Println("USB version: " + infoResp.Payload.UsbVersion)
 	case "create-driver":
 		if argLength == 4 || argLength == 5 {
 
