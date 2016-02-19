@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/cloudfoundry/cli/cf/terminal"
 	swaggerclient "github.com/go-swagger/go-swagger/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
@@ -21,12 +20,12 @@ type InstanceInterface interface {
 }
 
 type InstanceCommands struct {
-	httpClient *operations.Client
-	ui         terminal.UI
+	httpClient   *operations.Client
+	schemaParser *schema.SchemaParser
 }
 
-func NewInstanceCommands(httpClient *operations.Client, ui terminal.UI) InstanceInterface {
-	return &InstanceCommands{httpClient: httpClient, ui: ui}
+func NewInstanceCommands(httpClient *operations.Client, schemaParser *schema.SchemaParser) InstanceInterface {
+	return &InstanceCommands{httpClient: httpClient, schemaParser: schemaParser}
 }
 
 func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
@@ -63,9 +62,7 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 			return "", err
 		}
 
-		schemaParser := schema.NewSchemaParser(c.ui)
-
-		configValue, err := schemaParser.ParseSchema(string(configSchema.Payload))
+		configValue, err := c.schemaParser.ParseSchema(string(configSchema.Payload))
 		if err != nil {
 			return "", err
 		}
@@ -140,9 +137,7 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 			return "", err
 		}
 
-		schemaParser := schema.NewSchemaParser(c.ui)
-
-		configValue, err := schemaParser.ParseSchema(string(configSchema.Payload))
+		configValue, err := c.schemaParser.ParseSchema(string(configSchema.Payload))
 		if err != nil {
 			return "", err
 		}

@@ -15,6 +15,7 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/commands"
 	"github.com/hpcloud/cf-plugin-usb/config"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+	"github.com/hpcloud/cf-plugin-usb/lib/schema"
 )
 
 var target string
@@ -112,7 +113,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 
-			createdDriverId, err := commands.NewDriverCommands(c.httpClient).Create(bearer, args[2:5])
+			createdDriverId, err := commands.NewDriverCommands(c.httpClient).Create(bearer, args[2:argLength])
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
@@ -132,15 +133,17 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 
-			deletedDriverId, err := commands.NewDriverCommands(c.httpClient).Delete(bearer, args[2])
-			if err != nil {
-				fmt.Println("ERROR:", err)
-				return
-			}
-			if deletedDriverId == "" {
-				fmt.Println("Driver not found")
-			} else {
-				fmt.Println("Driver deleted:", deletedDriverId)
+			if c.ui.Confirm(fmt.Sprintf("Really delete the driver %v", args[2])) {
+				deletedDriverId, err := commands.NewDriverCommands(c.httpClient).Delete(bearer, args[2])
+				if err != nil {
+					fmt.Println("ERROR:", err)
+					return
+				}
+				if deletedDriverId == "" {
+					fmt.Println("Driver not found")
+				} else {
+					fmt.Println("Driver deleted:", deletedDriverId)
+				}
 			}
 		} else {
 			fmt.Println("Usage: cf usb delete-driver [driver-name]")
@@ -154,7 +157,9 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 
-			createdInstanceId, err := commands.NewInstanceCommands(c.httpClient, c.ui).Create(bearer, args[2:6])
+			schemaParser := schema.NewSchemaParser(c.ui)
+
+			createdInstanceId, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Create(bearer, args[2:argLength])
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
@@ -175,15 +180,19 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 
-			deletedInstanceId, err := commands.NewInstanceCommands(c.httpClient, c.ui).Delete(bearer, args[2])
-			if err != nil {
-				fmt.Println("ERROR:", err)
-				return
-			}
-			if deletedInstanceId == "" {
-				fmt.Println("Driver instance not found")
-			} else {
-				fmt.Println("Deleted driver instance:", deletedInstanceId)
+			if c.ui.Confirm(fmt.Sprintf("Really delete the driver instance %v", args[2])) {
+				schemaParser := schema.NewSchemaParser(c.ui)
+
+				deletedInstanceId, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Delete(bearer, args[2])
+				if err != nil {
+					fmt.Println("ERROR:", err)
+					return
+				}
+				if deletedInstanceId == "" {
+					fmt.Println("Driver instance not found")
+				} else {
+					fmt.Println("Deleted driver instance:", deletedInstanceId)
+				}
 			}
 		} else {
 			fmt.Println("Usage cf usb delete-instance [instanceName]")
@@ -196,7 +205,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 
-			updatedDriverName, err := commands.NewDriverCommands(c.httpClient).Update(bearer, args[2:4])
+			updatedDriverName, err := commands.NewDriverCommands(c.httpClient).Update(bearer, args[2:argLength])
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
@@ -217,7 +226,9 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 
-			updateInstanceName, err := commands.NewInstanceCommands(c.httpClient, c.ui).Update(bearer, args[2:6])
+			schemaParser := schema.NewSchemaParser(c.ui)
+
+			updateInstanceName, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Update(bearer, args[2:argLength])
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
@@ -316,7 +327,9 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 
-			instances, err := commands.NewInstanceCommands(c.httpClient, c.ui).List(bearer, args[2])
+			schemaParser := schema.NewSchemaParser(c.ui)
+
+			instances, err := commands.NewInstanceCommands(c.httpClient, schemaParser).List(bearer, args[2])
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
