@@ -11,7 +11,6 @@ import (
 
 	httptransport "github.com/go-swagger/go-swagger/httpkit/client"
 	"github.com/go-swagger/go-swagger/strfmt"
-
 	"github.com/hpcloud/cf-plugin-usb/commands"
 	"github.com/hpcloud/cf-plugin-usb/config"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"

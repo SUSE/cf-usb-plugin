@@ -1,11 +1,10 @@
 package schema
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
-
-	"encoding/json"
 
 	"github.com/cloudfoundry/cli/cf/terminal"
 )
