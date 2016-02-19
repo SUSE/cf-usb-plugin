@@ -16,7 +16,6 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 
 	"github.com/hpcloud/cf-plugin-usb/commands"
-	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
 var target string
@@ -237,52 +236,40 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			}
 			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
 
-			instanceName := args[2]
+			var updateArgs []string
+			updateArgs = append(updateArgs, args[2])
 
-			instance := getDriverInstanceByName(c.httpClient, bearer, instanceName)
-			if instance == nil {
-				fmt.Println("Driver instance not found")
-				return
-			}
+			bind := c.ui.Ask("Is service bindable?[y/n]")
+			updateArgs = append(updateArgs, bind)
 
-			params := operations.NewUpdateServiceParams()
-			params.ServiceID = *instance.Service
-
-			var service models.Service
-			service.DriverInstanceID = *instance.ID
-			bindable := true
-			bind := c.ui.Ask("Is service bindable?[Y/n]")
-			if strings.ToLower(strings.Trim(bind, " ")) == "n" {
-				bindable = false
-			}
-			service.Bindable = &bindable
-
-			service.Name = c.ui.Ask("Service name")
-			if service.Name == "" {
+			serviceName := c.ui.Ask("Service name")
+			if serviceName == "" {
 				fmt.Println("ERROR: Empty service name provided")
 				return
 			}
-			desc := c.ui.Ask("Service description")
-			if desc == "" {
+			updateArgs = append(updateArgs, serviceName)
+
+			serviceDesc := c.ui.Ask("Service description")
+			if serviceDesc == "" {
 				fmt.Println("ERROR: Empty service description provided")
 				return
 			}
-			service.Description = &desc
+			updateArgs = append(updateArgs, serviceDesc)
+
 			tags := c.ui.Ask("Tags (comma separated)")
 			if tags == "" {
 				fmt.Println("ERROR: Empty tags array provided")
 				return
 			}
-			service.Tags = strings.Split(tags, ",")
+			updateArgs = append(updateArgs, tags)
 
-			params.Service = &service
-
-			response, err := c.httpClient.UpdateService(params, bearer)
+			serviceId, err := commands.NewServiceCommands(c.httpClient).Update(bearer, updateArgs)
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
 			}
-			fmt.Println("Updated service with ID:", *response.Payload.ID)
+
+			fmt.Println("Updated service with ID:", serviceId)
 		} else {
 			fmt.Println("Usage: cf usb update-service [instanceName]")
 			return
@@ -327,7 +314,6 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		}
 	case "instances":
 		if argLength == 3 {
-
 			bearer, err := commands.GetBearerToken(cliConnection)
 			if err != nil {
 				fmt.Println("ERROR:", err)
@@ -340,17 +326,20 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 			if instances != nil {
+				serviceCommand := commands.NewServiceCommands(c.httpClient)
+
 				for _, di := range instances {
 					fmt.Println("Driver Instance Name:\t", di.Name)
 					fmt.Println("Driver Instance Id:\t", *di.ID)
 					fmt.Println("Configuration:\t\t", di.Configuration)
 					fmt.Println("Dials:\t\t\t", len(di.Dials))
-					service, err := c.httpClient.GetServiceByInstanceID(&operations.GetServiceByInstanceIDParams{DriverInstanceID: *di.ID}, bearer)
+
+					service, err := serviceCommand.GetServiceById(bearer, *di.ID)
 					if err != nil {
 						fmt.Println("ERROR:", err)
 					}
 
-					fmt.Println("Service:\t\t", "Name:", service.Payload.Name, "; Bindable:", *service.Payload.Bindable, "; Tags:", service.Payload.Tags)
+					fmt.Println("Service:\t\t", "Name:", service.Name, "; Bindable:", *service.Bindable, "; Tags:", service.Tags)
 					fmt.Println("")
 				}
 			}
