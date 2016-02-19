@@ -35,13 +35,15 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 	// except command to set target
 	if !(args[1] == "target" && argLength == 3) {
-		target, err := config.GetTarget()
-		if target == "" {
-			fmt.Println("Usb management target not set. Use cf usb target <usb-mgmt-endpoint> to set the target")
-			return
-		}
+		var err error
+
+		target, err = config.GetTarget()
 		if err != nil {
 			fmt.Println("ERROR:", err)
+			return
+		}
+		if target == "" {
+			fmt.Println("Usb management target not set. Use cf usb target <usb-mgmt-endpoint> to set the target")
 			return
 		}
 
@@ -67,7 +69,9 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	switch args[1] {
 	case "target":
 		if argLength == 2 {
-			target, err := config.GetTarget()
+			var err error
+
+			target, err = config.GetTarget()
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
@@ -76,7 +80,6 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			fmt.Println("Usb management target: " + target)
 		} else if argLength == 3 {
 			target = args[2]
-
 			err := config.SetTarget(target)
 			if err != nil {
 				fmt.Println("ERROR:", err)

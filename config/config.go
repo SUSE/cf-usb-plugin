@@ -51,7 +51,7 @@ func SetTarget(target string) (err error) {
 		return err
 	}
 
-	_, err = file.Write(output)
+	err = ioutil.WriteFile(getUsbConfigFile(), output, 0600)
 	if err != nil {
 		return err
 	}
