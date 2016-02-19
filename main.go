@@ -5,17 +5,16 @@ import (
 	"net/url"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/cloudfoundry/cli/cf/terminal"
 	"github.com/cloudfoundry/cli/plugin"
-	swaggerclient "github.com/go-swagger/go-swagger/client"
+
 	httptransport "github.com/go-swagger/go-swagger/httpkit/client"
 	"github.com/go-swagger/go-swagger/strfmt"
-	"github.com/hpcloud/cf-plugin-usb/config"
-	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 
 	"github.com/hpcloud/cf-plugin-usb/commands"
+	"github.com/hpcloud/cf-plugin-usb/config"
+	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 )
 
 var target string
@@ -229,12 +228,11 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		}
 	case "update-service":
 		if argLength == 3 {
-			token, err := cliConnection.AccessToken()
+			bearer, err := commands.GetBearerToken(cliConnection)
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
 			}
-			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
 
 			var updateArgs []string
 			updateArgs = append(updateArgs, args[2])
@@ -276,37 +274,32 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		}
 	case "dials":
 		if argLength == 3 {
-			token, err := cliConnection.AccessToken()
+			bearer, err := commands.GetBearerToken(cliConnection)
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
 			}
 
-			var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
-			instance := getDriverInstanceByName(c.httpClient, bearer, args[2])
-			if instance == nil {
-				fmt.Println("Driver instance not found")
-				return
-			}
-			params := operations.NewGetAllDialsParams()
-			params.DriverInstanceID = instance.ID
-
-			dials, err := c.httpClient.GetAllDials(params, bearer)
+			dials, err := commands.NewDialCommands(c.httpClient).List(bearer, args[2])
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
 			}
-			for _, dial := range dials.Payload {
-				fmt.Println("Dial configuration:\t", dial.Configuration)
-				fmt.Println("Dial ID:\t\t", *dial.ID)
-				fmt.Println("Plan ID:\t\t", *dial.Plan)
+			if dials != nil {
+				planCommand := commands.NewPlanCommands(c.httpClient)
 
-				plan, err := c.httpClient.GetServicePlan(&operations.GetServicePlanParams{PlanID: *dial.Plan}, bearer)
-				if err != nil {
-					fmt.Println("ERROR - getting plan", err)
+				for _, dial := range dials {
+					fmt.Println("Dial configuration:\t", dial.Configuration)
+					fmt.Println("Dial ID:\t\t", *dial.ID)
+					fmt.Println("Plan ID:\t\t", *dial.Plan)
+
+					plan, err := planCommand.GetPlanById(bearer, *dial.Plan)
+					if err != nil {
+						fmt.Println("ERROR:", err)
+					}
+					fmt.Println("Plan:\t\t\t Name:", plan.Name, "; Description:", *plan.Description)
+					fmt.Println("")
 				}
-				fmt.Println("Plan:\t\t\t Name:", plan.Payload.Name, "; Description:", *plan.Payload.Description)
-				fmt.Println("")
 			}
 		} else {
 			fmt.Println("Usage: cf usb dials [instanceName]")
