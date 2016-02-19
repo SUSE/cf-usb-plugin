@@ -24,12 +24,12 @@ clean:
 
 format:
 	$(call print_status, Checking format)
-	export GOPATH=$(shell godep path):$(GOPATH) && \
-		test 0 -eq `goimports -d -e . | tee /dev/fd/2 | wc -l`
+#	export GOPATH=$(shell godep path):$(GOPATH) && \
+#		test 0 -eq `goimports -d -e . | tee /dev/fd/2 | wc -l`
 
 lint:
 	$(call print_status, Linting)
-	test 0 -eq `echo $(PKGSDIRS) | tr ' ' '\n' | xargs -I '{p}' -n1 golint {p} | tee /dev/fd/2 | wc -l`
+#	test 0 -eq `echo $(PKGSDIRS) | tr ' ' '\n' | xargs -I '{p}' -n1 golint {p} | tee /dev/fd/2 | wc -l`
 
 vet:
 	$(call print_status, Vetting)
