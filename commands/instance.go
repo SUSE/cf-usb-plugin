@@ -53,7 +53,7 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 		}
 
 		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
-			return "", errors.New(fmt.Sprintf("Invalid JSON format", err.Error()))
+			return "", errors.New(fmt.Sprintf("Invalid JSON format %s", err.Error()))
 		}
 
 	} else if len(args) == 2 {
@@ -68,7 +68,7 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 		}
 
 		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
-			return "", errors.New(fmt.Sprintf("Invalid JSON format", err.Error()))
+			return "", errors.New(fmt.Sprintf("Invalid JSON format %s", err.Error()))
 		}
 	}
 
@@ -78,7 +78,7 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 		Configuration: driverConfig,
 	}
 
-	response, err := c.httpClient.CreateDriverInstance(&operations.CreateDriverInstanceParams{&newDriver}, bearer)
+	response, err := c.httpClient.CreateDriverInstance(&operations.CreateDriverInstanceParams{DriverInstance: &newDriver}, bearer)
 	if err != nil {
 		return "", err
 	}
@@ -128,7 +128,7 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 		}
 
 		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
-			return "", errors.New(fmt.Sprintf("Invalid JSON format", err.Error()))
+			return "", errors.New(fmt.Sprintf("Invalid JSON format %s", err.Error()))
 		}
 	} else if len(args) == 2 {
 
@@ -143,7 +143,7 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 		}
 
 		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
-			return "", errors.New(fmt.Sprintf("Invalid JSON format", err.Error()))
+			return "", errors.New(fmt.Sprintf("Invalid JSON format %s", err.Error()))
 		}
 	}
 
