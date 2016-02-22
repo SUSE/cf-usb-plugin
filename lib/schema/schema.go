@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"encoding/json"
+
 	"github.com/cloudfoundry/cli/cf/terminal"
 )
 
@@ -46,13 +47,13 @@ func (p *SchemaParser) parseObject(key string, input map[string]interface{}) (ma
 			switch t {
 			case "string":
 				if k == "password" {
-					result[k] = p.ui.AskForPassword(fmt.Sprintf("Insert string value for %s/%s%s", key, k, required), "")
+					result[k] = p.ui.AskForPassword(fmt.Sprintf("Insert string value for %s/%s%s", key, k, required))
 				} else {
-					result[k] = p.ui.Ask(fmt.Sprintf("Insert string value for %s/%s%s", key, k, required), "")
+					result[k] = p.ui.Ask(fmt.Sprintf("Insert string value for %s/%s%s", key, k, required))
 				}
 			case "integer":
 				{
-					i, err := strconv.Atoi(p.ui.Ask(fmt.Sprintf("Insert integer value for %s/%s%s", key, k, required), "0"))
+					i, err := strconv.Atoi(p.ui.Ask(fmt.Sprintf("Insert integer value for %s/%s%s", key, k, required)))
 					if err != nil {
 						return nil, err
 					}
@@ -60,14 +61,14 @@ func (p *SchemaParser) parseObject(key string, input map[string]interface{}) (ma
 				}
 			case "boolean":
 				{
-					i, err := strconv.ParseBool(p.ui.Ask(fmt.Sprintf("Insert boolean value for %s/%s%s", key, k, required), "0"))
+					i, err := strconv.ParseBool(p.ui.Ask(fmt.Sprintf("Insert boolean value for %s/%s%s", key, k, required)))
 					if err != nil {
 						return nil, err
 					}
 					result[k] = i
 				}
 			case "number":
-				i, err := strconv.ParseFloat(p.ui.Ask(fmt.Sprintf("Insert numeric value for %s/%s%s", key, k, required), "0"), 64)
+				i, err := strconv.ParseFloat(p.ui.Ask(fmt.Sprintf("Insert numeric value for %s/%s%s", key, k, required)), 64)
 				if err != nil {
 					return nil, err
 				}

@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"crypto/sha1"
@@ -6,12 +6,24 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
-	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
-
+	"github.com/cloudfoundry/cli/plugin"
 	swaggerclient "github.com/go-swagger/go-swagger/client"
+	httptransport "github.com/go-swagger/go-swagger/httpkit/client"
+	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
+
+func GetBearerToken(cliConnection plugin.CliConnection) (swaggerclient.AuthInfoWriter, error) {
+	token, err := cliConnection.AccessToken()
+	if err != nil {
+		return nil, err
+	}
+	var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+
+	return bearer, nil
+}
 
 func getDriverByName(client *operations.Client, authHeader swaggerclient.AuthInfoWriter, driverName string) *models.Driver {
 	ret, err := client.GetDrivers(&operations.GetDriversParams{}, authHeader)

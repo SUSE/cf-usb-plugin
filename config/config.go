@@ -33,7 +33,7 @@ func GetTarget() (target string, err error) {
 
 func SetTarget(target string) (err error) {
 	if !strings.Contains(target, "http") {
-		target = fmt.Sprintf("https://%[1]s", target)
+		target = fmt.Sprintf("http://%[1]s", target)
 	}
 
 	file, err := os.OpenFile(getUsbConfigFile(), os.O_RDWR|os.O_CREATE, 0755)
@@ -51,7 +51,7 @@ func SetTarget(target string) (err error) {
 		return err
 	}
 
-	_, err = file.Write(output)
+	err = ioutil.WriteFile(getUsbConfigFile(), output, 0600)
 	if err != nil {
 		return err
 	}
