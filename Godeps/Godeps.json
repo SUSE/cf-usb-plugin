@@ -1,0 +1,68 @@
+{
+	"ImportPath": "github.com/hpcloud/cf-plugin-usb",
+	"GoVersion": "go1.4.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/asaskevich/govalidator",
+			"Comment": "v2-31-gc219af1",
+			"Rev": "c219af1eafcdacdb7fbb6fa33b926cadd541ca19"
+		},
+		{
+			"ImportPath": "github.com/blang/semver",
+			"Comment": "v3.0.1",
+			"Rev": "31b736133b98f26d5e078ec9eb591666edfd091f"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/cf",
+			"Comment": "v6.15.0-29-gb8ad52f",
+			"Rev": "b8ad52fdb41d179fa9a5de1a43128d2eaceb7d40"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/plugin",
+			"Comment": "v6.15.0-29-gb8ad52f",
+			"Rev": "b8ad52fdb41d179fa9a5de1a43128d2eaceb7d40"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/gofileutils/fileutils",
+			"Rev": "c53c86fd9621d83f5d6d33a8e41499c4c9df95ce"
+		},
+		{
+			"ImportPath": "github.com/go-swagger/go-swagger/client",
+			"Comment": "0.3.0-41-gd64fab2",
+			"Rev": "d64fab2aa3de945dc240dfb5d46b93ab5533d99a"
+		},
+		{
+			"ImportPath": "github.com/go-swagger/go-swagger/errors",
+			"Comment": "0.3.0-41-gd64fab2",
+			"Rev": "d64fab2aa3de945dc240dfb5d46b93ab5533d99a"
+		},
+		{
+			"ImportPath": "github.com/go-swagger/go-swagger/httpkit",
+			"Comment": "0.3.0-41-gd64fab2",
+			"Rev": "d64fab2aa3de945dc240dfb5d46b93ab5533d99a"
+		},
+		{
+			"ImportPath": "github.com/go-swagger/go-swagger/strfmt",
+			"Comment": "0.3.0-41-gd64fab2",
+			"Rev": "d64fab2aa3de945dc240dfb5d46b93ab5533d99a"
+		},
+		{
+			"ImportPath": "github.com/go-swagger/go-swagger/swag",
+			"Comment": "0.3.0-41-gd64fab2",
+			"Rev": "d64fab2aa3de945dc240dfb5d46b93ab5533d99a"
+		},
+		{
+			"ImportPath": "github.com/nicksnyder/go-i18n/i18n",
+			"Comment": "v1.2.0-31-ga97d9e6",
+			"Rev": "a97d9e61302069288b30e05516351e8a2fa7259f"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/ssh/terminal",
+			"Rev": "575fdbe86e5dd89229707ebec0575ce7d088a4a6"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v2",
+			"Rev": "53feefa2559fb8dfa8d81baad31be332c97d6c77"
+		}
+	]
+}
