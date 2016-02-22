@@ -6,18 +6,22 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
+//InfoInterface exposes GetInfo command
 type InfoInterface interface {
 	GetInfo(swaggerclient.AuthInfoWriter) (*models.Info, error)
 }
 
+//InfoCommands struct
 type InfoCommands struct {
 	httpClient *operations.Client
 }
 
+//NewInfoCommands returns an InfoCommands object
 func NewInfoCommands(httpClient *operations.Client) InfoInterface {
 	return &InfoCommands{httpClient: httpClient}
 }
 
+//GetInfo - retruns usb information
 func (c *InfoCommands) GetInfo(bearer swaggerclient.AuthInfoWriter) (*models.Info, error) {
 	infoResp, err := c.httpClient.GetInfo(operations.NewGetInfoParams(), bearer)
 	if err != nil {

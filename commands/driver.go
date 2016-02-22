@@ -8,6 +8,7 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
+//DriverInterface exposes driver commands
 type DriverInterface interface {
 	Create(swaggerclient.AuthInfoWriter, []string) (string, error)
 	Delete(swaggerclient.AuthInfoWriter, string) (string, error)
@@ -15,14 +16,17 @@ type DriverInterface interface {
 	List(swaggerclient.AuthInfoWriter) ([]*models.Driver, error)
 }
 
+//DriverCommands struct
 type DriverCommands struct {
 	httpClient *operations.Client
 }
 
+//NewDriverCommands returns a DriverCommands object
 func NewDriverCommands(httpClient *operations.Client) DriverInterface {
 	return &DriverCommands{httpClient: httpClient}
 }
 
+//Create - creates a new driver
 func (c *DriverCommands) Create(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
 	// if bits path specified, check if exists
 	if len(args) == 3 {
@@ -72,6 +76,7 @@ func (c *DriverCommands) Create(bearer swaggerclient.AuthInfoWriter, args []stri
 	return *response.Payload.ID, nil
 }
 
+//Delete - deletes an existing driver
 func (c *DriverCommands) Delete(bearer swaggerclient.AuthInfoWriter, driverName string) (string, error) {
 	driver := getDriverByName(c.httpClient, bearer, driverName)
 	if driver == nil {
@@ -89,6 +94,7 @@ func (c *DriverCommands) Delete(bearer swaggerclient.AuthInfoWriter, driverName 
 	return *driver.ID, nil
 }
 
+//Update - updates an existing driver
 func (c *DriverCommands) Update(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
 	oldName := args[0]
 	newName := args[1]
@@ -111,6 +117,7 @@ func (c *DriverCommands) Update(bearer swaggerclient.AuthInfoWriter, args []stri
 	return response.Payload.Name, nil
 }
 
+//List - lists existing drivers
 func (c *DriverCommands) List(bearer swaggerclient.AuthInfoWriter) ([]*models.Driver, error) {
 	response, err := c.httpClient.GetDrivers(operations.NewGetDriversParams(), bearer)
 	if err != nil {

@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/schema"
 )
 
+//InstanceInterface exposes instances commands
 type InstanceInterface interface {
 	Create(swaggerclient.AuthInfoWriter, []string) (string, error)
 	Delete(swaggerclient.AuthInfoWriter, string) (string, error)
@@ -19,15 +19,18 @@ type InstanceInterface interface {
 	List(swaggerclient.AuthInfoWriter, string) ([]*models.DriverInstance, error)
 }
 
+//InstanceCommands struct
 type InstanceCommands struct {
 	httpClient   *operations.Client
 	schemaParser *schema.SchemaParser
 }
 
+//NewInstanceCommands - returns an InstanceCommands object
 func NewInstanceCommands(httpClient *operations.Client, schemaParser *schema.SchemaParser) InstanceInterface {
 	return &InstanceCommands{httpClient: httpClient, schemaParser: schemaParser}
 }
 
+//Create - creates a new driver instance
 func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
 	driverName := args[0]
 	instanceName := args[1]
@@ -47,13 +50,13 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 		if method == "configFile" {
 			fileContent, err := ioutil.ReadFile(configValue)
 			if err != nil {
-				return "", errors.New(fmt.Sprintf("Unable to read configuration file. %s", err.Error()))
+				return "", fmt.Errorf("Unable to read configuration file. %s", err.Error())
 			}
 			configValue = string(fileContent)
 		}
 
 		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
-			return "", errors.New(fmt.Sprintf("Invalid JSON format %s", err.Error()))
+			return "", fmt.Errorf("Invalid JSON format %s", err.Error())
 		}
 
 	} else if len(args) == 2 {
@@ -68,7 +71,7 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 		}
 
 		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
-			return "", errors.New(fmt.Sprintf("Invalid JSON format %s", err.Error()))
+			return "", fmt.Errorf("Invalid JSON format %s", err.Error())
 		}
 	}
 
@@ -86,6 +89,7 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 	return *response.Payload.ID, nil
 }
 
+//Delete - deletes an existing driver instance
 func (c *InstanceCommands) Delete(bearer swaggerclient.AuthInfoWriter, instanceName string) (string, error) {
 	instance := getDriverInstanceByName(c.httpClient, bearer, instanceName)
 	if instance == nil {
@@ -103,6 +107,7 @@ func (c *InstanceCommands) Delete(bearer swaggerclient.AuthInfoWriter, instanceN
 	return *instance.ID, nil
 }
 
+//Update - updates an existing driver instance
 func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
 	driverName := args[0]
 	instanceName := args[1]
@@ -122,13 +127,13 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 		if method == "configFile" {
 			fileContent, err := ioutil.ReadFile(configValue)
 			if err != nil {
-				return "", errors.New(fmt.Sprintf("Unable to read configuration file. %s", err.Error()))
+				return "", fmt.Errorf("Unable to read configuration file. %s", err.Error())
 			}
 			configValue = string(fileContent)
 		}
 
 		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
-			return "", errors.New(fmt.Sprintf("Invalid JSON format %s", err.Error()))
+			return "", fmt.Errorf("Invalid JSON format %s", err.Error())
 		}
 	} else if len(args) == 2 {
 
@@ -143,7 +148,7 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 		}
 
 		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
-			return "", errors.New(fmt.Sprintf("Invalid JSON format %s", err.Error()))
+			return "", fmt.Errorf("Invalid JSON format %s", err.Error())
 		}
 	}
 
@@ -167,6 +172,7 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 	return response.Payload.Name, nil
 }
 
+//List - lists existing instances for a specific driver
 func (c *InstanceCommands) List(bearer swaggerclient.AuthInfoWriter, driverName string) ([]*models.DriverInstance, error) {
 	targetDriver := getDriverByName(c.httpClient, bearer, driverName)
 	if targetDriver == nil {
