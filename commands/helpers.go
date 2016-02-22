@@ -15,12 +15,13 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
+//GetBearerToken - returns token from cf cli
 func GetBearerToken(cliConnection plugin.CliConnection) (swaggerclient.AuthInfoWriter, error) {
 	token, err := cliConnection.AccessToken()
 	if err != nil {
 		return nil, err
 	}
-	var bearer swaggerclient.AuthInfoWriter = httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
+	bearer := httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
 
 	return bearer, nil
 }

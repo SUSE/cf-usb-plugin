@@ -6,20 +6,24 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
+//PlanInterface exposes get plan by id command
 type PlanInterface interface {
-	GetPlanById(swaggerclient.AuthInfoWriter, string) (*models.Plan, error)
+	GetPlanByID(swaggerclient.AuthInfoWriter, string) (*models.Plan, error)
 }
 
+//PlanCommands struct
 type PlanCommands struct {
 	httpClient *operations.Client
 }
 
+//NewPlanCommands returns a PlanCommands object
 func NewPlanCommands(httpClient *operations.Client) PlanInterface {
 	return &PlanCommands{httpClient: httpClient}
 }
 
-func (c *PlanCommands) GetPlanById(bearer swaggerclient.AuthInfoWriter, planId string) (*models.Plan, error) {
-	response, err := c.httpClient.GetServicePlan(&operations.GetServicePlanParams{PlanID: planId}, bearer)
+//GetPlanByID returns an existing plan by id
+func (c *PlanCommands) GetPlanByID(bearer swaggerclient.AuthInfoWriter, planID string) (*models.Plan, error) {
+	response, err := c.httpClient.GetServicePlan(&operations.GetServicePlanParams{PlanID: planID}, bearer)
 	if err != nil {
 		return nil, err
 	}

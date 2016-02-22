@@ -10,12 +10,23 @@ import (
 	"github.com/cloudfoundry/cli/cf/configuration/config_helpers"
 )
 
-type ConfigInterface interface {
+//UsbConfigPluginInterface exposes config commands
+type UsbConfigPluginInterface interface {
 	GetTarget() (string, error)
 	SetTarget(string) error
 }
 
-func GetTarget() (target string, err error) {
+//UsbConfigPlugin struct
+type UsbConfigPlugin struct {
+}
+
+//NewConfig returns a UsbConfigPlugin object
+func NewConfig() UsbConfigPluginInterface {
+	return &UsbConfigPlugin{}
+}
+
+//GetTarget returns selected usb target
+func (*UsbConfigPlugin) GetTarget() (target string, err error) {
 	jsonConf, err := ioutil.ReadFile(getUsbConfigFile())
 	if err != nil {
 		return "", err
@@ -31,7 +42,8 @@ func GetTarget() (target string, err error) {
 	return config.MgmtTarget, nil
 }
 
-func SetTarget(target string) (err error) {
+//SetTarget saves the target information in config file
+func (*UsbConfigPlugin) SetTarget(target string) (err error) {
 	if !strings.Contains(target, "http") {
 		target = fmt.Sprintf("http://%[1]s", target)
 	}

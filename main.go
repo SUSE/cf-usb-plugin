@@ -8,7 +8,6 @@ import (
 
 	"github.com/cloudfoundry/cli/cf/terminal"
 	"github.com/cloudfoundry/cli/plugin"
-
 	httptransport "github.com/go-swagger/go-swagger/httpkit/client"
 	"github.com/go-swagger/go-swagger/strfmt"
 	"github.com/hpcloud/cf-plugin-usb/commands"
@@ -19,6 +18,7 @@ import (
 
 var target string
 
+//UsbPlugin struct
 type UsbPlugin struct {
 	ui         terminal.UI
 	httpClient *operations.Client
@@ -28,11 +28,11 @@ func main() {
 	plugin.Start(new(UsbPlugin))
 }
 
+//Run method called before each command
 func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	argLength := len(args)
-
+	config := config.NewConfig()
 	c.ui = terminal.NewUI(os.Stdin, terminal.NewTeePrinter())
-
 	// except command to set target
 	if !(args[1] == "target" && argLength == 3) {
 		var err error
@@ -112,13 +112,13 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 
-			createdDriverId, err := commands.NewDriverCommands(c.httpClient).Create(bearer, args[2:argLength])
+			createdDriverID, err := commands.NewDriverCommands(c.httpClient).Create(bearer, args[2:argLength])
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
 			}
 
-			fmt.Println("Driver created with ID:", createdDriverId)
+			fmt.Println("Driver created with ID:", createdDriverID)
 		} else {
 			fmt.Println("ERROR: Invalid number of arguments")
 			fmt.Println("Usage: cf usb create-driver [driver-type] [driver-name] [driver-bits-path]")
@@ -133,15 +133,15 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			}
 
 			if c.ui.Confirm(fmt.Sprintf("Really delete the driver %v", args[2])) {
-				deletedDriverId, err := commands.NewDriverCommands(c.httpClient).Delete(bearer, args[2])
+				deletedDriverID, err := commands.NewDriverCommands(c.httpClient).Delete(bearer, args[2])
 				if err != nil {
 					fmt.Println("ERROR:", err)
 					return
 				}
-				if deletedDriverId == "" {
+				if deletedDriverID == "" {
 					fmt.Println("Driver not found")
 				} else {
-					fmt.Println("Driver deleted:", deletedDriverId)
+					fmt.Println("Driver deleted:", deletedDriverID)
 				}
 			}
 		} else {
@@ -158,13 +158,13 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 			schemaParser := schema.NewSchemaParser(c.ui)
 
-			createdInstanceId, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Create(bearer, args[2:argLength])
+			createdInstanceID, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Create(bearer, args[2:argLength])
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
 			}
-			if createdInstanceId != "" {
-				fmt.Println("New driver instance created. ID:" + createdInstanceId)
+			if createdInstanceID != "" {
+				fmt.Println("New driver instance created. ID:" + createdInstanceID)
 			}
 
 		} else {
@@ -182,15 +182,15 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			if c.ui.Confirm(fmt.Sprintf("Really delete the driver instance %v", args[2])) {
 				schemaParser := schema.NewSchemaParser(c.ui)
 
-				deletedInstanceId, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Delete(bearer, args[2])
+				deletedInstanceID, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Delete(bearer, args[2])
 				if err != nil {
 					fmt.Println("ERROR:", err)
 					return
 				}
-				if deletedInstanceId == "" {
+				if deletedInstanceID == "" {
 					fmt.Println("Driver instance not found")
 				} else {
-					fmt.Println("Deleted driver instance:", deletedInstanceId)
+					fmt.Println("Deleted driver instance:", deletedInstanceID)
 				}
 			}
 		} else {
@@ -274,13 +274,13 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			}
 			updateArgs = append(updateArgs, tags)
 
-			serviceId, err := commands.NewServiceCommands(c.httpClient).Update(bearer, updateArgs)
+			serviceID, err := commands.NewServiceCommands(c.httpClient).Update(bearer, updateArgs)
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
 			}
 
-			fmt.Println("Updated service with ID:", serviceId)
+			fmt.Println("Updated service with ID:", serviceID)
 		} else {
 			fmt.Println("Usage: cf usb update-service [instanceName]")
 			return
@@ -306,7 +306,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 					fmt.Println("Dial ID:\t\t", *dial.ID)
 					fmt.Println("Plan ID:\t\t", *dial.Plan)
 
-					plan, err := planCommand.GetPlanById(bearer, *dial.Plan)
+					plan, err := planCommand.GetPlanByID(bearer, *dial.Plan)
 					if err != nil {
 						fmt.Println("ERROR:", err)
 					}
@@ -342,7 +342,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 					fmt.Println("Configuration:\t\t", di.Configuration)
 					fmt.Println("Dials:\t\t\t", len(di.Dials))
 
-					service, err := serviceCommand.GetServiceById(bearer, *di.ID)
+					service, err := serviceCommand.GetServiceByID(bearer, *di.ID)
 					if err != nil {
 						fmt.Println("ERROR:", err)
 					}
@@ -378,6 +378,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	}
 }
 
+//GetMetadata returns metadata for cf cli
 func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 	return plugin.PluginMetadata{
 		Name: "cf-plugin-usb",

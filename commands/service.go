@@ -9,21 +9,25 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
+//ServiceInterface exposes service commands
 type ServiceInterface interface {
-	GetServiceById(swaggerclient.AuthInfoWriter, string) (*models.Service, error)
+	GetServiceByID(swaggerclient.AuthInfoWriter, string) (*models.Service, error)
 	Update(swaggerclient.AuthInfoWriter, []string) (string, error)
 }
 
+//ServiceCommands struct
 type ServiceCommands struct {
 	httpClient *operations.Client
 }
 
+//NewServiceCommands returns a ServiceCommands object
 func NewServiceCommands(httpClient *operations.Client) ServiceInterface {
 	return &ServiceCommands{httpClient: httpClient}
 }
 
-func (c *ServiceCommands) GetServiceById(bearer swaggerclient.AuthInfoWriter, driverId string) (*models.Service, error) {
-	response, err := c.httpClient.GetServiceByInstanceID(&operations.GetServiceByInstanceIDParams{DriverInstanceID: driverId}, bearer)
+//GetServiceByID returns a service by driver instance id
+func (c *ServiceCommands) GetServiceByID(bearer swaggerclient.AuthInfoWriter, driverID string) (*models.Service, error) {
+	response, err := c.httpClient.GetServiceByInstanceID(&operations.GetServiceByInstanceIDParams{DriverInstanceID: driverID}, bearer)
 	if err != nil {
 		return nil, err
 	}
@@ -31,6 +35,7 @@ func (c *ServiceCommands) GetServiceById(bearer swaggerclient.AuthInfoWriter, dr
 	return response.Payload, nil
 }
 
+//Update - updates a service's details
 func (c *ServiceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
 	instance := getDriverInstanceByName(c.httpClient, bearer, args[0])
 	if instance == nil {
