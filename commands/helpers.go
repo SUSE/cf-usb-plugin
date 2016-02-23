@@ -44,7 +44,7 @@ func getDriverByName(client *operations.Client, authHeader swaggerclient.AuthInf
 	return targetDriver
 }
 
-func getDriverInstanceByName(client *operations.Client, authHeader swaggerclient.AuthInfoWriter, driverInstanceName string) *models.DriverInstance {
+func GetDriverInstanceByName(client *operations.Client, authHeader swaggerclient.AuthInfoWriter, driverInstanceName string) *models.DriverInstance {
 	ret, err := client.GetDrivers(&operations.GetDriversParams{}, authHeader)
 	if err != nil {
 		fmt.Println("ERROR - get driver instance by name:", err)

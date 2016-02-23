@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"strings"
 
 	swaggerclient "github.com/go-swagger/go-swagger/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
@@ -11,8 +10,8 @@ import (
 
 //ServiceInterface exposes service commands
 type ServiceInterface interface {
-	GetServiceByID(swaggerclient.AuthInfoWriter, string) (*models.Service, error)
-	Update(swaggerclient.AuthInfoWriter, []string) (string, error)
+	GetServiceByDriverInstanceID(swaggerclient.AuthInfoWriter, string) (*models.Service, error)
+	Update(swaggerclient.AuthInfoWriter, *models.Service) (string, error)
 }
 
 //ServiceCommands struct
@@ -26,8 +25,8 @@ func NewServiceCommands(httpClient *operations.Client) ServiceInterface {
 }
 
 //GetServiceByID returns a service by driver instance id
-func (c *ServiceCommands) GetServiceByID(bearer swaggerclient.AuthInfoWriter, driverID string) (*models.Service, error) {
-	response, err := c.httpClient.GetServiceByInstanceID(&operations.GetServiceByInstanceIDParams{DriverInstanceID: driverID}, bearer)
+func (c *ServiceCommands) GetServiceByDriverInstanceID(bearer swaggerclient.AuthInfoWriter, driverInstanceID string) (*models.Service, error) {
+	response, err := c.httpClient.GetServiceByInstanceID(&operations.GetServiceByInstanceIDParams{DriverInstanceID: driverInstanceID}, bearer)
 	if err != nil {
 		return nil, err
 	}
@@ -36,34 +35,16 @@ func (c *ServiceCommands) GetServiceByID(bearer swaggerclient.AuthInfoWriter, dr
 }
 
 //Update - updates a service's details
-func (c *ServiceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
-	instance := getDriverInstanceByName(c.httpClient, bearer, args[0])
-	if instance == nil {
-		fmt.Println("Driver instance not found")
-		return "", nil
-	}
-
+func (c *ServiceCommands) Update(bearer swaggerclient.AuthInfoWriter, service *models.Service) (string, error) {
 	params := operations.NewUpdateServiceParams()
-	params.ServiceID = *instance.Service
+	params.ServiceID = *service.ID
+	params.Service = service
 
-	var service models.Service
-	service.DriverInstanceID = *instance.ID
-
-	bindable := true
-	if strings.ToLower(strings.Trim(args[1], " ")) == "n" {
-		bindable = false
-	}
-
-	service.Bindable = &bindable
-	service.Name = args[2]
-	service.Description = &args[3]
-	service.Tags = strings.Split(args[4], ",")
-
-	params.Service = &service
+	fmt.Println("bindable:", *service.Bindable)
+	fmt.Println("bindable:", service.Bindable)
 
 	response, err := c.httpClient.UpdateService(params, bearer)
 	if err != nil {
-		fmt.Println("ERROR:", err)
 		return "", err
 	}
 

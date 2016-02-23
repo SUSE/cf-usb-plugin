@@ -91,7 +91,7 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 
 //Delete - deletes an existing driver instance
 func (c *InstanceCommands) Delete(bearer swaggerclient.AuthInfoWriter, instanceName string) (string, error) {
-	instance := getDriverInstanceByName(c.httpClient, bearer, instanceName)
+	instance := GetDriverInstanceByName(c.httpClient, bearer, instanceName)
 	if instance == nil {
 		return "", nil
 	}
@@ -152,7 +152,7 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 		}
 	}
 
-	oldInstance := getDriverInstanceByName(c.httpClient, bearer, instanceName)
+	oldInstance := GetDriverInstanceByName(c.httpClient, bearer, instanceName)
 	if oldInstance == nil {
 		fmt.Println("Driver instance not found")
 		return "", nil
