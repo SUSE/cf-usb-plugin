@@ -1,14 +1,15 @@
-package commands
+package commands_test
 
 import (
 	httptransport "github.com/go-swagger/go-swagger/httpkit/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 
-	commandMocks "github.com/hpcloud/cf-plugin-usb/commands/mocks"
-	mocks "github.com/hpcloud/cf-plugin-usb/lib/mocks"
+	"github.com/hpcloud/cf-plugin-usb/commands"
+
+	fakeCommands "github.com/hpcloud/cf-plugin-usb/commands/fakes"
+	fakeUsbClient "github.com/hpcloud/cf-plugin-usb/lib/fakes"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
@@ -29,10 +30,10 @@ func Test_ListDials(t *testing.T) {
 
 	getAllDialsResponseOK.Payload = getAllDialsResponse
 
-	usbClientMock := new(mocks.UsbClientInterface)
-	fakeInstanceCommands := new(commandMocks.InstanceInterface)
+	usbClientMock := new(fakeUsbClient.FakeUsbClientInterface)
+	fakeInstanceCommands := new(fakeCommands.FakeInstanceInterface)
 
-	usbClientMock.On("GetAllDials", mock.Anything, mock.Anything).Return(&getAllDialsResponseOK, nil)
+	usbClientMock.GetAllDialsReturns(&getAllDialsResponseOK, nil)
 
 	var instance models.DriverInstance
 	instanceID := "testInstanceID"
@@ -40,11 +41,11 @@ func Test_ListDials(t *testing.T) {
 	instance.Name = "testInstance"
 	instance.Dials = append(instance.Dials, "fake")
 
-	fakeInstanceCommands.On("GetDriverInstanceByName", mock.Anything, mock.Anything).Return(&instance, nil)
-
 	bearer := httptransport.BearerToken("testToken")
 
-	dialCommands := NewDialCommands(usbClientMock, fakeInstanceCommands)
+	fakeInstanceCommands.GetDriverInstanceByNameReturns(&instance)
+
+	dialCommands := commands.NewDialCommands(usbClientMock, fakeInstanceCommands)
 
 	response, err := dialCommands.List(bearer, "testInstance")
 	for _, d := range response {
