@@ -3,6 +3,8 @@ package commands
 import (
 	swaggerclient "github.com/go-swagger/go-swagger/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+
+	"github.com/hpcloud/cf-plugin-usb/lib"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
@@ -13,11 +15,11 @@ type PlanInterface interface {
 
 //PlanCommands struct
 type PlanCommands struct {
-	httpClient *operations.Client
+	httpClient lib.UsbClientInterface
 }
 
 //NewPlanCommands returns a PlanCommands object
-func NewPlanCommands(httpClient *operations.Client) PlanInterface {
+func NewPlanCommands(httpClient lib.UsbClientInterface) PlanInterface {
 	return &PlanCommands{httpClient: httpClient}
 }
 

@@ -7,6 +7,8 @@ import (
 
 	swaggerclient "github.com/go-swagger/go-swagger/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+
+	"github.com/hpcloud/cf-plugin-usb/lib"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 	"github.com/hpcloud/cf-plugin-usb/lib/schema"
 )
@@ -17,16 +19,17 @@ type InstanceInterface interface {
 	Delete(swaggerclient.AuthInfoWriter, string) (string, error)
 	Update(swaggerclient.AuthInfoWriter, []string) (string, error)
 	List(swaggerclient.AuthInfoWriter, string) ([]*models.DriverInstance, error)
+	GetDriverInstanceByName(swaggerclient.AuthInfoWriter, string) *models.DriverInstance
 }
 
 //InstanceCommands struct
 type InstanceCommands struct {
-	httpClient   *operations.Client
+	httpClient   lib.UsbClientInterface
 	schemaParser *schema.SchemaParser
 }
 
 //NewInstanceCommands - returns an InstanceCommands object
-func NewInstanceCommands(httpClient *operations.Client, schemaParser *schema.SchemaParser) InstanceInterface {
+func NewInstanceCommands(httpClient lib.UsbClientInterface, schemaParser *schema.SchemaParser) InstanceInterface {
 	return &InstanceCommands{httpClient: httpClient, schemaParser: schemaParser}
 }
 
@@ -35,7 +38,8 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 	driverName := args[0]
 	instanceName := args[1]
 
-	targetDriver := getDriverByName(c.httpClient, bearer, driverName)
+	driver := NewDriverCommands(c.httpClient)
+	targetDriver := driver.GetDriverByName(bearer, driverName)
 	if targetDriver == nil {
 		fmt.Println("Driver not found")
 		return "", nil
@@ -91,7 +95,7 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 
 //Delete - deletes an existing driver instance
 func (c *InstanceCommands) Delete(bearer swaggerclient.AuthInfoWriter, instanceName string) (string, error) {
-	instance := GetDriverInstanceByName(c.httpClient, bearer, instanceName)
+	instance := c.GetDriverInstanceByName(bearer, instanceName)
 	if instance == nil {
 		return "", nil
 	}
@@ -111,8 +115,9 @@ func (c *InstanceCommands) Delete(bearer swaggerclient.AuthInfoWriter, instanceN
 func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
 	driverName := args[0]
 	instanceName := args[1]
+	driver := NewDriverCommands(c.httpClient)
 
-	targetDriver := getDriverByName(c.httpClient, bearer, driverName)
+	targetDriver := driver.GetDriverByName(bearer, driverName)
 	if targetDriver == nil {
 		fmt.Println("Driver not found")
 		return "", nil
@@ -152,7 +157,7 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 		}
 	}
 
-	oldInstance := GetDriverInstanceByName(c.httpClient, bearer, instanceName)
+	oldInstance := c.GetDriverInstanceByName(bearer, instanceName)
 	if oldInstance == nil {
 		fmt.Println("Driver instance not found")
 		return "", nil
@@ -174,7 +179,9 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 
 //List - lists existing instances for a specific driver
 func (c *InstanceCommands) List(bearer swaggerclient.AuthInfoWriter, driverName string) ([]*models.DriverInstance, error) {
-	targetDriver := getDriverByName(c.httpClient, bearer, driverName)
+	driver := NewDriverCommands(c.httpClient)
+
+	targetDriver := driver.GetDriverByName(bearer, driverName)
 	if targetDriver == nil {
 		fmt.Println("Driver not found")
 		return nil, nil
@@ -189,4 +196,27 @@ func (c *InstanceCommands) List(bearer swaggerclient.AuthInfoWriter, driverName 
 	}
 
 	return response.Payload, nil
+}
+
+//GetDriverInstanceByName returns a *models.DriverInstance if found, else nil
+func (c *InstanceCommands) GetDriverInstanceByName(authHeader swaggerclient.AuthInfoWriter, driverInstanceName string) *models.DriverInstance {
+	ret, err := c.httpClient.GetDrivers(&operations.GetDriversParams{}, authHeader)
+	if err != nil {
+		fmt.Println("ERROR - get driver instance by name:", err)
+		return nil
+	}
+	for _, d := range ret.Payload {
+		for _, i := range d.DriverInstances {
+			di, err := c.httpClient.GetDriverInstance(&operations.GetDriverInstanceParams{DriverInstanceID: i}, authHeader)
+			if err != nil {
+				fmt.Println("ERROR - get driver instance by name:", err)
+				return nil
+			}
+			if di.Payload.Name == driverInstanceName {
+				return di.Payload
+			}
+		}
+	}
+
+	return nil
 }

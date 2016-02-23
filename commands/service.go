@@ -5,6 +5,8 @@ import (
 
 	swaggerclient "github.com/go-swagger/go-swagger/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+
+	"github.com/hpcloud/cf-plugin-usb/lib"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
@@ -16,12 +18,13 @@ type ServiceInterface interface {
 
 //ServiceCommands struct
 type ServiceCommands struct {
-	httpClient *operations.Client
+	instanceCommands InstanceInterface
+	httpClient       lib.UsbClientInterface
 }
 
 //NewServiceCommands returns a ServiceCommands object
-func NewServiceCommands(httpClient *operations.Client) ServiceInterface {
-	return &ServiceCommands{httpClient: httpClient}
+func NewServiceCommands(httpClient lib.UsbClientInterface, instance InstanceInterface) ServiceInterface {
+	return &ServiceCommands{httpClient: httpClient, instanceCommands: instance}
 }
 
 //GetServiceByID returns a service by driver instance id
@@ -35,7 +38,14 @@ func (c *ServiceCommands) GetServiceByDriverInstanceID(bearer swaggerclient.Auth
 }
 
 //Update - updates a service's details
-func (c *ServiceCommands) Update(bearer swaggerclient.AuthInfoWriter, service *models.Service) (string, error) {
+
+func (c *ServiceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
+	instance := c.instanceCommands.GetDriverInstanceByName(bearer, args[0])
+	if instance == nil {
+		fmt.Println("Driver instance not found")
+		return "", nil
+	}
+
 	params := operations.NewUpdateServiceParams()
 	params.ServiceID = *service.ID
 	params.Service = service

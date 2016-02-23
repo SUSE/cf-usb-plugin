@@ -14,7 +14,7 @@ import (
 	"github.com/go-swagger/go-swagger/strfmt"
 	"github.com/hpcloud/cf-plugin-usb/commands"
 	"github.com/hpcloud/cf-plugin-usb/config"
-	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+	"github.com/hpcloud/cf-plugin-usb/lib"
 	"github.com/hpcloud/cf-plugin-usb/lib/schema"
 )
 
@@ -25,7 +25,7 @@ type UsbPlugin struct {
 	argLength  int
 	ui         terminal.UI
 	token      swaggerclient.AuthInfoWriter
-	httpClient *operations.Client
+		httpClient lib.UsbClientInterface
 }
 
 func main() {
@@ -47,6 +47,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	}
 
 	c.token = bearer
+	schemaParser := schema.NewSchemaParser(c.ui)
 
 	// except command to set target
 	if !(args[1] == "target" && c.argLength == 3) {
@@ -78,7 +79,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 		transport.Debug = debug
 
-		c.httpClient = operations.New(transport, strfmt.Default)
+		c.httpClient = lib.NewUsbClient(transport, strfmt.Default)
 	}
 
 	switch args[1] {

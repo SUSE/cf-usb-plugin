@@ -2,6 +2,7 @@ package commands
 
 import (
 	swaggerclient "github.com/go-swagger/go-swagger/client"
+	"github.com/hpcloud/cf-plugin-usb/lib"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -13,11 +14,11 @@ type InfoInterface interface {
 
 //InfoCommands struct
 type InfoCommands struct {
-	httpClient *operations.Client
+	httpClient lib.UsbClientInterface
 }
 
 //NewInfoCommands returns an InfoCommands object
-func NewInfoCommands(httpClient *operations.Client) InfoInterface {
+func NewInfoCommands(httpClient lib.UsbClientInterface) InfoInterface {
 	return &InfoCommands{httpClient: httpClient}
 }
 

@@ -26,7 +26,7 @@ format:
 
 lint:
 	$(call print_status, Linting)
-	@echo $(PKGSDIRS) | tr ' ' '\n' | xargs -I '{p}' -n1 golint {p} | grep -v "lib/*" | grep -v "mock_.*\.go" | sed "s/^/Failed: /"
+	@echo $(PKGSDIRS) | tr ' ' '\n' | xargs -I '{p}' -n1 golint {p}| grep -v "mocks/*" | grep -v "lib/*" | grep -v "mock_.*\.go" | sed "s/^/Failed: /"
 
 vet:
 	$(call print_status, Vetting)
