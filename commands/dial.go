@@ -25,7 +25,7 @@ func NewDialCommands(httpClient *operations.Client) DialInterface {
 
 //List dials of an instance
 func (c *DialCommands) List(bearer swaggerclient.AuthInfoWriter, instanceName string) ([]*models.Dial, error) {
-	instance := getDriverInstanceByName(c.httpClient, bearer, instanceName)
+	instance := GetDriverInstanceByName(c.httpClient, bearer, instanceName)
 	if instance == nil {
 		fmt.Println("Driver instance not found")
 		return nil, nil

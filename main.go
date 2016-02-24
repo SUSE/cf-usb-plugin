@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/cloudfoundry/cli/cf/terminal"
 	"github.com/cloudfoundry/cli/plugin"
@@ -247,34 +248,60 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 				return
 			}
 
-			var updateArgs []string
-			updateArgs = append(updateArgs, args[2])
+			fmt.Println("instance name:", args[2])
 
-			bind := c.ui.Ask("Is service bindable?[y/n]")
-			updateArgs = append(updateArgs, bind)
-
-			serviceName := c.ui.Ask("Service name")
-			if serviceName == "" {
-				fmt.Println("ERROR: Empty service name provided")
+			instance := commands.GetDriverInstanceByName(c.httpClient, bearer, args[2])
+			if instance == nil {
+				fmt.Println("Driver instance not found")
 				return
 			}
-			updateArgs = append(updateArgs, serviceName)
 
-			serviceDesc := c.ui.Ask("Service description")
-			if serviceDesc == "" {
-				fmt.Println("ERROR: Empty service description provided")
+			serviceCommand := commands.NewServiceCommands(c.httpClient)
+			service, err := serviceCommand.GetServiceByDriverInstanceID(bearer, *instance.ID)
+			if err != nil {
+				fmt.Println("ERROR:", err)
 				return
 			}
-			updateArgs = append(updateArgs, serviceDesc)
+			fmt.Println("service id:", *service.ID)
+			service.DriverInstanceID = *instance.ID
 
-			tags := c.ui.Ask("Tags (comma separated)")
-			if tags == "" {
-				fmt.Println("ERROR: Empty tags array provided")
-				return
+			bindString := ""
+			if *service.Bindable {
+				bindString = "y"
+			} else {
+				bindString = "n"
 			}
-			updateArgs = append(updateArgs, tags)
 
-			serviceID, err := commands.NewServiceCommands(c.httpClient).Update(bearer, updateArgs)
+			bind := c.ui.Ask(fmt.Sprintf("Is service bindable ? (%s)", bindString))
+			if bind != "" {
+				bindable := true
+				if strings.ToLower(strings.Trim(bind, " ")) == "n" {
+					bindable = false
+				}
+				service.Bindable = &bindable
+			}
+
+			serviceName := c.ui.Ask(fmt.Sprintf("Service name (%s)", service.Name))
+			if serviceName != "" {
+				service.Name = serviceName
+			}
+
+			oldServiceDescription := ""
+			if service.Description != nil {
+				oldServiceDescription = fmt.Sprintf("(%s)", *service.Description)
+			}
+
+			serviceDesc := c.ui.Ask(fmt.Sprintf("Service description %s", oldServiceDescription))
+			if serviceDesc != "" {
+				service.Description = &serviceDesc
+			}
+
+			serviceTags := c.ui.Ask(fmt.Sprintf("Tags (comma separated) (%s)", strings.Join(service.Tags, ",")))
+			if serviceTags != "" {
+				service.Tags = strings.Split(serviceTags, ",")
+			}
+
+			serviceID, err := serviceCommand.Update(bearer, service)
 			if err != nil {
 				fmt.Println("ERROR:", err)
 				return
@@ -342,7 +369,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 					fmt.Println("Configuration:\t\t", di.Configuration)
 					fmt.Println("Dials:\t\t\t", len(di.Dials))
 
-					service, err := serviceCommand.GetServiceByID(bearer, *di.ID)
+					service, err := serviceCommand.GetServiceByDriverInstanceID(bearer, *di.ID)
 					if err != nil {
 						fmt.Println("ERROR:", err)
 					}
