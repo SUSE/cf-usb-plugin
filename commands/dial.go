@@ -5,6 +5,8 @@ import (
 
 	swaggerclient "github.com/go-swagger/go-swagger/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+
+	"github.com/hpcloud/cf-plugin-usb/lib"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
@@ -15,17 +17,20 @@ type DialInterface interface {
 
 //DialCommands struct
 type DialCommands struct {
-	httpClient *operations.Client
+	httpClient lib.UsbClientInterface
 }
 
 //NewDialCommands returns a DialCommands object
-func NewDialCommands(httpClient *operations.Client) DialInterface {
+func NewDialCommands(httpClient lib.UsbClientInterface) DialInterface {
 	return &DialCommands{httpClient: httpClient}
 }
 
 //List dials of an instance
 func (c *DialCommands) List(bearer swaggerclient.AuthInfoWriter, instanceName string) ([]*models.Dial, error) {
-	instance := GetDriverInstanceByName(c.httpClient, bearer, instanceName)
+	instance, err := c.httpClient.GetDriverInstanceByName(bearer, instanceName)
+	if err != nil {
+		return nil, err
+	}
 	if instance == nil {
 		fmt.Println("Driver instance not found")
 		return nil, nil

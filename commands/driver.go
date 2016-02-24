@@ -5,6 +5,8 @@ import (
 
 	swaggerclient "github.com/go-swagger/go-swagger/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+
+	"github.com/hpcloud/cf-plugin-usb/lib"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
@@ -18,11 +20,11 @@ type DriverInterface interface {
 
 //DriverCommands struct
 type DriverCommands struct {
-	httpClient *operations.Client
+	httpClient lib.UsbClientInterface
 }
 
 //NewDriverCommands returns a DriverCommands object
-func NewDriverCommands(httpClient *operations.Client) DriverInterface {
+func NewDriverCommands(httpClient lib.UsbClientInterface) DriverInterface {
 	return &DriverCommands{httpClient: httpClient}
 }
 
@@ -78,7 +80,11 @@ func (c *DriverCommands) Create(bearer swaggerclient.AuthInfoWriter, args []stri
 
 //Delete - deletes an existing driver
 func (c *DriverCommands) Delete(bearer swaggerclient.AuthInfoWriter, driverName string) (string, error) {
-	driver := getDriverByName(c.httpClient, bearer, driverName)
+
+	driver, err := c.httpClient.GetDriverByName(bearer, driverName)
+	if err != nil {
+		return "", err
+	}
 	if driver == nil {
 		return "", nil
 	}
@@ -86,7 +92,7 @@ func (c *DriverCommands) Delete(bearer swaggerclient.AuthInfoWriter, driverName 
 	params := operations.NewDeleteDriverParams()
 	params.DriverID = *driver.ID
 
-	_, err := c.httpClient.DeleteDriver(params, bearer)
+	_, err = c.httpClient.DeleteDriver(params, bearer)
 	if err != nil {
 		return "", err
 	}
@@ -99,7 +105,10 @@ func (c *DriverCommands) Update(bearer swaggerclient.AuthInfoWriter, args []stri
 	oldName := args[0]
 	newName := args[1]
 
-	driver := getDriverByName(c.httpClient, bearer, oldName)
+	driver, err := c.httpClient.GetDriverByName(bearer, oldName)
+	if err != nil {
+		return "", err
+	}
 	if driver == nil {
 		return "", nil
 	}

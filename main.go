@@ -14,7 +14,7 @@ import (
 	"github.com/go-swagger/go-swagger/strfmt"
 	"github.com/hpcloud/cf-plugin-usb/commands"
 	"github.com/hpcloud/cf-plugin-usb/config"
-	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+	"github.com/hpcloud/cf-plugin-usb/lib"
 	"github.com/hpcloud/cf-plugin-usb/lib/schema"
 )
 
@@ -25,7 +25,7 @@ type UsbPlugin struct {
 	argLength  int
 	ui         terminal.UI
 	token      swaggerclient.AuthInfoWriter
-	httpClient *operations.Client
+	httpClient lib.UsbClientInterface
 }
 
 func main() {
@@ -78,7 +78,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 		transport.Debug = debug
 
-		c.httpClient = operations.New(transport, strfmt.Default)
+		c.httpClient = lib.NewUsbClient(transport, strfmt.Default)
 	}
 
 	switch args[1] {
@@ -231,6 +231,7 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 	}
 }
 
+//TargetCommand - gets or sets the target for the plugin
 func (c *UsbPlugin) TargetCommand(args []string, config config.UsbConfigPluginInterface) {
 	if c.argLength == 2 {
 		var err error
@@ -254,6 +255,7 @@ func (c *UsbPlugin) TargetCommand(args []string, config config.UsbConfigPluginIn
 	}
 }
 
+//InfoCommand - returns broker information
 func (c *UsbPlugin) InfoCommand() {
 	infoResp, err := commands.NewInfoCommands(c.httpClient).GetInfo(c.token)
 	if err != nil {
@@ -266,6 +268,7 @@ func (c *UsbPlugin) InfoCommand() {
 	fmt.Println("USB version: " + infoResp.UsbVersion)
 }
 
+//CreateDriverCommand - creates a new driver
 func (c *UsbPlugin) CreateDriverCommand(args []string) {
 	if c.argLength == 4 || c.argLength == 5 {
 		createdDriverID, err := commands.NewDriverCommands(c.httpClient).Create(c.token, args[2:c.argLength])
@@ -282,6 +285,7 @@ func (c *UsbPlugin) CreateDriverCommand(args []string) {
 	}
 }
 
+//DeleteDriverCommand - deletes an existing driver
 func (c *UsbPlugin) DeleteDriverCommand(args []string) {
 	if c.argLength == 3 {
 		if c.ui.Confirm(fmt.Sprintf("Really delete the driver %v", args[2])) {
@@ -301,6 +305,7 @@ func (c *UsbPlugin) DeleteDriverCommand(args []string) {
 	}
 }
 
+//CreateInstanceCommand - creates an instance of a driver
 func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 	if c.argLength == 6 || c.argLength == 4 {
 		schemaParser := schema.NewSchemaParser(c.ui)
@@ -320,6 +325,7 @@ func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 	}
 }
 
+//DeleteInstanceCommand - deletes the instance of a driver
 func (c *UsbPlugin) DeleteInstanceCommand(args []string) {
 	if c.argLength == 3 {
 		if c.ui.Confirm(fmt.Sprintf("Really delete the driver instance %v", args[2])) {
@@ -341,6 +347,7 @@ func (c *UsbPlugin) DeleteInstanceCommand(args []string) {
 	}
 }
 
+//UpdateDriverCommand - allows user to change a drivers name
 func (c *UsbPlugin) UpdateDriverCommand(args []string) {
 	if c.argLength == 4 {
 		updatedDriverName, err := commands.NewDriverCommands(c.httpClient).Update(c.token, args[2:c.argLength])
@@ -358,6 +365,7 @@ func (c *UsbPlugin) UpdateDriverCommand(args []string) {
 	}
 }
 
+//UpdateInstanceCommand - allows user to update the instance of a driver
 func (c *UsbPlugin) UpdateInstanceCommand(args []string) {
 	if c.argLength == 6 || c.argLength == 4 {
 		schemaParser := schema.NewSchemaParser(c.ui)
@@ -376,9 +384,14 @@ func (c *UsbPlugin) UpdateInstanceCommand(args []string) {
 	}
 }
 
+//UpdateServiceCommand - allows user to update the service provided by a driver instance
 func (c *UsbPlugin) UpdateServiceCommand(args []string) {
 	if c.argLength == 3 {
-		instance := commands.GetDriverInstanceByName(c.httpClient, c.token, args[2])
+		instance, err := c.httpClient.GetDriverInstanceByName(c.token, args[2])
+		if err != nil {
+			fmt.Println("ERROR - get driver instance:", err)
+			return
+		}
 		if instance == nil {
 			fmt.Println("Driver instance not found")
 			return
@@ -442,6 +455,7 @@ func (c *UsbPlugin) UpdateServiceCommand(args []string) {
 	}
 }
 
+//DialsCommand - lists dials of a driver instance
 func (c *UsbPlugin) DialsCommand(args []string) {
 	if c.argLength == 3 {
 		dials, err := commands.NewDialCommands(c.httpClient).List(c.token, args[2])
@@ -472,11 +486,12 @@ func (c *UsbPlugin) DialsCommand(args []string) {
 	}
 }
 
+//InstancesCommand - list instances of a driver
 func (c *UsbPlugin) InstancesCommand(args []string) {
 	if c.argLength == 3 {
 		schemaParser := schema.NewSchemaParser(c.ui)
-
-		instances, err := commands.NewInstanceCommands(c.httpClient, schemaParser).List(c.token, args[2])
+		instanceCommands := commands.NewInstanceCommands(c.httpClient, schemaParser)
+		instances, err := instanceCommands.List(c.token, args[2])
 		if err != nil {
 			fmt.Println("ERROR:", err)
 			return
@@ -506,6 +521,7 @@ func (c *UsbPlugin) InstancesCommand(args []string) {
 	}
 }
 
+//DriversCommand - list existing drivers
 func (c *UsbPlugin) DriversCommand() {
 	drivers, err := commands.NewDriverCommands(c.httpClient).List(c.token)
 	if err != nil {

@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"fmt"
-
 	swaggerclient "github.com/go-swagger/go-swagger/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+
+	"github.com/hpcloud/cf-plugin-usb/lib"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
@@ -16,15 +16,15 @@ type ServiceInterface interface {
 
 //ServiceCommands struct
 type ServiceCommands struct {
-	httpClient *operations.Client
+	httpClient lib.UsbClientInterface
 }
 
 //NewServiceCommands returns a ServiceCommands object
-func NewServiceCommands(httpClient *operations.Client) ServiceInterface {
+func NewServiceCommands(httpClient lib.UsbClientInterface) ServiceInterface {
 	return &ServiceCommands{httpClient: httpClient}
 }
 
-//GetServiceByID returns a service by driver instance id
+//GetServiceByDriverInstanceID returns a service by driver instance id
 func (c *ServiceCommands) GetServiceByDriverInstanceID(bearer swaggerclient.AuthInfoWriter, driverInstanceID string) (*models.Service, error) {
 	response, err := c.httpClient.GetServiceByInstanceID(&operations.GetServiceByInstanceIDParams{DriverInstanceID: driverInstanceID}, bearer)
 	if err != nil {
@@ -39,9 +39,6 @@ func (c *ServiceCommands) Update(bearer swaggerclient.AuthInfoWriter, service *m
 	params := operations.NewUpdateServiceParams()
 	params.ServiceID = *service.ID
 	params.Service = service
-
-	fmt.Println("bindable:", *service.Bindable)
-	fmt.Println("bindable:", service.Bindable)
 
 	response, err := c.httpClient.UpdateService(params, bearer)
 	if err != nil {
