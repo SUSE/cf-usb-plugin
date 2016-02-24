@@ -1,6 +1,9 @@
 {
 	"ImportPath": "github.com/hpcloud/cf-plugin-usb",
-	"GoVersion": "go1.4.2",
+	"GoVersion": "go1.4",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/asaskevich/govalidator",
@@ -19,6 +22,11 @@
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry/cli/plugin",
+			"Comment": "v6.15.0-29-gb8ad52f",
+			"Rev": "b8ad52fdb41d179fa9a5de1a43128d2eaceb7d40"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/testhelpers/terminal",
 			"Comment": "v6.15.0-29-gb8ad52f",
 			"Rev": "b8ad52fdb41d179fa9a5de1a43128d2eaceb7d40"
 		},
@@ -55,6 +63,11 @@
 			"ImportPath": "github.com/nicksnyder/go-i18n/i18n",
 			"Comment": "v1.2.0-31-ga97d9e6",
 			"Rev": "a97d9e61302069288b30e05516351e8a2fa7259f"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/assert",
+			"Comment": "v1.0-17-g089c718",
+			"Rev": "089c7181b8c728499929ff09b62d3fdd8df8adff"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/ssh/terminal",
