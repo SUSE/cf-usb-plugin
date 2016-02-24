@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -27,6 +28,10 @@ func NewConfig() UsbConfigPluginInterface {
 
 //GetTarget returns selected usb target
 func (*UsbConfigPlugin) GetTarget() (target string, err error) {
+	if _, err := os.Stat(getUsbConfigFile()); err != nil {
+		return "", errors.New("Usb management target not set. Use cf usb target <usb-mgmt-endpoint> to set the target")
+	}
+
 	jsonConf, err := ioutil.ReadFile(getUsbConfigFile())
 	if err != nil {
 		return "", err

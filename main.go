@@ -57,10 +57,6 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			fmt.Println("ERROR:", err)
 			return
 		}
-		if target == "" {
-			fmt.Println("Usb management target not set. Use cf usb target <usb-mgmt-endpoint> to set the target")
-			return
-		}
 
 		/*sslDisabled, err := cliConnection.IsSSLDisabled()
 		if err != nil {
