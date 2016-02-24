@@ -48,6 +48,14 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 	c.token = bearer
 
+	if c.argLength == 1 {
+		metadata := c.GetMetadata()
+		for _, command := range metadata.Commands {
+			fmt.Printf("%-25s %-50s\n", command.Name, command.HelpText)
+		}
+		return
+	}
+
 	// except command to set target
 	if !(args[1] == "target" && c.argLength == 3) {
 		var err error
@@ -55,10 +63,6 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		target, err = config.GetTarget()
 		if err != nil {
 			fmt.Println("ERROR:", err)
-			return
-		}
-		if target == "" {
-			fmt.Println("Usb management target not set. Use cf usb target <usb-mgmt-endpoint> to set the target")
 			return
 		}
 
