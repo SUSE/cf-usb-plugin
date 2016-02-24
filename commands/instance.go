@@ -19,7 +19,6 @@ type InstanceInterface interface {
 	Delete(swaggerclient.AuthInfoWriter, string) (string, error)
 	Update(swaggerclient.AuthInfoWriter, []string) (string, error)
 	List(swaggerclient.AuthInfoWriter, string) ([]*models.DriverInstance, error)
-	GetDriverInstanceByName(swaggerclient.AuthInfoWriter, string) *models.DriverInstance
 }
 
 //InstanceCommands struct
@@ -38,8 +37,7 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 	driverName := args[0]
 	instanceName := args[1]
 
-	driver := NewDriverCommands(c.httpClient)
-	targetDriver := driver.GetDriverByName(bearer, driverName)
+	targetDriver, err := c.httpClient.GetDriverByName(bearer, driverName)
 	if targetDriver == nil {
 		fmt.Println("Driver not found")
 		return "", nil
@@ -95,7 +93,10 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 
 //Delete - deletes an existing driver instance
 func (c *InstanceCommands) Delete(bearer swaggerclient.AuthInfoWriter, instanceName string) (string, error) {
-	instance := c.GetDriverInstanceByName(bearer, instanceName)
+	instance, err := c.httpClient.GetDriverInstanceByName(bearer, instanceName)
+	if err != nil {
+		return "", err
+	}
 	if instance == nil {
 		return "", nil
 	}
@@ -103,7 +104,7 @@ func (c *InstanceCommands) Delete(bearer swaggerclient.AuthInfoWriter, instanceN
 	params := operations.NewDeleteDriverInstanceParams()
 	params.DriverInstanceID = *instance.ID
 
-	_, err := c.httpClient.DeleteDriverInstance(params, bearer)
+	_, err = c.httpClient.DeleteDriverInstance(params, bearer)
 	if err != nil {
 		return "", err
 	}
@@ -115,9 +116,11 @@ func (c *InstanceCommands) Delete(bearer swaggerclient.AuthInfoWriter, instanceN
 func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
 	driverName := args[0]
 	instanceName := args[1]
-	driver := NewDriverCommands(c.httpClient)
 
-	targetDriver := driver.GetDriverByName(bearer, driverName)
+	targetDriver, err := c.httpClient.GetDriverByName(bearer, driverName)
+	if err != nil {
+		return "", err
+	}
 	if targetDriver == nil {
 		fmt.Println("Driver not found")
 		return "", nil
@@ -157,7 +160,10 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 		}
 	}
 
-	oldInstance := c.GetDriverInstanceByName(bearer, instanceName)
+	oldInstance, err := c.httpClient.GetDriverInstanceByName(bearer, instanceName)
+	if err != nil {
+		return "", err
+	}
 	if oldInstance == nil {
 		fmt.Println("Driver instance not found")
 		return "", nil
@@ -179,9 +185,10 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 
 //List - lists existing instances for a specific driver
 func (c *InstanceCommands) List(bearer swaggerclient.AuthInfoWriter, driverName string) ([]*models.DriverInstance, error) {
-	driver := NewDriverCommands(c.httpClient)
-
-	targetDriver := driver.GetDriverByName(bearer, driverName)
+	targetDriver, err := c.httpClient.GetDriverByName(bearer, driverName)
+	if err != nil {
+		return nil, err
+	}
 	if targetDriver == nil {
 		fmt.Println("Driver not found")
 		return nil, nil
@@ -196,27 +203,4 @@ func (c *InstanceCommands) List(bearer swaggerclient.AuthInfoWriter, driverName 
 	}
 
 	return response.Payload, nil
-}
-
-//GetDriverInstanceByName returns a *models.DriverInstance if found, else nil
-func (c *InstanceCommands) GetDriverInstanceByName(authHeader swaggerclient.AuthInfoWriter, driverInstanceName string) *models.DriverInstance {
-	ret, err := c.httpClient.GetDrivers(&operations.GetDriversParams{}, authHeader)
-	if err != nil {
-		fmt.Println("ERROR - get driver instance by name:", err)
-		return nil
-	}
-	for _, d := range ret.Payload {
-		for _, i := range d.DriverInstances {
-			di, err := c.httpClient.GetDriverInstance(&operations.GetDriverInstanceParams{DriverInstanceID: i}, authHeader)
-			if err != nil {
-				fmt.Println("ERROR - get driver instance by name:", err)
-				return nil
-			}
-			if di.Payload.Name == driverInstanceName {
-				return di.Payload
-			}
-		}
-	}
-
-	return nil
 }

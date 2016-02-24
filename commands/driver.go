@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"os"
 
 	swaggerclient "github.com/go-swagger/go-swagger/client"
@@ -17,7 +16,6 @@ type DriverInterface interface {
 	Delete(swaggerclient.AuthInfoWriter, string) (string, error)
 	Update(swaggerclient.AuthInfoWriter, []string) (string, error)
 	List(swaggerclient.AuthInfoWriter) ([]*models.Driver, error)
-	GetDriverByName(swaggerclient.AuthInfoWriter, string) *models.Driver
 }
 
 //DriverCommands struct
@@ -28,25 +26,6 @@ type DriverCommands struct {
 //NewDriverCommands returns a DriverCommands object
 func NewDriverCommands(httpClient lib.UsbClientInterface) DriverInterface {
 	return &DriverCommands{httpClient: httpClient}
-}
-
-//GetDriverByName returns a *model.driver if found else nil
-func (c *DriverCommands) GetDriverByName(bearer swaggerclient.AuthInfoWriter, driverName string) *models.Driver {
-	ret, err := c.httpClient.GetDrivers(&operations.GetDriversParams{}, bearer)
-	if err != nil {
-		fmt.Println("ERROR - get driver by name:", err)
-		return nil
-	}
-
-	var targetDriver *models.Driver
-
-	for _, d := range ret.Payload {
-		if d.Name == driverName {
-			targetDriver = d
-		}
-	}
-
-	return targetDriver
 }
 
 //Create - creates a new driver
@@ -102,7 +81,10 @@ func (c *DriverCommands) Create(bearer swaggerclient.AuthInfoWriter, args []stri
 //Delete - deletes an existing driver
 func (c *DriverCommands) Delete(bearer swaggerclient.AuthInfoWriter, driverName string) (string, error) {
 
-	driver := c.GetDriverByName(bearer, driverName)
+	driver, err := c.httpClient.GetDriverByName(bearer, driverName)
+	if err != nil {
+		return "", err
+	}
 	if driver == nil {
 		return "", nil
 	}
@@ -110,7 +92,7 @@ func (c *DriverCommands) Delete(bearer swaggerclient.AuthInfoWriter, driverName 
 	params := operations.NewDeleteDriverParams()
 	params.DriverID = *driver.ID
 
-	_, err := c.httpClient.DeleteDriver(params, bearer)
+	_, err = c.httpClient.DeleteDriver(params, bearer)
 	if err != nil {
 		return "", err
 	}
@@ -123,7 +105,10 @@ func (c *DriverCommands) Update(bearer swaggerclient.AuthInfoWriter, args []stri
 	oldName := args[0]
 	newName := args[1]
 
-	driver := c.GetDriverByName(bearer, oldName)
+	driver, err := c.httpClient.GetDriverByName(bearer, oldName)
+	if err != nil {
+		return "", err
+	}
 	if driver == nil {
 		return "", nil
 	}

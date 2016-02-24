@@ -12,36 +12,6 @@ import (
 	"testing"
 )
 
-func Test_GetDriverByName(t *testing.T) {
-	assert := assert.New(t)
-
-	usbClientMock := new(fakeUsbClient.FakeUsbClientInterface)
-
-	var driverResonse operations.GetDriversOK
-
-	var response []*models.Driver
-
-	var driver models.Driver
-	driver.DriverType = "testType"
-	driver.Name = "test"
-	driverID := "testID"
-	driver.ID = &driverID
-	driver.DriverInstances = []string{"testInstanceID"}
-
-	response = append(response, &driver)
-
-	driverResonse.Payload = response
-	usbClientMock.GetDriversReturns(&driverResonse, nil)
-
-	driverCommands := commands.NewDriverCommands(usbClientMock)
-
-	bearer := httptransport.BearerToken("testToken")
-
-	result := driverCommands.GetDriverByName(bearer, "test")
-	assert.Equal("test", result.Name)
-	assert.NotNil(result)
-}
-
 func Test_CreateDriver(t *testing.T) {
 	assert := assert.New(t)
 	usbClientMock := new(fakeUsbClient.FakeUsbClientInterface)
@@ -90,6 +60,7 @@ func Test_DeleteDriver(t *testing.T) {
 
 	var deleteResponse operations.DeleteDriverNoContent
 
+	usbClientMock.GetDriverByNameReturns(&driver, nil)
 	usbClientMock.DeleteDriverReturns(&deleteResponse, nil)
 
 	driverCommands := commands.NewDriverCommands(usbClientMock)
@@ -120,6 +91,8 @@ func Test_UpdateDriver(t *testing.T) {
 	response = append(response, &driver)
 
 	driverResonse.Payload = response
+
+	usbClientMock.GetDriverByNameReturns(&driver, nil)
 	usbClientMock.GetDriversReturns(&driverResonse, nil)
 
 	var updateResponse operations.UpdateDriverOK

@@ -17,18 +17,20 @@ type DialInterface interface {
 
 //DialCommands struct
 type DialCommands struct {
-	instanceCommands InstanceInterface
-	httpClient       lib.UsbClientInterface
+	httpClient lib.UsbClientInterface
 }
 
 //NewDialCommands returns a DialCommands object
-func NewDialCommands(httpClient lib.UsbClientInterface, instance InstanceInterface) DialInterface {
-	return &DialCommands{httpClient: httpClient, instanceCommands: instance}
+func NewDialCommands(httpClient lib.UsbClientInterface) DialInterface {
+	return &DialCommands{httpClient: httpClient}
 }
 
 //List dials of an instance
 func (c *DialCommands) List(bearer swaggerclient.AuthInfoWriter, instanceName string) ([]*models.Dial, error) {
-	instance := c.instanceCommands.GetDriverInstanceByName(bearer, instanceName)
+	instance, err := c.httpClient.GetDriverInstanceByName(bearer, instanceName)
+	if err != nil {
+		return nil, err
+	}
 	if instance == nil {
 		fmt.Println("Driver instance not found")
 		return nil, nil

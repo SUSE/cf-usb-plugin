@@ -3,6 +3,7 @@ package lib
 import (
 	client "github.com/go-swagger/go-swagger/client"
 	operations "github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+	"github.com/hpcloud/cf-plugin-usb/lib/models"
 
 	"github.com/go-swagger/go-swagger/strfmt"
 )
@@ -125,4 +126,43 @@ func (a *UsbClient) UploadDriver(params *operations.UploadDriverParams, authInfo
 }
 func (a *UsbClient) SetTransport(transport client.Transport) {
 	a.httpClient.SetTransport(transport)
+}
+
+//GetDriverByName returns a *model.driver if found else nil
+func (a *UsbClient) GetDriverByName(authInfo client.AuthInfoWriter, driverName string) (*models.Driver, error) {
+	ret, err := a.GetDrivers(&operations.GetDriversParams{}, authInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	var targetDriver *models.Driver
+
+	for _, d := range ret.Payload {
+		if d.Name == driverName {
+			targetDriver = d
+		}
+	}
+
+	return targetDriver, nil
+}
+
+//GetDriverInstanceByName returns a *models.DriverInstance if found, else nil
+func (a *UsbClient) GetDriverInstanceByName(authHeader client.AuthInfoWriter, driverInstanceName string) (*models.DriverInstance, error) {
+	ret, err := a.GetDrivers(&operations.GetDriversParams{}, authHeader)
+	if err != nil {
+		return nil, err
+	}
+	for _, d := range ret.Payload {
+		for _, i := range d.DriverInstances {
+			di, err := a.GetDriverInstance(&operations.GetDriverInstanceParams{DriverInstanceID: i}, authHeader)
+			if err != nil {
+				return nil, err
+			}
+			if di.Payload.Name == driverInstanceName {
+				return di.Payload, nil
+			}
+		}
+	}
+
+	return nil, nil
 }

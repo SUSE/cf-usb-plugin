@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"fmt"
-
 	swaggerclient "github.com/go-swagger/go-swagger/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 
@@ -18,16 +16,15 @@ type ServiceInterface interface {
 
 //ServiceCommands struct
 type ServiceCommands struct {
-	instanceCommands InstanceInterface
-	httpClient       lib.UsbClientInterface
+	httpClient lib.UsbClientInterface
 }
 
 //NewServiceCommands returns a ServiceCommands object
-func NewServiceCommands(httpClient lib.UsbClientInterface, instance InstanceInterface) ServiceInterface {
-	return &ServiceCommands{httpClient: httpClient, instanceCommands: instance}
+func NewServiceCommands(httpClient lib.UsbClientInterface) ServiceInterface {
+	return &ServiceCommands{httpClient: httpClient}
 }
 
-//GetServiceByID returns a service by driver instance id
+//GetServiceByDriverInstanceID returns a service by driver instance id
 func (c *ServiceCommands) GetServiceByDriverInstanceID(bearer swaggerclient.AuthInfoWriter, driverInstanceID string) (*models.Service, error) {
 	response, err := c.httpClient.GetServiceByInstanceID(&operations.GetServiceByInstanceIDParams{DriverInstanceID: driverInstanceID}, bearer)
 	if err != nil {
@@ -38,20 +35,10 @@ func (c *ServiceCommands) GetServiceByDriverInstanceID(bearer swaggerclient.Auth
 }
 
 //Update - updates a service's details
-
-func (c *ServiceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
-	instance := c.instanceCommands.GetDriverInstanceByName(bearer, args[0])
-	if instance == nil {
-		fmt.Println("Driver instance not found")
-		return "", nil
-	}
-
+func (c *ServiceCommands) Update(bearer swaggerclient.AuthInfoWriter, service *models.Service) (string, error) {
 	params := operations.NewUpdateServiceParams()
 	params.ServiceID = *service.ID
 	params.Service = service
-
-	fmt.Println("bindable:", *service.Bindable)
-	fmt.Println("bindable:", service.Bindable)
 
 	response, err := c.httpClient.UpdateService(params, bearer)
 	if err != nil {

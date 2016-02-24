@@ -3,6 +3,7 @@ package lib
 import (
 	client "github.com/go-swagger/go-swagger/client"
 	operations "github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
 //Usb client interface
@@ -35,4 +36,6 @@ type UsbClientInterface interface {
 	UpdateServicePlan(params *operations.UpdateServicePlanParams, authInfo client.AuthInfoWriter) (*operations.UpdateServicePlanOK, error)
 	UploadDriver(params *operations.UploadDriverParams, authInfo client.AuthInfoWriter) (*operations.UploadDriverOK, error)
 	SetTransport(transport client.Transport)
+	GetDriverByName(authInfo client.AuthInfoWriter, driverName string) (*models.Driver, error)
+	GetDriverInstanceByName(authHeader client.AuthInfoWriter, driverInstanceName string) (*models.DriverInstance, error)
 }

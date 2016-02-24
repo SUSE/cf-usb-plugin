@@ -7,6 +7,7 @@ import (
 	client "github.com/go-swagger/go-swagger/client"
 	"github.com/hpcloud/cf-plugin-usb/lib"
 	operations "github.com/hpcloud/cf-plugin-usb/lib/client/operations"
+	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
 type FakeUsbClientInterface struct {
@@ -284,6 +285,26 @@ type FakeUsbClientInterface struct {
 	setTransportMutex       sync.RWMutex
 	setTransportArgsForCall []struct {
 		transport client.Transport
+	}
+	GetDriverByNameStub        func(authInfo client.AuthInfoWriter, driverName string) (*models.Driver, error)
+	getDriverByNameMutex       sync.RWMutex
+	getDriverByNameArgsForCall []struct {
+		authInfo   client.AuthInfoWriter
+		driverName string
+	}
+	getDriverByNameReturns struct {
+		result1 *models.Driver
+		result2 error
+	}
+	GetDriverInstanceByNameStub        func(authHeader client.AuthInfoWriter, driverInstanceName string) (*models.DriverInstance, error)
+	getDriverInstanceByNameMutex       sync.RWMutex
+	getDriverInstanceByNameArgsForCall []struct {
+		authHeader         client.AuthInfoWriter
+		driverInstanceName string
+	}
+	getDriverInstanceByNameReturns struct {
+		result1 *models.DriverInstance
+		result2 error
 	}
 }
 
@@ -1226,6 +1247,74 @@ func (fake *FakeUsbClientInterface) SetTransportArgsForCall(i int) client.Transp
 	fake.setTransportMutex.RLock()
 	defer fake.setTransportMutex.RUnlock()
 	return fake.setTransportArgsForCall[i].transport
+}
+
+func (fake *FakeUsbClientInterface) GetDriverByName(authInfo client.AuthInfoWriter, driverName string) (*models.Driver, error) {
+	fake.getDriverByNameMutex.Lock()
+	fake.getDriverByNameArgsForCall = append(fake.getDriverByNameArgsForCall, struct {
+		authInfo   client.AuthInfoWriter
+		driverName string
+	}{authInfo, driverName})
+	fake.getDriverByNameMutex.Unlock()
+	if fake.GetDriverByNameStub != nil {
+		return fake.GetDriverByNameStub(authInfo, driverName)
+	} else {
+		return fake.getDriverByNameReturns.result1, fake.getDriverByNameReturns.result2
+	}
+}
+
+func (fake *FakeUsbClientInterface) GetDriverByNameCallCount() int {
+	fake.getDriverByNameMutex.RLock()
+	defer fake.getDriverByNameMutex.RUnlock()
+	return len(fake.getDriverByNameArgsForCall)
+}
+
+func (fake *FakeUsbClientInterface) GetDriverByNameArgsForCall(i int) (client.AuthInfoWriter, string) {
+	fake.getDriverByNameMutex.RLock()
+	defer fake.getDriverByNameMutex.RUnlock()
+	return fake.getDriverByNameArgsForCall[i].authInfo, fake.getDriverByNameArgsForCall[i].driverName
+}
+
+func (fake *FakeUsbClientInterface) GetDriverByNameReturns(result1 *models.Driver, result2 error) {
+	fake.GetDriverByNameStub = nil
+	fake.getDriverByNameReturns = struct {
+		result1 *models.Driver
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeUsbClientInterface) GetDriverInstanceByName(authHeader client.AuthInfoWriter, driverInstanceName string) (*models.DriverInstance, error) {
+	fake.getDriverInstanceByNameMutex.Lock()
+	fake.getDriverInstanceByNameArgsForCall = append(fake.getDriverInstanceByNameArgsForCall, struct {
+		authHeader         client.AuthInfoWriter
+		driverInstanceName string
+	}{authHeader, driverInstanceName})
+	fake.getDriverInstanceByNameMutex.Unlock()
+	if fake.GetDriverInstanceByNameStub != nil {
+		return fake.GetDriverInstanceByNameStub(authHeader, driverInstanceName)
+	} else {
+		return fake.getDriverInstanceByNameReturns.result1, fake.getDriverInstanceByNameReturns.result2
+	}
+}
+
+func (fake *FakeUsbClientInterface) GetDriverInstanceByNameCallCount() int {
+	fake.getDriverInstanceByNameMutex.RLock()
+	defer fake.getDriverInstanceByNameMutex.RUnlock()
+	return len(fake.getDriverInstanceByNameArgsForCall)
+}
+
+func (fake *FakeUsbClientInterface) GetDriverInstanceByNameArgsForCall(i int) (client.AuthInfoWriter, string) {
+	fake.getDriverInstanceByNameMutex.RLock()
+	defer fake.getDriverInstanceByNameMutex.RUnlock()
+	return fake.getDriverInstanceByNameArgsForCall[i].authHeader, fake.getDriverInstanceByNameArgsForCall[i].driverInstanceName
+}
+
+func (fake *FakeUsbClientInterface) GetDriverInstanceByNameReturns(result1 *models.DriverInstance, result2 error) {
+	fake.GetDriverInstanceByNameStub = nil
+	fake.getDriverInstanceByNameReturns = struct {
+		result1 *models.DriverInstance
+		result2 error
+	}{result1, result2}
 }
 
 var _ lib.UsbClientInterface = new(FakeUsbClientInterface)
