@@ -367,7 +367,7 @@ func (c *UsbPlugin) UpdateDriverCommand(args []string) {
 
 //UpdateInstanceCommand - allows user to update the instance of a driver
 func (c *UsbPlugin) UpdateInstanceCommand(args []string) {
-	if c.argLength == 6 || c.argLength == 4 {
+	if c.argLength == 5 || c.argLength == 3 {
 		schemaParser := schema.NewSchemaParser(c.ui)
 
 		updateInstanceName, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Update(c.token, args[2:c.argLength])
