@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"sort"
 
 	swaggerclient "github.com/go-swagger/go-swagger/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
@@ -200,6 +201,12 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 	return response.Payload.Name, nil
 }
 
+type instanceSorter []*models.DriverInstance
+
+func (a instanceSorter) Len() int           { return len(a) }
+func (a instanceSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a instanceSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
+
 //List - lists existing instances for a specific driver
 func (c *InstanceCommands) List(bearer swaggerclient.AuthInfoWriter, driverName string) ([]*models.DriverInstance, error) {
 	targetDriver, err := c.httpClient.GetDriverByName(bearer, driverName)
@@ -218,6 +225,6 @@ func (c *InstanceCommands) List(bearer swaggerclient.AuthInfoWriter, driverName 
 	if err != nil {
 		return nil, err
 	}
-
+	sort.Sort(instanceSorter(response.Payload))
 	return response.Payload, nil
 }

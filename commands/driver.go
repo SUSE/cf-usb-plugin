@@ -2,6 +2,7 @@ package commands
 
 import (
 	"os"
+	"sort"
 
 	swaggerclient "github.com/go-swagger/go-swagger/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
@@ -126,12 +127,18 @@ func (c *DriverCommands) Update(bearer swaggerclient.AuthInfoWriter, args []stri
 	return response.Payload.Name, nil
 }
 
+type driverSorter []*models.Driver
+
+func (a driverSorter) Len() int           { return len(a) }
+func (a driverSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a driverSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
+
 //List - lists existing drivers
 func (c *DriverCommands) List(bearer swaggerclient.AuthInfoWriter) ([]*models.Driver, error) {
 	response, err := c.httpClient.GetDrivers(operations.NewGetDriversParams(), bearer)
 	if err != nil {
 		return nil, err
 	}
-
+	sort.Sort(driverSorter(response.Payload))
 	return response.Payload, nil
 }
