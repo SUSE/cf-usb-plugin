@@ -15,6 +15,7 @@ import (
 type UsbConfigPluginInterface interface {
 	GetTarget() (string, error)
 	SetTarget(string) error
+	GetUsbConfigFile() string
 }
 
 //UsbConfigPlugin struct
@@ -27,12 +28,12 @@ func NewConfig() UsbConfigPluginInterface {
 }
 
 //GetTarget returns selected usb target
-func (*UsbConfigPlugin) GetTarget() (target string, err error) {
-	if _, err := os.Stat(getUsbConfigFile()); err != nil {
+func (configfile *UsbConfigPlugin) GetTarget() (target string, err error) {
+	if _, err := os.Stat(configfile.GetUsbConfigFile()); err != nil {
 		return "", errors.New("Usb management target not set. Use cf usb target <usb-mgmt-endpoint> to set the target")
 	}
 
-	jsonConf, err := ioutil.ReadFile(getUsbConfigFile())
+	jsonConf, err := ioutil.ReadFile(configfile.GetUsbConfigFile())
 	if err != nil {
 		return "", err
 	}
@@ -48,12 +49,12 @@ func (*UsbConfigPlugin) GetTarget() (target string, err error) {
 }
 
 //SetTarget saves the target information in config file
-func (*UsbConfigPlugin) SetTarget(target string) (err error) {
+func (configfile *UsbConfigPlugin) SetTarget(target string) (err error) {
 	if !strings.Contains(target, "http") {
 		target = fmt.Sprintf("http://%[1]s", target)
 	}
 
-	file, err := os.OpenFile(getUsbConfigFile(), os.O_RDWR|os.O_CREATE, 0755)
+	file, err := os.OpenFile(configfile.GetUsbConfigFile(), os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		return err
 	}
@@ -68,7 +69,7 @@ func (*UsbConfigPlugin) SetTarget(target string) (err error) {
 		return err
 	}
 
-	err = ioutil.WriteFile(getUsbConfigFile(), output, 0600)
+	err = ioutil.WriteFile(configfile.GetUsbConfigFile(), output, 0600)
 	if err != nil {
 		return err
 	}
@@ -76,6 +77,7 @@ func (*UsbConfigPlugin) SetTarget(target string) (err error) {
 	return nil
 }
 
-func getUsbConfigFile() string {
+//GetUsbConfigFile returns the path to the usb config file
+func (*UsbConfigPlugin) GetUsbConfigFile() string {
 	return filepath.Join(filepath.Dir(config_helpers.DefaultFilePath()), "usb-config.json")
 }

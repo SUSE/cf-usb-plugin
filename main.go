@@ -36,7 +36,26 @@ func main() {
 func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	c.argLength = len(args)
 
+
 	config := config.NewConfig()
+	configFile := config.GetUsbConfigFile()
+
+	if _, err := os.Stat(configFile); err != nil {
+		_,err := cliConnection.HasAPIEndpoint()
+
+		if err != nil {
+		    fmt.Printf("The api endpoint doesn't exist")
+		    return
+		} else {
+			file, err := os.OpenFile(configFile, os.O_RDWR|os.O_CREATE, 0755)
+			if err != nil {
+			    fmt.Printf("Cannot create config file")
+			    return
+			}
+
+			defer file.Close()
+		}
+	}
 
 	c.ui = terminal.NewUI(os.Stdin, terminal.NewTeePrinter())
 
