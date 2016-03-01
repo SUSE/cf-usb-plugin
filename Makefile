@@ -35,11 +35,14 @@ vet:
 build:
 	$(call print_status, Building)
 	export GOPATH=$(shell godep path):$(GOPATH) && \
-	gox -verbose \
-		-ldflags="-X main.version $(APP_VERSION)" \
-		-os="windows linux darwin " \
-		-arch="amd64" \
-		-output="build/{{.OS}}-{{.Arch}}/{{.Dir}}" ./...
+	$(call gobuild,linux,amd64)
+	$(call gobuild,windows,amd64,.exe)
+	$(call gobuild,darwin,amd64)
+	
+
+gobuild = GOARCH=$(2) GOOS=$(1) go build \
+		-ldflags="-X main.version=$(APP_VERSION)" \
+		-o="build/$(1)-$(2)/cf-usb-plugin$(3)" main.go
 
 dist: build
 	$(call print_status, Disting)
