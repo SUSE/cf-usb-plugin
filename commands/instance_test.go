@@ -82,12 +82,16 @@ func Test_UpdateInstance(t *testing.T) {
 	bearer := httptransport.BearerToken("testToken")
 	testID := "testID"
 
+	var testDriverResult operations.GetDriverOK
+
 	var testDriver models.Driver
 	testDriver.Name = "testDriver"
 	testDriver.ID = &testID
 	testDriver.DriverType = "testType"
 
-	usbClientMock.GetDriverByNameReturns(&testDriver, nil)
+	testDriverResult.Payload = &testDriver
+
+	usbClientMock.GetDriverReturns(&testDriverResult, nil)
 
 	var oldInstance models.DriverInstance
 	oldInstance.Name = "testInstance"

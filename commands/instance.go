@@ -114,13 +114,24 @@ func (c *InstanceCommands) Delete(bearer swaggerclient.AuthInfoWriter, instanceN
 
 //Update - updates an existing driver instance
 func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
-	driverName := args[0]
-	instanceName := args[1]
+	instanceName := args[0]
 
-	targetDriver, err := c.httpClient.GetDriverByName(bearer, driverName)
+	instance, err := c.httpClient.GetDriverInstanceByName(bearer, instanceName)
+
+	if instance.DriverID == "" {
+		fmt.Println("Empty driver id provided by cf-usb")
+		return "", nil
+	}
+
+	getDriverParams := operations.NewGetDriverParams()
+	getDriverParams.DriverID = instance.DriverID
+	targetDriverResult, err := c.httpClient.GetDriver(getDriverParams, bearer)
 	if err != nil {
 		return "", err
 	}
+
+	targetDriver := targetDriverResult.Payload
+
 	if targetDriver == nil {
 		fmt.Println("Driver not found")
 		return "", nil
@@ -128,9 +139,9 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 
 	var driverConfig map[string]interface{}
 
-	if len(args) == 4 {
-		method := args[2]
-		configValue := args[3]
+	if len(args) == 3 {
+		method := args[1]
+		configValue := args[2]
 
 		if method == "configFile" {
 			fileContent, err := ioutil.ReadFile(configValue)
@@ -143,7 +154,7 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
 			return "", fmt.Errorf("Invalid JSON format %s", err.Error())
 		}
-	} else if len(args) == 2 {
+	} else if len(args) == 1 {
 
 		configSchema, err := c.httpClient.GetDriverSchema(&operations.GetDriverSchemaParams{DriverID: *targetDriver.ID}, bearer)
 		if err != nil {
