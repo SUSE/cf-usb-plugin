@@ -129,6 +129,10 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		c.InstancesCommand(args)
 	case "drivers":
 		c.DriversCommand()
+	default:
+		fmt.Printf("'%s' is not a registered command. See 'cf usb help'", args[1])
+		fmt.Println()
+		return
 	}
 }
 
@@ -332,7 +336,6 @@ func (c *UsbPlugin) DeleteDriverCommand(args []string) {
 func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 	if c.argLength == 6 || c.argLength == 4 {
 		schemaParser := schema.NewSchemaParser(c.ui)
-
 		createdInstanceID, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Create(c.token, args[2:c.argLength])
 		if err != nil {
 			fmt.Println("ERROR:", err)
