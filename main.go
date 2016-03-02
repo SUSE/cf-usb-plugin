@@ -36,7 +36,26 @@ func main() {
 func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	c.argLength = len(args)
 
+
 	config := config.NewConfig()
+	configFile := config.GetUsbConfigFile()
+
+	if _, err := os.Stat(configFile); err != nil {
+		_,err := cliConnection.HasAPIEndpoint()
+
+		if err != nil {
+		    fmt.Printf("The api endpoint doesn't exist")
+		    return
+		} else {
+			file, err := os.OpenFile(configFile, os.O_RDWR|os.O_CREATE, 0755)
+			if err != nil {
+			    fmt.Printf("Cannot create config file")
+			    return
+			}
+
+			defer file.Close()
+		}
+	}
 
 	c.ui = terminal.NewUI(os.Stdin, terminal.NewTeePrinter())
 
@@ -98,8 +117,8 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		c.CreateInstanceCommand(args)
 	case "delete-instance":
 		c.DeleteInstanceCommand(args)
-	case "update-driver":
-		c.UpdateDriverCommand(args)
+	case "rename-driver":
+		c.RenameDriverCommand(args)
 	case "update-instance":
 		c.UpdateInstanceCommand(args)
 	case "update-service":
@@ -176,11 +195,11 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 				},
 			},
 			plugin.Command{
-				Name:     "usb update-driver",
-				HelpText: "Usb plugin update driver command",
+				Name:     "usb rename-driver",
+				HelpText: "Usb plugin rename driver command",
 
 				UsageDetails: plugin.Usage{
-					Usage: "usb update-driver [oldDriverName] [newDriverName]",
+					Usage: "usb rename-driver [oldDriverName] [newDriverName]",
 				},
 			},
 			plugin.Command{
@@ -351,8 +370,8 @@ func (c *UsbPlugin) DeleteInstanceCommand(args []string) {
 	}
 }
 
-//UpdateDriverCommand - allows user to change a drivers name
-func (c *UsbPlugin) UpdateDriverCommand(args []string) {
+//RenameDriverCommand - allows user to change a drivers name
+func (c *UsbPlugin) RenameDriverCommand(args []string) {
 	if c.argLength == 4 {
 		updatedDriverName, err := commands.NewDriverCommands(c.httpClient).Update(c.token, args[2:c.argLength])
 		if err != nil {
@@ -365,7 +384,7 @@ func (c *UsbPlugin) UpdateDriverCommand(args []string) {
 			fmt.Println("Driver updated:", updatedDriverName)
 		}
 	} else {
-		fmt.Println("Usage: cf usb update-driver [old-driver-name] [new-driver-name]")
+		fmt.Println("Usage: cf usb rename-driver [old-driver-name] [new-driver-name]")
 	}
 }
 
