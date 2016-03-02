@@ -49,7 +49,7 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 		method := args[2]
 		configValue := args[3]
 
-		if method == "configFile" {
+		if method == "jsonfile" {
 			fileContent, err := ioutil.ReadFile(configValue)
 			if err != nil {
 				return "", fmt.Errorf("Unable to read configuration file. %s", err.Error())
@@ -132,7 +132,7 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 		method := args[2]
 		configValue := args[3]
 
-		if method == "configFile" {
+		if method == "jsonfile" {
 			fileContent, err := ioutil.ReadFile(configValue)
 			if err != nil {
 				return "", fmt.Errorf("Unable to read configuration file. %s", err.Error())

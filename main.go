@@ -175,7 +175,7 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 				HelpText: "Usb plugin create driver instance command",
 
 				UsageDetails: plugin.Usage{
-					Usage: "usb create-instance [driverName] [instanceName] configValue/configFile [jsonValue/filePath]",
+					Usage: "usb create-instance [driverName] [instanceName] json/jsonfile [jsonValue/filePath]",
 				},
 			},
 			plugin.Command{
@@ -207,7 +207,7 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 				HelpText: "Usb plugin update driver instance command",
 
 				UsageDetails: plugin.Usage{
-					Usage: "usb update-instance [driverName] [instanceName]  configValue/configFile [jsonValue/filePath]",
+					Usage: "usb update-instance [driverName] [instanceName]  json/jsonfile [jsonValue/filePath]",
 				},
 			},
 			plugin.Command{
@@ -343,7 +343,7 @@ func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 		}
 
 	} else {
-		fmt.Println("Usage cf usb create-instance [driverName] [instanceName] configValue/configFile [jsonValue/filePath]")
+		fmt.Println("Usage cf usb create-instance [driverName] [instanceName] json/jsonfile [jsonValue/filePath]")
 		return
 	}
 }
@@ -402,7 +402,7 @@ func (c *UsbPlugin) UpdateInstanceCommand(args []string) {
 			fmt.Println("Driver instance updated:" + updateInstanceName)
 		}
 	} else {
-		fmt.Println("Usage: cf usb update-instance [driverName] [instanceName] configValue/configFile [jsonValue/filePath]")
+		fmt.Println("Usage: cf usb update-instance [driverName] [instanceName] json/jsonfile [jsonValue/filePath]")
 		return
 	}
 }
