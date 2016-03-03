@@ -49,6 +49,11 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 		method := args[2]
 		configValue := args[3]
 
+		if (method != "json") && (method != "jsonfile") {
+			
+			return "",fmt.Errorf("Method must be either 'json' or 'jsonfile'")
+		}
+
 		if method == "jsonfile" {
 			fileContent, err := ioutil.ReadFile(configValue)
 			if err != nil {
@@ -56,6 +61,7 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 			}
 			configValue = string(fileContent)
 		}
+
 
 		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
 			return "", fmt.Errorf("Invalid JSON format %s", err.Error())
