@@ -40,7 +40,7 @@ func Test_CreateDriverInstance(t *testing.T) {
 	createdInstance.ID = &testID
 	usbClientMock.CreateDriverInstanceReturns(&createResult, nil)
 
-	response, err := instanceCommands.Create(bearer, []string{"testDriver", "testInstance", "configValue", `{"a":"b"}`})
+	response, err := instanceCommands.Create(bearer, []string{"testDriver", "testInstance", "json", `{"a":"b"}`})
 	assert.Equal(response, testID)
 	assert.NoError(err)
 }
@@ -110,7 +110,7 @@ func Test_UpdateInstance(t *testing.T) {
 
 	usbClientMock.GetDriverInstanceByNameReturns(&oldInstance, nil)
 
-	response, err := instanceCommands.Update(bearer, []string{"testDriver", "testInstanceUpdate", "configValue", `{"a":"b"}`})
+	response, err := instanceCommands.Update(bearer, []string{"testDriver", "testInstanceUpdate", "json", `{"a":"b"}`})
 	assert.NotEqual(response, oldInstance.Name)
 	assert.NoError(err)
 }

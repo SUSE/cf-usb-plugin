@@ -49,13 +49,19 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 		method := args[2]
 		configValue := args[3]
 
-		if method == "configFile" {
+		if (method != "json") && (method != "jsonfile") {
+			
+			return "",fmt.Errorf("Method must be either 'json' or 'jsonfile'")
+		}
+
+		if method == "jsonfile" {
 			fileContent, err := ioutil.ReadFile(configValue)
 			if err != nil {
 				return "", fmt.Errorf("Unable to read configuration file. %s", err.Error())
 			}
 			configValue = string(fileContent)
 		}
+
 
 		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
 			return "", fmt.Errorf("Invalid JSON format %s", err.Error())
@@ -143,7 +149,7 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 		method := args[1]
 		configValue := args[2]
 
-		if method == "configFile" {
+		if method == "jsonfile" {
 			fileContent, err := ioutil.ReadFile(configValue)
 			if err != nil {
 				return "", fmt.Errorf("Unable to read configuration file. %s", err.Error())
