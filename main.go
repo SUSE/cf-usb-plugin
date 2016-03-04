@@ -420,8 +420,7 @@ func (c *UsbPlugin) UpdateServiceCommand(args []string) {
 			return
 		}
 
-		serviceCommand := commands.NewServiceCommands(c.httpClient)
-		service, err := serviceCommand.GetServiceByDriverInstanceID(c.token, *instance.ID)
+		service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, *instance.ID)
 		if err != nil {
 			fmt.Println("ERROR:", err)
 			return
@@ -465,7 +464,7 @@ func (c *UsbPlugin) UpdateServiceCommand(args []string) {
 			service.Tags = strings.Split(serviceTags, ",")
 		}
 
-		serviceID, err := serviceCommand.Update(c.token, service)
+		serviceID, err := commands.NewServiceCommands(c.httpClient).Update(c.token, service)
 		if err != nil {
 			fmt.Println("ERROR:", err)
 			return
@@ -488,14 +487,12 @@ func (c *UsbPlugin) DialsCommand(args []string) {
 		}
 
 		if dials != nil {
-			planCommand := commands.NewPlanCommands(c.httpClient)
-
 			for _, dial := range dials {
 				fmt.Println("Dial configuration:\t", dial.Configuration)
 				fmt.Println("Dial ID:\t\t", *dial.ID)
 				fmt.Println("Plan ID:\t\t", *dial.Plan)
 
-				plan, err := planCommand.GetPlanByID(c.token, *dial.Plan)
+				plan, err := c.httpClient.GetPlanByID(c.token, *dial.Plan)
 				if err != nil {
 					fmt.Println("ERROR:", err)
 				}
@@ -521,15 +518,13 @@ func (c *UsbPlugin) InstancesCommand(args []string) {
 		}
 
 		if instances != nil {
-			serviceCommand := commands.NewServiceCommands(c.httpClient)
-
 			for _, di := range instances {
 				fmt.Println("Driver Instance Name:\t", di.Name)
 				fmt.Println("Driver Instance Id:\t", *di.ID)
 				fmt.Println("Configuration:\t\t", di.Configuration)
 				fmt.Println("Dials:\t\t\t", len(di.Dials))
 
-				service, err := serviceCommand.GetServiceByDriverInstanceID(c.token, *di.ID)
+				service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, *di.ID)
 				if err != nil {
 					fmt.Println("ERROR:", err)
 				}

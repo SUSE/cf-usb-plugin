@@ -52,6 +52,7 @@ tools:
 	$(call print_status, Installing Tools)
 	go get -u golang.org/x/tools/cmd/vet
 	go get -u golang.org/x/tools/cmd/goimports
+	go get -u golang.org/x/tools/cmd/cover
 	go get -u github.com/golang/lint/golint
 	go get -u github.com/tools/godep
 

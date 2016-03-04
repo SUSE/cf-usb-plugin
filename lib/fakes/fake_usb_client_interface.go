@@ -306,6 +306,26 @@ type FakeUsbClientInterface struct {
 		result1 *models.DriverInstance
 		result2 error
 	}
+	GetServiceByDriverInstanceIDStub        func(authInfo client.AuthInfoWriter, driverInstanceID string) (*models.Service, error)
+	getServiceByDriverInstanceIDMutex       sync.RWMutex
+	getServiceByDriverInstanceIDArgsForCall []struct {
+		authInfo         client.AuthInfoWriter
+		driverInstanceID string
+	}
+	getServiceByDriverInstanceIDReturns struct {
+		result1 *models.Service
+		result2 error
+	}
+	GetPlanByIDStub        func(authInfo client.AuthInfoWriter, planID string) (*models.Plan, error)
+	getPlanByIDMutex       sync.RWMutex
+	getPlanByIDArgsForCall []struct {
+		authInfo client.AuthInfoWriter
+		planID   string
+	}
+	getPlanByIDReturns struct {
+		result1 *models.Plan
+		result2 error
+	}
 }
 
 func (fake *FakeUsbClientInterface) CreateDial(params *operations.CreateDialParams, authInfo client.AuthInfoWriter) (*operations.CreateDialCreated, error) {
@@ -1313,6 +1333,74 @@ func (fake *FakeUsbClientInterface) GetDriverInstanceByNameReturns(result1 *mode
 	fake.GetDriverInstanceByNameStub = nil
 	fake.getDriverInstanceByNameReturns = struct {
 		result1 *models.DriverInstance
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeUsbClientInterface) GetServiceByDriverInstanceID(authInfo client.AuthInfoWriter, driverInstanceID string) (*models.Service, error) {
+	fake.getServiceByDriverInstanceIDMutex.Lock()
+	fake.getServiceByDriverInstanceIDArgsForCall = append(fake.getServiceByDriverInstanceIDArgsForCall, struct {
+		authInfo         client.AuthInfoWriter
+		driverInstanceID string
+	}{authInfo, driverInstanceID})
+	fake.getServiceByDriverInstanceIDMutex.Unlock()
+	if fake.GetServiceByDriverInstanceIDStub != nil {
+		return fake.GetServiceByDriverInstanceIDStub(authInfo, driverInstanceID)
+	} else {
+		return fake.getServiceByDriverInstanceIDReturns.result1, fake.getServiceByDriverInstanceIDReturns.result2
+	}
+}
+
+func (fake *FakeUsbClientInterface) GetServiceByDriverInstanceIDCallCount() int {
+	fake.getServiceByDriverInstanceIDMutex.RLock()
+	defer fake.getServiceByDriverInstanceIDMutex.RUnlock()
+	return len(fake.getServiceByDriverInstanceIDArgsForCall)
+}
+
+func (fake *FakeUsbClientInterface) GetServiceByDriverInstanceIDArgsForCall(i int) (client.AuthInfoWriter, string) {
+	fake.getServiceByDriverInstanceIDMutex.RLock()
+	defer fake.getServiceByDriverInstanceIDMutex.RUnlock()
+	return fake.getServiceByDriverInstanceIDArgsForCall[i].authInfo, fake.getServiceByDriverInstanceIDArgsForCall[i].driverInstanceID
+}
+
+func (fake *FakeUsbClientInterface) GetServiceByDriverInstanceIDReturns(result1 *models.Service, result2 error) {
+	fake.GetServiceByDriverInstanceIDStub = nil
+	fake.getServiceByDriverInstanceIDReturns = struct {
+		result1 *models.Service
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeUsbClientInterface) GetPlanByID(authInfo client.AuthInfoWriter, planID string) (*models.Plan, error) {
+	fake.getPlanByIDMutex.Lock()
+	fake.getPlanByIDArgsForCall = append(fake.getPlanByIDArgsForCall, struct {
+		authInfo client.AuthInfoWriter
+		planID   string
+	}{authInfo, planID})
+	fake.getPlanByIDMutex.Unlock()
+	if fake.GetPlanByIDStub != nil {
+		return fake.GetPlanByIDStub(authInfo, planID)
+	} else {
+		return fake.getPlanByIDReturns.result1, fake.getPlanByIDReturns.result2
+	}
+}
+
+func (fake *FakeUsbClientInterface) GetPlanByIDCallCount() int {
+	fake.getPlanByIDMutex.RLock()
+	defer fake.getPlanByIDMutex.RUnlock()
+	return len(fake.getPlanByIDArgsForCall)
+}
+
+func (fake *FakeUsbClientInterface) GetPlanByIDArgsForCall(i int) (client.AuthInfoWriter, string) {
+	fake.getPlanByIDMutex.RLock()
+	defer fake.getPlanByIDMutex.RUnlock()
+	return fake.getPlanByIDArgsForCall[i].authInfo, fake.getPlanByIDArgsForCall[i].planID
+}
+
+func (fake *FakeUsbClientInterface) GetPlanByIDReturns(result1 *models.Plan, result2 error) {
+	fake.GetPlanByIDStub = nil
+	fake.getPlanByIDReturns = struct {
+		result1 *models.Plan
 		result2 error
 	}{result1, result2}
 }

@@ -166,3 +166,23 @@ func (a *UsbClient) GetDriverInstanceByName(authHeader client.AuthInfoWriter, dr
 
 	return nil, nil
 }
+
+//GetServiceByDriverInstanceID returns a service by driver instance id
+func (a *UsbClient) GetServiceByDriverInstanceID(authInfo client.AuthInfoWriter, driverInstanceID string) (*models.Service, error) {
+	response, err := a.GetServiceByInstanceID(&operations.GetServiceByInstanceIDParams{DriverInstanceID: driverInstanceID}, authInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.Payload, nil
+}
+
+//GetPlanByID returns an existing plan by id
+func (a *UsbClient) GetPlanByID(authInfo client.AuthInfoWriter, planID string) (*models.Plan, error) {
+	response, err := a.GetServicePlan(&operations.GetServicePlanParams{PlanID: planID}, authInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.Payload, nil
+}

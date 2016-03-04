@@ -7,31 +7,11 @@ import (
 
 	"github.com/hpcloud/cf-plugin-usb/commands"
 
+	"testing"
+
 	fakeUsbClient "github.com/hpcloud/cf-plugin-usb/lib/fakes"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
-
-func Test_GetServiceByDriverInstanceID(t *testing.T) {
-	assert := assert.New(t)
-	usbClientMock := new(fakeUsbClient.FakeUsbClientInterface)
-
-	bearer := httptransport.BearerToken("testToken")
-
-	var result operations.GetServiceByInstanceIDOK
-	var service models.Service
-	service.Name = "test"
-	serviceID := "testID"
-	service.ID = &serviceID
-	result.Payload = &service
-	usbClientMock.GetServiceByInstanceIDReturns(&result, nil)
-
-	serviceCommands := commands.NewServiceCommands(usbClientMock)
-
-	response, err := serviceCommands.GetServiceByDriverInstanceID(bearer, "testID")
-	assert.Equal(*response.ID, serviceID)
-	assert.NoError(err)
-}
 
 func Test_UpdateService(t *testing.T) {
 	assert := assert.New(t)

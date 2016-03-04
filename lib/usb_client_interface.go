@@ -38,4 +38,6 @@ type UsbClientInterface interface {
 	SetTransport(transport client.Transport)
 	GetDriverByName(authInfo client.AuthInfoWriter, driverName string) (*models.Driver, error)
 	GetDriverInstanceByName(authHeader client.AuthInfoWriter, driverInstanceName string) (*models.DriverInstance, error)
+	GetServiceByDriverInstanceID(authInfo client.AuthInfoWriter, driverInstanceID string) (*models.Service, error)
+	GetPlanByID(authInfo client.AuthInfoWriter, planID string) (*models.Plan, error)
 }
