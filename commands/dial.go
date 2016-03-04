@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"sort"
 
 	swaggerclient "github.com/go-swagger/go-swagger/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
@@ -25,6 +26,12 @@ func NewDialCommands(httpClient lib.UsbClientInterface) DialInterface {
 	return &DialCommands{httpClient: httpClient}
 }
 
+type dialSorter []*models.Dial
+
+func (a dialSorter) Len() int           { return len(a) }
+func (a dialSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a dialSorter) Less(i, j int) bool { return *a[i].ID < *a[j].ID }
+
 //List dials of an instance
 func (c *DialCommands) List(bearer swaggerclient.AuthInfoWriter, instanceName string) ([]*models.Dial, error) {
 	instance, err := c.httpClient.GetDriverInstanceByName(bearer, instanceName)
@@ -44,5 +51,6 @@ func (c *DialCommands) List(bearer swaggerclient.AuthInfoWriter, instanceName st
 		return nil, err
 	}
 
+	sort.Sort(dialSorter(response.Payload))
 	return response.Payload, nil
 }

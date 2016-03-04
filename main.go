@@ -36,25 +36,24 @@ func main() {
 func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	c.argLength = len(args)
 
-
 	config := config.NewConfig()
 	configFile := config.GetUsbConfigFile()
 
 	if _, err := os.Stat(configFile); err != nil {
-		_,err := cliConnection.HasAPIEndpoint()
+		_, err := cliConnection.HasAPIEndpoint()
 
 		if err != nil {
-		    fmt.Printf("The api endpoint doesn't exist")
-		    return
-		} else {
-			file, err := os.OpenFile(configFile, os.O_RDWR|os.O_CREATE, 0755)
-			if err != nil {
-			    fmt.Printf("Cannot create config file")
-			    return
-			}
-
-			defer file.Close()
+			fmt.Printf("The api endpoint doesn't exist")
+			return
 		}
+		file, err := os.OpenFile(configFile, os.O_RDWR|os.O_CREATE, 0755)
+		if err != nil {
+			fmt.Printf("Cannot create config file")
+			return
+		}
+
+		defer file.Close()
+
 	}
 
 	c.ui = terminal.NewUI(os.Stdin, terminal.NewTeePrinter())
@@ -129,6 +128,10 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		c.InstancesCommand(args)
 	case "drivers":
 		c.DriversCommand()
+	default:
+		fmt.Printf("'%s' is not a registered command. See 'cf usb help'", args[1])
+		fmt.Println()
+		return
 	}
 }
 
@@ -332,7 +335,6 @@ func (c *UsbPlugin) DeleteDriverCommand(args []string) {
 func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 	if c.argLength == 6 || c.argLength == 4 {
 		schemaParser := schema.NewSchemaParser(c.ui)
-
 		createdInstanceID, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Create(c.token, args[2:c.argLength])
 		if err != nil {
 			fmt.Println("ERROR:", err)
