@@ -9,7 +9,9 @@ import (
 	"reflect"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
+
 	"unicode"
 	"unicode/utf8"
 )
@@ -450,21 +452,48 @@ func IsISO3166Alpha3(str string) bool {
 	return false
 }
 
+// IsDNSName will validate the given string as a DNS name
+func IsDNSName(str string) bool {
+	if str == "" || len(strings.Replace(str,".","",-1)) > 255 {
+		// constraints already violated
+		return false
+	}
+	return rxDNSName.MatchString(str)
+}
+
+// IsDialString validates the given string for usage with the various Dial() functions
+func IsDialString(str string) bool {
+
+	if h, p, err := net.SplitHostPort(str); err == nil && h != "" && p != "" && (IsDNSName(h) || IsIP(h)) && IsPort(p) {
+		return true
+	}
+
+	return false
+}
+
 // IsIP checks if a string is either IP version 4 or 6.
 func IsIP(str string) bool {
 	return net.ParseIP(str) != nil
 }
 
+// IsPort checks if a string represents a valid port
+func IsPort(str string) bool {
+	if i, err := strconv.Atoi(str); err == nil && i > 0 && i < 65536 {
+		return true
+	}
+	return false
+}
+
 // IsIPv4 check if the string is an IP version 4.
 func IsIPv4(str string) bool {
 	ip := net.ParseIP(str)
-	return ip != nil && ip.To4() != nil
+	return ip != nil && strings.Contains(str, ".")
 }
 
 // IsIPv6 check if the string is an IP version 6.
 func IsIPv6(str string) bool {
 	ip := net.ParseIP(str)
-	return ip != nil && ip.To4() == nil
+	return ip != nil && strings.Contains(str, ":")
 }
 
 // IsMAC check if a string is valid MAC address.
@@ -508,7 +537,7 @@ func ValidateStruct(s interface{}) (bool, error) {
 	}
 	// we only accept structs
 	if val.Kind() != reflect.Struct {
-		return false, fmt.Errorf("function only accepts structs; got %T", val)
+		return false, fmt.Errorf("function only accepts structs; got %s", val.Kind())
 	}
 	var errs Errors
 	for i := 0; i < val.NumField(); i++ {
@@ -563,6 +592,11 @@ func IsSSN(str string) bool {
 	return rxSSN.MatchString(str)
 }
 
+// IsSemver check if string is valid semantic version
+func IsSemver(str string) bool {
+	return rxSemver.MatchString(str)
+}
+
 // ByteLength check string's length
 func ByteLength(str string, params ...string) bool {
 	if len(params) == 2 {
@@ -571,6 +605,15 @@ func ByteLength(str string, params ...string) bool {
 		return len(str) >= int(min) && len(str) <= int(max)
 	}
 
+	return false
+}
+
+// StringMatches checks if a string matches a given pattern.
+func StringMatches(s string, params ...string) bool {
+	if len(params) == 1 {
+		pattern := params[0]
+		return Matches(s, pattern)
+	}
 	return false
 }
 
@@ -667,7 +710,7 @@ func typeCheck(v reflect.Value, t reflect.StructField) (bool, error) {
 				negate = true
 			}
 			if ok := isValidTag(tagOpt); !ok {
-				err := fmt.Errorf("Unkown Validator %s", tagOpt)
+				err := fmt.Errorf("Unknown Validator %s", tagOpt)
 				return false, Error{t.Name, err}
 			}
 
@@ -830,15 +873,16 @@ func ErrorsByField(e error) map[string]string {
 		return m
 	}
 	// prototype for ValidateStruct
-	errorStr := e.Error()
-	errorList := strings.Split(errorStr, ";")
-	for _, item := range errorList {
-		if len(item) == 0 {
-			continue
+
+	switch e.(type) {
+	case Error:
+		m[e.(Error).Name] = e.(Error).Err.Error()
+	case Errors:
+		for _, item := range e.(Errors).Errors() {
+			m[item.(Error).Name] = item.(Error).Err.Error()
 		}
-		errorByField := strings.Split(item, ": ")
-		m[errorByField[0]] = errorByField[1]
 	}
+
 	return m
 }
 

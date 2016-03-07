@@ -345,7 +345,7 @@ func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 		}
 
 	} else {
-		fmt.Println("Usage cf usb create-instance [driverName] [instanceName] json/jsonfile [jsonValue/filePath]")
+		fmt.Println("Usage cf usb create-instance [driverName] [instanceName] [-c jsonValue/filePath]")
 		return
 	}
 }
@@ -510,36 +510,45 @@ func (c *UsbPlugin) DialsCommand(args []string) {
 
 //InstancesCommand - list instances of a driver
 func (c *UsbPlugin) InstancesCommand(args []string) {
-	if c.argLength == 3 {
-		schemaParser := schema.NewSchemaParser(c.ui)
-		instanceCommands := commands.NewInstanceCommands(c.httpClient, schemaParser)
-		instances, err := instanceCommands.List(c.token, args[2])
+	schemaParser := schema.NewSchemaParser(c.ui)
+	instanceCommands := commands.NewInstanceCommands(c.httpClient, schemaParser)
+
+	drivers, err := commands.NewDriverCommands(c.httpClient).List(c.token)
+
+	if err != nil {
+	    fmt.Println("ERROR:", err)
+	    return
+	    }
+	for _, driver := range drivers {
+
+		instances, err := instanceCommands.List(c.token, driver.Name)
+
 		if err != nil {
-			fmt.Println("ERROR:", err)
-			return
+		    fmt.Println("ERROR:", err)
+		    return
 		}
 
 		if instances != nil {
-			for _, di := range instances {
-				fmt.Println("Driver Instance Name:\t", di.Name)
-				fmt.Println("Driver Instance Id:\t", *di.ID)
-				fmt.Println("Configuration:\t\t", di.Configuration)
-				fmt.Println("Dials:\t\t\t", len(di.Dials))
 
-				service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, *di.ID)
-				if err != nil {
-					fmt.Println("ERROR:", err)
-				}
+		    for _, di := range instances {
+		    fmt.Println("Driver Instance Name:\t", di.Name)
+		    fmt.Println("Driver Instance Id:\t", *di.ID)
+		    fmt.Println("Configuration:\t\t", di.Configuration)
+		    fmt.Println("Dials:\t\t\t", len(di.Dials))
 
-				fmt.Println("Service:\t\t", "Name:", service.Name, "; Bindable:", *service.Bindable, "; Tags:", service.Tags)
-				fmt.Println("")
-			}
+		    service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, *di.ID)
+
+		    if err != nil {
+			fmt.Println("ERROR:", err)
+		    }
+
+		    fmt.Println("Service:\t\t", "Name:", service.Name, "; Bindable:", *service.Bindable, "; Tags:", service.Tags)
+		    fmt.Println("")
 		}
-
-	} else {
-		fmt.Println("Usage cf usb instances [driverName]")
+	    }
 	}
 }
+
 
 //DriversCommand - list existing drivers
 func (c *UsbPlugin) DriversCommand() {
