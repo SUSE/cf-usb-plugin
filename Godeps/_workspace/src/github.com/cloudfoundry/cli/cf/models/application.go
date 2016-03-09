@@ -62,6 +62,7 @@ type ApplicationFields struct {
 	HealthCheckTimeout   int
 	State                string
 	SpaceGuid            string
+	StackGuid            string
 	PackageUpdatedAt     *time.Time
 	PackageState         string
 	StagingFailedReason  string
@@ -69,6 +70,7 @@ type ApplicationFields struct {
 	DetectedBuildpack    string
 	DockerImage          string
 	EnableSsh            bool
+	AppPorts             []int
 }
 
 type AppParams struct {
@@ -98,6 +100,7 @@ type AppParams struct {
 	StackName          *string
 	State              *string
 	PackageUpdatedAt   *time.Time
+	AppPorts           *[]int
 }
 
 func (app *AppParams) Merge(other *AppParams) {
@@ -166,6 +169,9 @@ func (app *AppParams) Merge(other *AppParams) {
 	}
 	if other.EnableSsh != nil {
 		app.EnableSsh = other.EnableSsh
+	}
+	if other.AppPorts != nil {
+		app.AppPorts = other.AppPorts
 	}
 
 	app.NoRoute = app.NoRoute || other.NoRoute

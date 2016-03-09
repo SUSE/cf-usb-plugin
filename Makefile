@@ -34,7 +34,8 @@ vet:
 
 build:
 	$(call print_status, Building)
-	export GOPATH=$(shell godep path):$(GOPATH) && \
+	export GOPATH=$(shell godep path):$(GOPATH)
+	godep restore
 	$(call gobuild,linux,amd64)
 	$(call gobuild,windows,amd64,.exe)
 	$(call gobuild,darwin,amd64)
@@ -46,7 +47,7 @@ gobuild = GOARCH=$(2) GOOS=$(1) go build \
 
 dist: build
 	$(call print_status, Disting)
-	tar czf cf-plugin-usb-$(APP_VERSION)-$(ARCH).tgz cf-plugin-usb
+	tar czf cf-plugin-usb-$(APP_VERSION)-$(ARCH).tgz build/*
 
 tools:
 	$(call print_status, Installing Tools)

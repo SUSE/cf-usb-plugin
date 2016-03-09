@@ -1,81 +1,167 @@
 {
 	"ImportPath": "github.com/hpcloud/cf-plugin-usb",
-	"GoVersion": "go1.4",
+	"GoVersion": "go1.5",
 	"Packages": [
 		"./..."
 	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/asaskevich/govalidator",
-			"Comment": "v2-31-gc219af1",
-			"Rev": "c219af1eafcdacdb7fbb6fa33b926cadd541ca19"
+			"Comment": "v2-51-g9699ab6",
+			"Rev": "9699ab6b38bee2e02cd3fe8b99ecf67665395c96"
 		},
 		{
 			"ImportPath": "github.com/blang/semver",
-			"Comment": "v3.0.1",
-			"Rev": "31b736133b98f26d5e078ec9eb591666edfd091f"
+			"Comment": "v3.1.0",
+			"Rev": "aea32c919a18e5ef4537bbd283ff29594b1b0165"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry/cli/cf",
-			"Comment": "v6.15.0-29-gb8ad52f",
-			"Rev": "b8ad52fdb41d179fa9a5de1a43128d2eaceb7d40"
+			"Comment": "v6.16.1-32-g5be830e",
+			"Rev": "5be830eb3370729497656f2e383ff5b38a842379"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/cf/configuration",
+			"Comment": "v6.16.1-32-g5be830e",
+			"Rev": "5be830eb3370729497656f2e383ff5b38a842379"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/cf/configuration/config_helpers",
+			"Comment": "v6.16.1-32-g5be830e",
+			"Rev": "5be830eb3370729497656f2e383ff5b38a842379"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/cf/configuration/core_config",
+			"Comment": "v6.16.1-32-g5be830e",
+			"Rev": "5be830eb3370729497656f2e383ff5b38a842379"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/cf/i18n",
+			"Comment": "v6.16.1-32-g5be830e",
+			"Rev": "5be830eb3370729497656f2e383ff5b38a842379"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/cf/models",
+			"Comment": "v6.16.1-32-g5be830e",
+			"Rev": "5be830eb3370729497656f2e383ff5b38a842379"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/cf/resources",
+			"Comment": "v6.16.1-32-g5be830e",
+			"Rev": "5be830eb3370729497656f2e383ff5b38a842379"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/cf/terminal",
+			"Comment": "v6.16.1-32-g5be830e",
+			"Rev": "5be830eb3370729497656f2e383ff5b38a842379"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/cf/trace",
+			"Comment": "v6.16.1-32-g5be830e",
+			"Rev": "5be830eb3370729497656f2e383ff5b38a842379"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry/cli/plugin",
-			"Comment": "v6.15.0-29-gb8ad52f",
-			"Rev": "b8ad52fdb41d179fa9a5de1a43128d2eaceb7d40"
+			"Comment": "v6.16.1-32-g5be830e",
+			"Rev": "5be830eb3370729497656f2e383ff5b38a842379"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/plugin/models",
+			"Comment": "v6.16.1-32-g5be830e",
+			"Rev": "5be830eb3370729497656f2e383ff5b38a842379"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry/cli/testhelpers/terminal",
-			"Comment": "v6.15.0-29-gb8ad52f",
-			"Rev": "b8ad52fdb41d179fa9a5de1a43128d2eaceb7d40"
+			"Comment": "v6.16.1-32-g5be830e",
+			"Rev": "5be830eb3370729497656f2e383ff5b38a842379"
 		},
 		{
 			"ImportPath": "github.com/cloudfoundry/gofileutils/fileutils",
-			"Rev": "c53c86fd9621d83f5d6d33a8e41499c4c9df95ce"
+			"Rev": "788944944894988fe374b311a216f6387efd6ae0"
+		},
+		{
+			"ImportPath": "github.com/davecgh/go-spew/spew",
+			"Rev": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d"
 		},
 		{
 			"ImportPath": "github.com/go-swagger/go-swagger/client",
-			"Comment": "0.3.0-41-gd64fab2",
-			"Rev": "d64fab2aa3de945dc240dfb5d46b93ab5533d99a"
+			"Comment": "0.4.0-29-g4fc282a",
+			"Rev": "4fc282a149e998dbe8703bd2e2643d14c7d71c0f"
 		},
 		{
 			"ImportPath": "github.com/go-swagger/go-swagger/errors",
-			"Comment": "0.3.0-41-gd64fab2",
-			"Rev": "d64fab2aa3de945dc240dfb5d46b93ab5533d99a"
+			"Comment": "0.4.0-29-g4fc282a",
+			"Rev": "4fc282a149e998dbe8703bd2e2643d14c7d71c0f"
 		},
 		{
 			"ImportPath": "github.com/go-swagger/go-swagger/httpkit",
-			"Comment": "0.3.0-41-gd64fab2",
-			"Rev": "d64fab2aa3de945dc240dfb5d46b93ab5533d99a"
+			"Comment": "0.4.0-29-g4fc282a",
+			"Rev": "4fc282a149e998dbe8703bd2e2643d14c7d71c0f"
+		},
+		{
+			"ImportPath": "github.com/go-swagger/go-swagger/httpkit/client",
+			"Comment": "0.4.0-29-g4fc282a",
+			"Rev": "4fc282a149e998dbe8703bd2e2643d14c7d71c0f"
+		},
+		{
+			"ImportPath": "github.com/go-swagger/go-swagger/httpkit/validate",
+			"Comment": "0.4.0-29-g4fc282a",
+			"Rev": "4fc282a149e998dbe8703bd2e2643d14c7d71c0f"
 		},
 		{
 			"ImportPath": "github.com/go-swagger/go-swagger/strfmt",
-			"Comment": "0.3.0-41-gd64fab2",
-			"Rev": "d64fab2aa3de945dc240dfb5d46b93ab5533d99a"
+			"Comment": "0.4.0-29-g4fc282a",
+			"Rev": "4fc282a149e998dbe8703bd2e2643d14c7d71c0f"
 		},
 		{
 			"ImportPath": "github.com/go-swagger/go-swagger/swag",
-			"Comment": "0.3.0-41-gd64fab2",
-			"Rev": "d64fab2aa3de945dc240dfb5d46b93ab5533d99a"
+			"Comment": "0.4.0-29-g4fc282a",
+			"Rev": "4fc282a149e998dbe8703bd2e2643d14c7d71c0f"
 		},
 		{
 			"ImportPath": "github.com/nicksnyder/go-i18n/i18n",
-			"Comment": "v1.2.0-31-ga97d9e6",
-			"Rev": "a97d9e61302069288b30e05516351e8a2fa7259f"
+			"Comment": "v1.4.0",
+			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
+		},
+		{
+			"ImportPath": "github.com/nicksnyder/go-i18n/i18n/bundle",
+			"Comment": "v1.4.0",
+			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
+		},
+		{
+			"ImportPath": "github.com/nicksnyder/go-i18n/i18n/language",
+			"Comment": "v1.4.0",
+			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
+		},
+		{
+			"ImportPath": "github.com/nicksnyder/go-i18n/i18n/translation",
+			"Comment": "v1.4.0",
+			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
+		},
+		{
+			"ImportPath": "github.com/pmezard/go-difflib/difflib",
+			"Rev": "792786c7400a136282c1664665ae0a8db921c6c2"
 		},
 		{
 			"ImportPath": "github.com/stretchr/testify/assert",
-			"Comment": "v1.0-17-g089c718",
-			"Rev": "089c7181b8c728499929ff09b62d3fdd8df8adff"
+			"Comment": "v1.1.3-6-g6fe211e",
+			"Rev": "6fe211e493929a8aac0469b93f28b1d0688a9a3a"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/ssh/terminal",
-			"Rev": "575fdbe86e5dd89229707ebec0575ce7d088a4a6"
+			"Rev": "5dc8cb4b8a8eb076cbb5a06bc3b8682c15bdbbd3"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "6acef71eb69611914f7a30939ea9f6e194c78172"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context/ctxhttp",
+			"Rev": "6acef71eb69611914f7a30939ea9f6e194c78172"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
-			"Rev": "53feefa2559fb8dfa8d81baad31be332c97d6c77"
+			"Rev": "f7716cbe52baa25d2e9b0d0da546fcf909fc16b4"
 		}
 	]
 }
