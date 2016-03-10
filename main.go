@@ -66,11 +66,13 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 	c.token = bearer
 
-	if c.argLength == 1 {
-		metadata := c.GetMetadata()
-		for _, command := range metadata.Commands {
-			fmt.Printf("%-25s %-50s\n", command.Name, command.HelpText)
-		}
+	if c.argLength == 1 || (c.argLength == 2 && args[1] == "help") {
+		c.showCommandsWithHelpText()
+		return
+	}
+
+	if c.argLength == 3 && args[1] == "help" {
+		c.ui.Say(c.getUsage(args))
 		return
 	}
 
@@ -152,105 +154,126 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 		Commands: []plugin.Command{
 			{
 				Name:     "usb",
-				HelpText: "Usb plugin command's help text",
+				HelpText: "View command's help text",
 				UsageDetails: plugin.Usage{
 					Usage: "cf usb",
 				},
 			},
 			plugin.Command{
 				Name:     "usb target",
-				HelpText: "Gets or sets usb management endpoint",
-
+				HelpText: "Set or view target usb management endpoint api url",
 				UsageDetails: plugin.Usage{
-					Usage: "usb target <usb-mgmt-endpoint>\n   cf usb target <usb-mgmt-endpoint>",
+					Usage: "cf usb target [URL]",
 				},
 			},
 			plugin.Command{
 				Name:     "usb info",
-				HelpText: "Usb plugin token command text",
-
+				HelpText: "Show usb plugin info",
 				UsageDetails: plugin.Usage{
-					Usage: "usb token\n   cf usb token",
+					Usage: "cf usb info",
 				},
 			},
 			plugin.Command{
 				Name:     "usb create-instance",
-				HelpText: "Usb plugin create driver instance command",
-
+				HelpText: "Create a driver instance",
 				UsageDetails: plugin.Usage{
-					Usage: "usb create-instance [driverName] [instanceName] json/jsonfile [jsonValue/filePath]",
+					Usage: `cf usb create-instance DRIVER_NAME INSTANCE_NAME [-c PARAMETERS_AS_JSON]
+
+    Optionally provide driver-specific configuration parameters in a valid JSON object in-line:
+    cf usb create-instance DRIVER_NAME INSTANCE_NAME -c '{"name":"value","name":"value"}'
+	
+    Optionally provide a file containing driver-specific configuration parameters in a valid JSON object.
+    The path to the parameters file can be an absolute or relative path to a file:
+    cf usb create-instance DRIVER_NAME INSTANCE_NAME -c PATH_TO_FILE	
+					
+EXAMPLE:
+    cf usb create-instance mydriver myinstance (omit -c to configure driver instance interactively -- cf usb will prompt for config values)
+    cf usb create-instance mydriver myinstance -c '{"host":"localhost","port":"1234","user":"username","password":"password"}'
+    cf usb create-instance mydriver myinstance -c ~/workspace/tmp/mydriverinstance_config.json
+	
+OPTIONS:
+    -c   Valid JSON object containing driver instance specific configuration parameters, provided in-line or in a file
+`,
 				},
 			},
 			plugin.Command{
 				Name:     "usb delete-instance",
-				HelpText: "Usb plugin delete driver instance command",
-
+				HelpText: "Delete a driver instance",
 				UsageDetails: plugin.Usage{
-					Usage: "usb delete-instance [instanceName]",
+					Usage: "cf usb delete-instance INSTANCE_NAME",
 				},
 			},
 			plugin.Command{
 				Name:     "usb create-driver",
-				HelpText: "Usb plugin create driver command",
-
+				HelpText: "Create a driver",
 				UsageDetails: plugin.Usage{
-					Usage: "usb create-driver [driverType] [driverName]",
+					Usage: "cf usb create-driver DRIVER_TYPE DRIVER_NAME",
 				},
 			},
 			plugin.Command{
 				Name:     "usb rename-driver",
-				HelpText: "Usb plugin rename driver command",
-
+				HelpText: "Rename a driver",
 				UsageDetails: plugin.Usage{
-					Usage: "usb rename-driver [oldDriverName] [newDriverName]",
+					Usage: "cf usb rename-driver OLD_DRIVER_NAME NEW_DRIVER_NAME",
 				},
 			},
 			plugin.Command{
 				Name:     "usb update-instance",
-				HelpText: "Usb plugin update driver instance command",
-
+				HelpText: "Update a driver instance",
 				UsageDetails: plugin.Usage{
-					Usage: "usb update-instance [driverName] [instanceName]  json/jsonfile [jsonValue/filePath]",
+					Usage: `cf usb update-instance INSTANCE_NAME [-c PARAMETERS_AS_JSON]
+
+    Optionally provide driver-specific configuration parameters in a valid JSON object in-line:
+    cf usb update-instance INSTANCE_NAME -c '{"name":"value","name":"value"}'
+	
+    Optionally provide a file containing driver-specific configuration parameters in a valid JSON object.
+    The path to the parameters file can be an absolute or relative path to a file:
+    cf usb update-instance INSTANCE_NAME -c PATH_TO_FILE	
+					
+EXAMPLE:
+    cf usb update-instance myinstance (omit -c to configure driver instance interactively -- cf usb will prompt for config values)
+    cf usb update-instance myinstance -c '{"host":"localhost","port":"1234","user":"username","password":"password"}'
+    cf usb update-instance myinstance -c ~/workspace/tmp/myinstance_config.json
+	
+OPTIONS:
+    -c   Valid JSON object containing driver instance specific configuration parameters, provided in-line or in a file
+`,
 				},
 			},
 			plugin.Command{
 				Name:     "usb update-service",
-				HelpText: "Usb plugin update service command",
-
+				HelpText: "Update a service",
 				UsageDetails: plugin.Usage{
-					Usage: "usb update-service [instanceName]",
+					Usage: "cf usb update-service INSTANCE_NAME",
 				},
 			},
 			plugin.Command{
 				Name:     "usb delete-driver",
-				HelpText: "Usb plugin delete driver command",
-
+				HelpText: "Delete a driver",
 				UsageDetails: plugin.Usage{
-					Usage: "usb delete-driver [driverName]",
+					Usage: "cf usb delete-driver DRIVER_NAME",
 				},
 			},
 			plugin.Command{
 				Name:     "usb drivers",
 				HelpText: "List existing drivers",
-
 				UsageDetails: plugin.Usage{
-					Usage: "usb drivers\n   cf usb drivers",
+					Usage: "cf usb drivers",
 				},
 			},
 			plugin.Command{
 				Name:     "usb instances",
-				HelpText: "List existing driver instances",
-
+				HelpText: "List existing driver instances for a driver",
 				UsageDetails: plugin.Usage{
-					Usage: "usb instances  [driverName]",
+					Usage: "cf usb instances DRIVER_NAME",
 				},
 			},
 			plugin.Command{
 				Name:     "usb dials",
-				HelpText: "List existing dials for instance",
+				HelpText: "List existing dials for a driver instance",
 
 				UsageDetails: plugin.Usage{
-					Usage: "usb dials  [instanceName]",
+					Usage: "cf usb dials INSTANCE_NAME",
 				},
 			},
 		},
@@ -305,9 +328,7 @@ func (c *UsbPlugin) CreateDriverCommand(args []string) {
 
 		fmt.Println("Driver created with ID:", createdDriverID)
 	} else {
-		fmt.Println("ERROR: Invalid number of arguments")
-		fmt.Println("Usage: cf usb create-driver [driver-type] [driver-name] [driver-bits-path]")
-		return
+		c.showIncorrectUsage("Requires driver type, driver name as arguments\n", args)
 	}
 }
 
@@ -327,7 +348,7 @@ func (c *UsbPlugin) DeleteDriverCommand(args []string) {
 			}
 		}
 	} else {
-		fmt.Println("Usage: cf usb delete-driver [driver-name]")
+		c.showIncorrectUsage("Requires driver name as argument\n", args)
 	}
 }
 
@@ -345,8 +366,7 @@ func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 		}
 
 	} else {
-		fmt.Println("Usage cf usb create-instance [driverName] [instanceName] [-c jsonValue/filePath]")
-		return
+		c.showIncorrectUsage("Requires driver name, instance name as arguments\n", args)
 	}
 }
 
@@ -368,7 +388,7 @@ func (c *UsbPlugin) DeleteInstanceCommand(args []string) {
 			}
 		}
 	} else {
-		fmt.Println("Usage cf usb delete-instance [instanceName]")
+		c.showIncorrectUsage("Requires instance name as argument\n", args)
 	}
 }
 
@@ -386,7 +406,7 @@ func (c *UsbPlugin) RenameDriverCommand(args []string) {
 			fmt.Println("Driver updated:", updatedDriverName)
 		}
 	} else {
-		fmt.Println("Usage: cf usb rename-driver [old-driver-name] [new-driver-name]")
+		c.showIncorrectUsage("Requires old driver name, new driver name as arguments\n", args)
 	}
 }
 
@@ -404,8 +424,7 @@ func (c *UsbPlugin) UpdateInstanceCommand(args []string) {
 			fmt.Println("Driver instance updated:" + updateInstanceName)
 		}
 	} else {
-		fmt.Println("Usage: cf usb update-instance [driverName] [instanceName] json/jsonfile [jsonValue/filePath]")
-		return
+		c.showIncorrectUsage("Requires instance name as argument\n", args)
 	}
 }
 
@@ -474,8 +493,7 @@ func (c *UsbPlugin) UpdateServiceCommand(args []string) {
 
 		fmt.Println("Updated service with ID:", serviceID)
 	} else {
-		fmt.Println("Usage: cf usb update-service [instanceName]")
-		return
+		c.showIncorrectUsage("Requires instance name as argument\n", args)
 	}
 }
 
@@ -503,8 +521,7 @@ func (c *UsbPlugin) DialsCommand(args []string) {
 			}
 		}
 	} else {
-		fmt.Println("Usage: cf usb dials [instanceName]")
-		return
+		c.showIncorrectUsage("Requires instance name as argument\n", args)
 	}
 }
 
@@ -565,4 +582,37 @@ func (c *UsbPlugin) DriversCommand() {
 		}
 		table.Print()
 	}
+}
+
+func (c *UsbPlugin) showCommandsWithHelpText() {
+	metadata := c.GetMetadata()
+	for _, command := range metadata.Commands {
+		fmt.Printf("%-25s %-50s\n", command.Name, command.HelpText)
+	}
+	return
+}
+
+func (c *UsbPlugin) getUsage(args []string) string {
+	output := ""
+
+	for _, cmd := range c.GetMetadata().Commands {
+		command := args[1]
+		if args[1] == "help" {
+			command = args[2]
+		}
+
+		if cmd.Name == fmt.Sprintf("%s %s", args[0], command) {
+			output = "NAME:\n    "
+			output += fmt.Sprintf("%s - %s", cmd.Name, cmd.HelpText)
+			output += "\n\nUSAGE:\n    "
+			output += cmd.UsageDetails.Usage
+			output += "\n"
+		}
+	}
+
+	return output
+}
+
+func (c *UsbPlugin) showIncorrectUsage(message string, args []string) {
+	c.ui.Failed(fmt.Sprintf("Incorrect Usage. %s\n", message) + c.getUsage(args))
 }
