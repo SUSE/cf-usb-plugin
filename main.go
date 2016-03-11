@@ -43,12 +43,12 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		_, err := cliConnection.HasAPIEndpoint()
 
 		if err != nil {
-			fmt.Printf("The api endpoint doesn't exist")
+			c.showFailed("The api endpoint doesn't exist")
 			return
 		}
 		file, err := os.OpenFile(configFile, os.O_RDWR|os.O_CREATE, 0755)
 		if err != nil {
-			fmt.Printf("Cannot create config file")
+			c.showFailed("Cannot create config file")
 			return
 		}
 
@@ -60,7 +60,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 	bearer, err := commands.GetBearerToken(cliConnection)
 	if err != nil {
-		fmt.Println("ERROR:", err)
+		c.showFailed(fmt.Sprint("ERROR:", err))
 		return
 	}
 
@@ -82,18 +82,18 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 		target, err = config.GetTarget()
 		if err != nil {
-			fmt.Println("ERROR:", err)
+			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}
 
 		/*sslDisabled, err := cliConnection.IsSSLDisabled()
 		if err != nil {
-			fmt.Println("ERROR:", err)
+			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}*/
 		u, err := url.Parse(target)
 		if err != nil {
-			fmt.Println("ERROR :", err)
+			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}
 		transport := httptransport.New(u.Host, "/", []string{u.Scheme})
@@ -131,7 +131,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	case "drivers":
 		c.DriversCommand()
 	default:
-		fmt.Printf("'%s' is not a registered command. See 'cf usb help'", args[1])
+		c.showFailed(fmt.Sprintf("'%s' is not a registered command. See 'cf usb help'", args[1]))
 		fmt.Println()
 		return
 	}
@@ -287,7 +287,7 @@ func (c *UsbPlugin) TargetCommand(args []string, config config.UsbConfigPluginIn
 
 		target, err = config.GetTarget()
 		if err != nil {
-			fmt.Println("ERROR:", err)
+			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}
 
@@ -296,11 +296,11 @@ func (c *UsbPlugin) TargetCommand(args []string, config config.UsbConfigPluginIn
 		target = args[2]
 		err := config.SetTarget(target)
 		if err != nil {
-			fmt.Println("ERROR:", err)
+			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}
 
-		fmt.Println("Usb management target set to: " + target)
+		c.showOk(fmt.Sprint("Usb management target set to: " + target))
 	}
 }
 
@@ -308,12 +308,12 @@ func (c *UsbPlugin) TargetCommand(args []string, config config.UsbConfigPluginIn
 func (c *UsbPlugin) InfoCommand() {
 	infoResp, err := commands.NewInfoCommands(c.httpClient).GetInfo(c.token)
 	if err != nil {
-		fmt.Println("ERROR:", err)
+		c.showFailed(fmt.Sprint("ERROR:", err))
 		return
 	}
 
+	c.showOk("")
 	fmt.Println("Broker API version: " + infoResp.BrokerAPIVersion)
-
 	fmt.Println("USB version: " + infoResp.UsbVersion)
 }
 
@@ -322,11 +322,11 @@ func (c *UsbPlugin) CreateDriverCommand(args []string) {
 	if c.argLength == 4 || c.argLength == 5 {
 		createdDriverID, err := commands.NewDriverCommands(c.httpClient).Create(c.token, args[2:c.argLength])
 		if err != nil {
-			fmt.Println("ERROR:", err)
+			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}
 
-		fmt.Println("Driver created with ID:", createdDriverID)
+		c.showOk(fmt.Sprint("Driver created with ID:", createdDriverID))
 	} else {
 		c.showIncorrectUsage("Requires driver type, driver name as arguments\n", args)
 	}
@@ -338,13 +338,13 @@ func (c *UsbPlugin) DeleteDriverCommand(args []string) {
 		if c.ui.Confirm(fmt.Sprintf("Really delete the driver %v", args[2])) {
 			deletedDriverID, err := commands.NewDriverCommands(c.httpClient).Delete(c.token, args[2])
 			if err != nil {
-				fmt.Println("ERROR:", err)
+				c.showFailed(fmt.Sprint("ERROR:", err))
 				return
 			}
 			if deletedDriverID == "" {
-				fmt.Println("Driver not found")
+				c.showFailed("Driver not found")
 			} else {
-				fmt.Println("Driver deleted:", deletedDriverID)
+				c.showOk(fmt.Sprint("Driver deleted:", deletedDriverID))
 			}
 		}
 	} else {
@@ -358,11 +358,11 @@ func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 		schemaParser := schema.NewSchemaParser(c.ui)
 		createdInstanceID, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Create(c.token, args[2:c.argLength])
 		if err != nil {
-			fmt.Println("ERROR:", err)
+			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}
 		if createdInstanceID != "" {
-			fmt.Println("New driver instance created. ID:" + createdInstanceID)
+			c.showOk(fmt.Sprint("New driver instance created. ID:" + createdInstanceID))
 		}
 
 	} else {
@@ -378,13 +378,13 @@ func (c *UsbPlugin) DeleteInstanceCommand(args []string) {
 
 			deletedInstanceID, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Delete(c.token, args[2])
 			if err != nil {
-				fmt.Println("ERROR:", err)
+				c.showFailed(fmt.Sprint("ERROR:", err))
 				return
 			}
 			if deletedInstanceID == "" {
-				fmt.Println("Driver instance not found")
+				c.showFailed("Driver instance not found")
 			} else {
-				fmt.Println("Deleted driver instance:", deletedInstanceID)
+				c.showOk(fmt.Sprint("Deleted driver instance:", deletedInstanceID))
 			}
 		}
 	} else {
@@ -397,13 +397,13 @@ func (c *UsbPlugin) RenameDriverCommand(args []string) {
 	if c.argLength == 4 {
 		updatedDriverName, err := commands.NewDriverCommands(c.httpClient).Update(c.token, args[2:c.argLength])
 		if err != nil {
-			fmt.Println("ERROR:", err)
+			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}
 		if updatedDriverName == "" {
-			fmt.Println("Driver not found")
+			c.showFailed("Driver not found")
 		} else {
-			fmt.Println("Driver updated:", updatedDriverName)
+			c.showOk(fmt.Sprint("Driver updated:", updatedDriverName))
 		}
 	} else {
 		c.showIncorrectUsage("Requires old driver name, new driver name as arguments\n", args)
@@ -417,11 +417,11 @@ func (c *UsbPlugin) UpdateInstanceCommand(args []string) {
 
 		updateInstanceName, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Update(c.token, args[2:c.argLength])
 		if err != nil {
-			fmt.Println("ERROR:", err)
+			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}
 		if updateInstanceName != "" {
-			fmt.Println("Driver instance updated:" + updateInstanceName)
+			c.showOk(fmt.Sprint("Driver instance updated:" + updateInstanceName))
 		}
 	} else {
 		c.showIncorrectUsage("Requires instance name as argument\n", args)
@@ -433,17 +433,17 @@ func (c *UsbPlugin) UpdateServiceCommand(args []string) {
 	if c.argLength == 3 {
 		instance, err := c.httpClient.GetDriverInstanceByName(c.token, args[2])
 		if err != nil {
-			fmt.Println("ERROR - get driver instance:", err)
+			c.showFailed(fmt.Sprint("ERROR - get driver instance:", err))
 			return
 		}
 		if instance == nil {
-			fmt.Println("Driver instance not found")
+			c.showFailed("Driver instance not found")
 			return
 		}
 
 		service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, *instance.ID)
 		if err != nil {
-			fmt.Println("ERROR:", err)
+			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}
 		fmt.Println("service id:", *service.ID)
@@ -487,11 +487,11 @@ func (c *UsbPlugin) UpdateServiceCommand(args []string) {
 
 		serviceID, err := commands.NewServiceCommands(c.httpClient).Update(c.token, service)
 		if err != nil {
-			fmt.Println("ERROR:", err)
+			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}
 
-		fmt.Println("Updated service with ID:", serviceID)
+		c.showOk(fmt.Sprint("Updated service with ID:", serviceID))
 	} else {
 		c.showIncorrectUsage("Requires instance name as argument\n", args)
 	}
@@ -502,11 +502,12 @@ func (c *UsbPlugin) DialsCommand(args []string) {
 	if c.argLength == 3 {
 		dials, err := commands.NewDialCommands(c.httpClient).List(c.token, args[2])
 		if err != nil {
-			fmt.Println("ERROR:", err)
+			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}
 
 		if dials != nil {
+			c.showOk("")
 			for _, dial := range dials {
 				fmt.Println("Dial configuration:\t", dial.Configuration)
 				fmt.Println("Dial ID:\t\t", *dial.ID)
@@ -514,11 +515,14 @@ func (c *UsbPlugin) DialsCommand(args []string) {
 
 				plan, err := c.httpClient.GetPlanByID(c.token, *dial.Plan)
 				if err != nil {
-					fmt.Println("ERROR:", err)
+					c.showFailed(fmt.Sprint("ERROR:", err))
 				}
 				fmt.Println("Plan:\t\t\t Name:", plan.Name, "; Description:", *plan.Description)
 				fmt.Println("")
 			}
+		} else
+		{
+		    c.showFailed("No dials found")
 		}
 	} else {
 		c.showIncorrectUsage("Requires instance name as argument\n", args)
@@ -529,40 +533,45 @@ func (c *UsbPlugin) DialsCommand(args []string) {
 func (c *UsbPlugin) InstancesCommand(args []string) {
 	schemaParser := schema.NewSchemaParser(c.ui)
 	instanceCommands := commands.NewInstanceCommands(c.httpClient, schemaParser)
+	instanceCount := 0
 
 	drivers, err := commands.NewDriverCommands(c.httpClient).List(c.token)
 
 	if err != nil {
-	    fmt.Println("ERROR:", err)
+	    c.showFailed(fmt.Sprint("ERROR:", err))
 	    return
 	    }
 	for _, driver := range drivers {
-
 		instances, err := instanceCommands.List(c.token, driver.Name)
 
 		if err != nil {
-		    fmt.Println("ERROR:", err)
+		    c.showFailed(fmt.Sprint("ERROR:", err))
 		    return
 		}
 
 		if instances != nil {
-
 		    for _, di := range instances {
-		    fmt.Println("Driver Instance Name:\t", di.Name)
-		    fmt.Println("Driver Instance Id:\t", *di.ID)
-		    fmt.Println("Configuration:\t\t", di.Configuration)
-		    fmt.Println("Dials:\t\t\t", len(di.Dials))
+			fmt.Println("Driver Instance Name:\t", di.Name)
+			fmt.Println("Driver Instance Id:\t", *di.ID)
+			fmt.Println("Configuration:\t\t", di.Configuration)
+			fmt.Println("Dials:\t\t\t", len(di.Dials))
 
-		    service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, *di.ID)
+			service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, *di.ID)
 
-		    if err != nil {
-			fmt.Println("ERROR:", err)
+			if err != nil {
+			    c.showFailed(fmt.Sprint("ERROR:", err))
+			}
+
+			fmt.Println("Service:\t\t", "Name:", service.Name, "; Bindable:", *service.Bindable, "; Tags:", service.Tags)
+			fmt.Println("")
+
+			instanceCount++
 		    }
-
-		    fmt.Println("Service:\t\t", "Name:", service.Name, "; Bindable:", *service.Bindable, "; Tags:", service.Tags)
-		    fmt.Println("")
 		}
-	    }
+	}
+
+	if instanceCount == 0 {
+	    c.showFailed("No instances found")
 	}
 }
 
@@ -571,16 +580,19 @@ func (c *UsbPlugin) InstancesCommand(args []string) {
 func (c *UsbPlugin) DriversCommand() {
 	drivers, err := commands.NewDriverCommands(c.httpClient).List(c.token)
 	if err != nil {
-		fmt.Println("ERROR:", err)
+		c.showFailed(fmt.Sprint("ERROR:", err))
 		return
 	}
 
 	if drivers != nil {
-		table := terminal.NewTable(c.ui, []string{"Id", "Name", "Type"})
+		c.showOk("")
+		table := terminal.NewTable(c.ui, []string{"Name", "Id", "Type"})
 		for _, driver := range drivers {
-			table.Add(*driver.ID, driver.Name, driver.DriverType)
+			table.Add(driver.Name, *driver.ID, driver.DriverType)
 		}
 		table.Print()
+	} else {
+	    c.showFailed("No drivers found")
 	}
 }
 
@@ -593,26 +605,36 @@ func (c *UsbPlugin) showCommandsWithHelpText() {
 }
 
 func (c *UsbPlugin) getUsage(args []string) string {
-	output := ""
+        output := ""
 
-	for _, cmd := range c.GetMetadata().Commands {
-		command := args[1]
-		if args[1] == "help" {
-			command = args[2]
-		}
+        for _, cmd := range c.GetMetadata().Commands {
+                command := args[1]
+                if args[1] == "help" {
+                        command = args[2]
+                }
 
-		if cmd.Name == fmt.Sprintf("%s %s", args[0], command) {
-			output = "NAME:\n    "
-			output += fmt.Sprintf("%s - %s", cmd.Name, cmd.HelpText)
-			output += "\n\nUSAGE:\n    "
-			output += cmd.UsageDetails.Usage
-			output += "\n"
-		}
-	}
+                if cmd.Name == fmt.Sprintf("%s %s", args[0], command) {
+                        output = "NAME:\n    "
+                        output += fmt.Sprintf("%s - %s", cmd.Name, cmd.HelpText)
+                        output += "\n\nUSAGE:\n    "
+                        output += cmd.UsageDetails.Usage
+                        output += "\n"
+                }
+        }
 
-	return output
+        return output
 }
 
+
 func (c *UsbPlugin) showIncorrectUsage(message string, args []string) {
-	c.ui.Failed(fmt.Sprintf("Incorrect Usage. %s\n", message) + c.getUsage(args))
+        c.ui.Failed(fmt.Sprintf("Incorrect Usage. %s\n", message) + c.getUsage(args))
+}
+
+func (c *UsbPlugin) showFailed(message string) {
+        c.ui.Failed(fmt.Sprintf("%s\n", message))
+}
+
+func (c *UsbPlugin) showOk(message string) {
+        c.ui.Say(terminal.SuccessColor("OK"))
+        fmt.Printf("%s\n", message)
 }

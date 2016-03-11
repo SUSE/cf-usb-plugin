@@ -141,20 +141,21 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 	var driverConfig map[string]interface{}
 
 	if len(args) == 3 {
-		method := args[1]
+	    if args[1] == "-c" {
 		configValue := args[2]
 
-		if method == "jsonfile" {
-			fileContent, err := ioutil.ReadFile(configValue)
-			if err != nil {
-				return "", fmt.Errorf("Unable to read configuration file. %s", err.Error())
-			}
-			configValue = string(fileContent)
+		if _, err := ioutil.ReadFile(configValue); err == nil {
+		    fileContent, err := ioutil.ReadFile(configValue)
+		    if err != nil {
+		    	return "", fmt.Errorf("Unable to read configuration file. %s", err.Error())
+		    }
+		    configValue = string(fileContent)
 		}
 
 		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
-			return "", fmt.Errorf("Invalid JSON format %s", err.Error())
+		    return "", fmt.Errorf("Invalid JSON format %s", err.Error())
 		}
+	    }
 	} else if len(args) == 1 {
 
 		configSchema, err := c.httpClient.GetDriverSchema(&operations.GetDriverSchemaParams{DriverID: *targetDriver.ID}, bearer)
