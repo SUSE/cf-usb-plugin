@@ -131,7 +131,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	case "drivers":
 		c.DriversCommand()
 	default:
-		c.showFailed(fmt.Sprintf("'%s' is not a registered command. See 'cf usb help'", args[1]))
+		fmt.Printf("'%s' is not a registered command. See 'cf usb help'", args[1])
 		fmt.Println()
 		return
 	}
