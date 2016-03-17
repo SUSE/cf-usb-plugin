@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/url"
+	"net"
 	"os"
 	"strconv"
 	"strings"
@@ -46,10 +47,29 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			c.showFailed("The api endpoint doesn't exist")
 			return
 		}
+
+		endpoint,err1 := cliConnection.ApiEndpoint()
+		if err1 != nil {
+		    c.showFailed("Cannot connect to api endpoint")
+		    return
+		}
+
 		file, err := os.OpenFile(configFile, os.O_RDWR|os.O_CREATE, 0755)
 		if err != nil {
 			c.showFailed("Cannot create config file")
 			return
+		}
+
+		usbendpoint := "usb." + strings.Replace(endpoint,"https://api.","",1)
+		_, err2 := net.Dial("tcp", usbendpoint + ":80")
+		if err2 != nil {
+		    c.showFailed("Cannot connect to usb endpoint on port 80")
+		}
+
+		_,err3 := file.WriteString("{\"MgmtTarget\":\"http://" + usbendpoint + "\"}")
+
+		if err3 != nil {
+		    c.showFailed("Error writing configuration to usb config file")
 		}
 
 		defer file.Close()
