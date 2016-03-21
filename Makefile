@@ -43,7 +43,7 @@ build:
 
 gobuild = GOARCH=$(2) GOOS=$(1) go build \
 		-ldflags="-X main.version=$(APP_VERSION)" \
-		-o="build/$(1)-$(2)/cf-usb-plugin$(3)" main.go
+		-o="build/$(1)-$(2)/cf-plugin-usb$(3)" main.go
 
 dist: build
 	$(call print_status, Disting)
