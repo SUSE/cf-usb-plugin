@@ -604,7 +604,9 @@ func (c *UsbPlugin) DriversCommand() {
 		return
 	}
 
-	if drivers != nil {
+	driversCount := len(drivers)
+
+	if driversCount > 0 {
 		c.showOk("")
 		table := terminal.NewTable(c.ui, []string{"Name", "Id", "Type"})
 		for _, driver := range drivers {
