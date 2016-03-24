@@ -1,15 +1,19 @@
 package commands_test
 
 import (
+	"os"
+	"path/filepath"
+
 	httptransport "github.com/go-swagger/go-swagger/httpkit/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 
 	"github.com/hpcloud/cf-plugin-usb/commands"
 
+	"testing"
+
 	fakeUsbClient "github.com/hpcloud/cf-plugin-usb/lib/fakes"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_CreateDriver(t *testing.T) {
@@ -32,9 +36,39 @@ func Test_CreateDriver(t *testing.T) {
 
 	bearer := httptransport.BearerToken("testToken")
 
-	result, err := driverCommands.Create(bearer, []string{"testType", "testName"})
-	assert.Equal("testID", result)
+	workDir, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	bitsTestPath := filepath.Join(workDir, "../test-assets/driver-bits")
+
+	result, err := driverCommands.Create(bearer, []string{"testType", "testName", bitsTestPath})
+	assert.Equal(result, driverID)
 	assert.NoError(err)
+}
+
+func Test_CreateDriverWrongDriverPath(t *testing.T) {
+	assert := assert.New(t)
+	usbClientMock := new(fakeUsbClient.FakeUsbClientInterface)
+
+	var driverResonse operations.CreateDriverCreated
+
+	var driver models.Driver
+	driver.DriverType = "testType"
+	driver.Name = "testName"
+	driverID := "testID"
+	driver.ID = &driverID
+	driver.DriverInstances = []string{"testInstanceID"}
+
+	driverResonse.Payload = &driver
+	usbClientMock.CreateDriverReturns(&driverResonse, nil)
+
+	driverCommands := commands.NewDriverCommands(usbClientMock)
+
+	bearer := httptransport.BearerToken("testToken")
+
+	_, err := driverCommands.Create(bearer, []string{"testType", "testName", "testPath"})
+	assert.Error(err, "stat testPath: no such file or directory")
 }
 
 func Test_DeleteDriver(t *testing.T) {
