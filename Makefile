@@ -1,7 +1,8 @@
 include version.mk
 
 ARCH:=$(shell go env GOOS).$(shell go env GOARCH)
-APP_VERSION=$(VERSION)
+COMMIT_HASH=$(shell git log --pretty=format:'%h' -n 1)
+APP_VERSION=$(VERSION)-$(COMMIT_HASH)
 
 PKGSDIRS=$(shell go list -f '{{.Dir}}' ./...)
 
@@ -45,9 +46,23 @@ gobuild = GOARCH=$(2) GOOS=$(1) go build \
 		-ldflags="-X main.version=$(APP_VERSION)" \
 		-o="build/$(1)-$(2)/cf-plugin-usb$(3)" main.go
 
-dist: build
-	$(call print_status, Disting)
-	tar czf cf-plugin-usb-$(APP_VERSION)-$(ARCH).tgz build/*
+linux_dist: build
+	$(call print_status, Disting linux)
+	$(call godist,linux,amd64)
+
+windows_dist: build
+	$(call print_status, Disting windows)
+	$(call godist,windows,amd64)
+
+darwin_dist: build
+	$(call print_status, Disting darwin)
+	$(call godist,darwin,amd64)
+
+dist: linux_dist \
+	windows_dist \
+	darwin_dist
+
+godist = GOARCH=$(2) GOOS=$(1) tar czf cf-plugin-usb-$(APP_VERSION)-$(1)-$(2).tgz build/$(1)-$(2)/*
 
 tools:
 	$(call print_status, Installing Tools)
