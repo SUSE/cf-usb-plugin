@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sort"
 	"strconv"
 
 	"github.com/cloudfoundry/cli/cf/terminal"
@@ -37,7 +38,16 @@ func (p *SchemaParser) parseObject(key string, input map[string]interface{}) (ma
 	var result map[string]interface{} = make(map[string]interface{})
 
 	if prop, ok := input["properties"]; ok {
-		for k, v := range prop.(map[string]interface{}) {
+
+		var keys []string
+		for k := range prop.(map[string]interface{}) {
+			keys = append(keys, k)
+		}
+
+		sort.Strings(keys)
+
+		for _, k := range keys {
+			v := prop.(map[string]interface{})[k]
 			t := v.(map[string]interface{})["type"]
 			required := ""
 			if isRequired(k, input) {
