@@ -56,12 +56,11 @@ func Test_DeleteInstance(t *testing.T) {
 	bearer := httptransport.BearerToken("testToken")
 	testID := "testID"
 
-	var testDriver models.Driver
-	testDriver.Name = "testDriver"
-	testDriver.ID = &testID
-	testDriver.DriverType = "testType"
+	var testDriverInstance models.DriverInstance
+	testDriverInstance.Name = "testDriver"
+	testDriverInstance.ID = &testID
 
-	usbClientMock.GetDriverByNameReturns(&testDriver, nil)
+	usbClientMock.GetDriverInstanceByNameReturns(&testDriverInstance, nil)
 
 	var deleteResult operations.DeleteDriverInstanceNoContent
 
