@@ -39,8 +39,7 @@ func (c *DialCommands) List(bearer swaggerclient.AuthInfoWriter, instanceName st
 		return nil, err
 	}
 	if instance == nil {
-		fmt.Println("Driver instance not found")
-		return nil, nil
+		return nil, fmt.Errorf("Driver instance not found")
 	}
 
 	params := operations.NewGetAllDialsParams()

@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"os"
 	"sort"
 
@@ -82,7 +83,7 @@ func (c *DriverCommands) Delete(bearer swaggerclient.AuthInfoWriter, driverName 
 		return "", err
 	}
 	if driver == nil {
-		return "", nil
+		return "", fmt.Errorf("Driver not found")
 	}
 
 	params := operations.NewDeleteDriverParams()
@@ -106,7 +107,7 @@ func (c *DriverCommands) Update(bearer swaggerclient.AuthInfoWriter, args []stri
 		return "", err
 	}
 	if driver == nil {
-		return "", nil
+		return "", fmt.Errorf("Driver not found")
 	}
 	driver.Name = newName
 

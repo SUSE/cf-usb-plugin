@@ -40,8 +40,7 @@ func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []st
 
 	targetDriver, err := c.httpClient.GetDriverByName(bearer, driverName)
 	if targetDriver == nil {
-		fmt.Println("Driver not found")
-		return "", nil
+		return "", fmt.Errorf("Driver not found")
 	}
 
 	var driverConfig map[string]interface{}
@@ -99,7 +98,7 @@ func (c *InstanceCommands) Delete(bearer swaggerclient.AuthInfoWriter, instanceN
 		return "", err
 	}
 	if instance == nil {
-		return "", nil
+		return "", fmt.Errorf("Driver instance not found")
 	}
 
 	params := operations.NewDeleteDriverInstanceParams()
@@ -118,10 +117,12 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 	instanceName := args[0]
 
 	instance, err := c.httpClient.GetDriverInstanceByName(bearer, instanceName)
+	if err != nil {
+		return "", err
+	}
 
 	if instance.DriverID == "" {
-		fmt.Println("Empty driver id provided by cf-usb")
-		return "", nil
+		return "", fmt.Errorf("Empty driver id provided by cf-usb")
 	}
 
 	getDriverParams := operations.NewGetDriverParams()
@@ -134,8 +135,7 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 	targetDriver := targetDriverResult.Payload
 
 	if targetDriver == nil {
-		fmt.Println("Driver not found")
-		return "", nil
+		return "", fmt.Errorf("Driver not found")
 	}
 
 	var driverConfig map[string]interface{}
@@ -178,8 +178,7 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 		return "", err
 	}
 	if oldInstance == nil {
-		fmt.Println("Driver instance not found")
-		return "", nil
+		return "", fmt.Errorf("Driver instance not found")
 	}
 
 	oldInstance.Configuration = driverConfig
@@ -209,8 +208,7 @@ func (c *InstanceCommands) List(bearer swaggerclient.AuthInfoWriter, driverName 
 		return nil, err
 	}
 	if targetDriver == nil {
-		fmt.Println("Driver not found")
-		return nil, nil
+		return nil, fmt.Errorf("Driver not found")
 	}
 
 	params := operations.NewGetDriverInstancesParams()
