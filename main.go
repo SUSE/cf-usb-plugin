@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"net/url"
 	"net"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -48,10 +48,10 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			return
 		}
 
-		endpoint,err1 := cliConnection.ApiEndpoint()
+		endpoint, err1 := cliConnection.ApiEndpoint()
 		if err1 != nil {
-		    c.showFailed("Cannot connect to api endpoint")
-		    return
+			c.showFailed("Cannot connect to api endpoint")
+			return
 		}
 
 		file, err := os.OpenFile(configFile, os.O_RDWR|os.O_CREATE, 0755)
@@ -60,16 +60,16 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			return
 		}
 
-		usbendpoint := "usb." + strings.Replace(endpoint,"https://api.","",1)
-		_, err2 := net.Dial("tcp", usbendpoint + ":80")
+		usbendpoint := "usb." + strings.Replace(endpoint, "https://api.", "", 1)
+		_, err2 := net.Dial("tcp", usbendpoint+":80")
 		if err2 != nil {
-		    c.showFailed("Cannot connect to usb endpoint on port 80")
+			c.showFailed("Cannot connect to usb endpoint on port 80")
 		}
 
-		_,err3 := file.WriteString("{\"MgmtTarget\":\"http://" + usbendpoint + "\"}")
+		_, err3 := file.WriteString("{\"MgmtTarget\":\"http://" + usbendpoint + "\"}")
 
 		if err3 != nil {
-		    c.showFailed("Error writing configuration to usb config file")
+			c.showFailed("Error writing configuration to usb config file")
 		}
 
 		defer file.Close()
@@ -339,7 +339,7 @@ func (c *UsbPlugin) InfoCommand() {
 
 //CreateDriverCommand - creates a new driver
 func (c *UsbPlugin) CreateDriverCommand(args []string) {
-	if c.argLength == 5 {
+	if c.argLength == 4 {
 		createdDriverID, err := commands.NewDriverCommands(c.httpClient).Create(c.token, args[2:c.argLength])
 		if err != nil {
 			c.showFailed(fmt.Sprint("ERROR:", err))
@@ -374,7 +374,7 @@ func (c *UsbPlugin) DeleteDriverCommand(args []string) {
 
 //CreateInstanceCommand - creates an instance of a driver
 func (c *UsbPlugin) CreateInstanceCommand(args []string) {
-	if c.argLength == 6 || c.argLength == 4 {
+	if c.argLength == 7 || c.argLength == 5 {
 		schemaParser := schema.NewSchemaParser(c.ui)
 		createdInstanceID, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Create(c.token, args[2:c.argLength])
 		if err != nil {
@@ -571,6 +571,7 @@ func (c *UsbPlugin) InstancesCommand(args []string) {
 		if instances != nil {
 			for _, di := range instances {
 				fmt.Println("Driver Instance Name:\t", di.Name)
+				fmt.Println("TARGET:\t\t", di.TargetURL)
 				fmt.Println("Driver Instance Id:\t", *di.ID)
 				fmt.Println("Configuration:\t\t", di.Configuration)
 				fmt.Println("Dials:\t\t\t", len(di.Dials))

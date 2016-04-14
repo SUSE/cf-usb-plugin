@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"os"
+	//"os"
 	"sort"
 
 	swaggerclient "github.com/go-swagger/go-swagger/client"
@@ -33,10 +33,10 @@ func NewDriverCommands(httpClient lib.UsbClientInterface) DriverInterface {
 //Create - creates a new driver
 func (c *DriverCommands) Create(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
 	// if bits path specified, check if exists
-	if _, err := os.Stat(args[2]); err != nil {
-		return "", err
-	}
-
+	/*	if _, err := os.Stat(args[2]); err != nil {
+			return "", err
+		}
+	*/
 	var driver models.Driver
 	driver.DriverType = args[0]
 	driver.Name = args[1]
@@ -48,30 +48,30 @@ func (c *DriverCommands) Create(bearer swaggerclient.AuthInfoWriter, args []stri
 	if err != nil {
 		return "", err
 	}
+	/*
+		filePath := args[2]
 
-	filePath := args[2]
+		sha, err := getFileSha(filePath)
+		if err != nil {
+			return "", err
+		}
 
-	sha, err := getFileSha(filePath)
-	if err != nil {
-		return "", err
-	}
+		file, err := os.Open(filePath)
+		if err != nil {
+			return "", err
+		}
 
-	file, err := os.Open(filePath)
-	if err != nil {
-		return "", err
-	}
+		var uploadParams operations.UploadDriverParams
 
-	var uploadParams operations.UploadDriverParams
+		uploadParams.DriverID = *response.Payload.ID
+		uploadParams.File = *file
+		uploadParams.Sha = sha
 
-	uploadParams.DriverID = *response.Payload.ID
-	uploadParams.File = *file
-	uploadParams.Sha = sha
-
-	_, err = c.httpClient.UploadDriver(&uploadParams, bearer)
-	if err != nil {
-		return "", err
-	}
-
+		_, err = c.httpClient.UploadDriver(&uploadParams, bearer)
+		if err != nil {
+			return "", err
+		}
+	*/
 	return *response.Payload.ID, nil
 }
 
