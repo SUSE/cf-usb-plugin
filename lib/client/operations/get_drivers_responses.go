@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -20,7 +20,7 @@ type GetDriversReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *GetDriversReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *GetDriversReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 200:
@@ -38,7 +38,7 @@ func (o *GetDriversReader) ReadResponse(response client.Response, consumer httpk
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -59,7 +59,7 @@ func (o *GetDriversOK) Error() string {
 	return fmt.Sprintf("[GET /drivers][%d] getDriversOK  %+v", 200, o.Payload)
 }
 
-func (o *GetDriversOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDriversOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
@@ -86,7 +86,7 @@ func (o *GetDriversInternalServerError) Error() string {
 	return fmt.Sprintf("[GET /drivers][%d] getDriversInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *GetDriversInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDriversInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -20,7 +20,7 @@ type GetDriverInstanceReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *GetDriverInstanceReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *GetDriverInstanceReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 200:
@@ -45,7 +45,7 @@ func (o *GetDriverInstanceReader) ReadResponse(response client.Response, consume
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -66,7 +66,7 @@ func (o *GetDriverInstanceOK) Error() string {
 	return fmt.Sprintf("[GET /driver_instances/{driver_instance_id}][%d] getDriverInstanceOK  %+v", 200, o.Payload)
 }
 
-func (o *GetDriverInstanceOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDriverInstanceOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.DriverInstance)
 
@@ -94,7 +94,7 @@ func (o *GetDriverInstanceNotFound) Error() string {
 	return fmt.Sprintf("[GET /driver_instances/{driver_instance_id}][%d] getDriverInstanceNotFound ", 404)
 }
 
-func (o *GetDriverInstanceNotFound) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDriverInstanceNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -116,7 +116,7 @@ func (o *GetDriverInstanceInternalServerError) Error() string {
 	return fmt.Sprintf("[GET /driver_instances/{driver_instance_id}][%d] getDriverInstanceInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *GetDriverInstanceInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDriverInstanceInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

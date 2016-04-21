@@ -4,9 +4,10 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/errors"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -36,19 +37,19 @@ type UpdateServicePlanParams struct {
 }
 
 // WithPlan adds the plan to the update service plan params
-func (o *UpdateServicePlanParams) WithPlan(plan *models.Plan) *UpdateServicePlanParams {
-	o.Plan = plan
+func (o *UpdateServicePlanParams) WithPlan(Plan *models.Plan) *UpdateServicePlanParams {
+	o.Plan = Plan
 	return o
 }
 
 // WithPlanID adds the planId to the update service plan params
-func (o *UpdateServicePlanParams) WithPlanID(planId string) *UpdateServicePlanParams {
-	o.PlanID = planId
+func (o *UpdateServicePlanParams) WithPlanID(PlanID string) *UpdateServicePlanParams {
+	o.PlanID = PlanID
 	return o
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *UpdateServicePlanParams) WriteToRequest(r client.Request, reg strfmt.Registry) error {
+func (o *UpdateServicePlanParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	var res []error
 

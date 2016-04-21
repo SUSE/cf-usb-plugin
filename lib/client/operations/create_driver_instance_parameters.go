@@ -4,9 +4,10 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/errors"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -31,13 +32,13 @@ type CreateDriverInstanceParams struct {
 }
 
 // WithDriverInstance adds the driverInstance to the create driver instance params
-func (o *CreateDriverInstanceParams) WithDriverInstance(driverInstance *models.DriverInstance) *CreateDriverInstanceParams {
-	o.DriverInstance = driverInstance
+func (o *CreateDriverInstanceParams) WithDriverInstance(DriverInstance *models.DriverInstance) *CreateDriverInstanceParams {
+	o.DriverInstance = DriverInstance
 	return o
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *CreateDriverInstanceParams) WriteToRequest(r client.Request, reg strfmt.Registry) error {
+func (o *CreateDriverInstanceParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	var res []error
 

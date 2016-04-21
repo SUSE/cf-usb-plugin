@@ -4,9 +4,10 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/errors"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -36,19 +37,19 @@ type UpdateDriverInstanceParams struct {
 }
 
 // WithDriverConfig adds the driverConfig to the update driver instance params
-func (o *UpdateDriverInstanceParams) WithDriverConfig(driverConfig *models.DriverInstance) *UpdateDriverInstanceParams {
-	o.DriverConfig = driverConfig
+func (o *UpdateDriverInstanceParams) WithDriverConfig(DriverConfig *models.DriverInstance) *UpdateDriverInstanceParams {
+	o.DriverConfig = DriverConfig
 	return o
 }
 
 // WithDriverInstanceID adds the driverInstanceId to the update driver instance params
-func (o *UpdateDriverInstanceParams) WithDriverInstanceID(driverInstanceId string) *UpdateDriverInstanceParams {
-	o.DriverInstanceID = driverInstanceId
+func (o *UpdateDriverInstanceParams) WithDriverInstanceID(DriverInstanceID string) *UpdateDriverInstanceParams {
+	o.DriverInstanceID = DriverInstanceID
 	return o
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *UpdateDriverInstanceParams) WriteToRequest(r client.Request, reg strfmt.Registry) error {
+func (o *UpdateDriverInstanceParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	var res []error
 

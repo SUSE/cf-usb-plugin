@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -20,7 +20,7 @@ type GetDriverSchemaReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *GetDriverSchemaReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *GetDriverSchemaReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 200:
@@ -45,7 +45,7 @@ func (o *GetDriverSchemaReader) ReadResponse(response client.Response, consumer 
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -66,7 +66,7 @@ func (o *GetDriverSchemaOK) Error() string {
 	return fmt.Sprintf("[GET /drivers/{driver_id}/config_schema][%d] getDriverSchemaOK  %+v", 200, o.Payload)
 }
 
-func (o *GetDriverSchemaOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDriverSchemaOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
@@ -92,7 +92,7 @@ func (o *GetDriverSchemaNotFound) Error() string {
 	return fmt.Sprintf("[GET /drivers/{driver_id}/config_schema][%d] getDriverSchemaNotFound ", 404)
 }
 
-func (o *GetDriverSchemaNotFound) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDriverSchemaNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -114,7 +114,7 @@ func (o *GetDriverSchemaInternalServerError) Error() string {
 	return fmt.Sprintf("[GET /drivers/{driver_id}/config_schema][%d] getDriverSchemaInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *GetDriverSchemaInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDriverSchemaInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

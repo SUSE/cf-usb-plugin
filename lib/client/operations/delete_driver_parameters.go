@@ -4,9 +4,10 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/errors"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 )
 
 // NewDeleteDriverParams creates a new DeleteDriverParams object
@@ -29,13 +30,13 @@ type DeleteDriverParams struct {
 }
 
 // WithDriverID adds the driverId to the delete driver params
-func (o *DeleteDriverParams) WithDriverID(driverId string) *DeleteDriverParams {
-	o.DriverID = driverId
+func (o *DeleteDriverParams) WithDriverID(DriverID string) *DeleteDriverParams {
+	o.DriverID = DriverID
 	return o
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *DeleteDriverParams) WriteToRequest(r client.Request, reg strfmt.Registry) error {
+func (o *DeleteDriverParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	var res []error
 

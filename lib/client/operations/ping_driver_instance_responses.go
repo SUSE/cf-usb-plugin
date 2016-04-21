@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 )
 
 // PingDriverInstanceReader is a Reader for the PingDriverInstance structure.
@@ -18,7 +18,7 @@ type PingDriverInstanceReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *PingDriverInstanceReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *PingDriverInstanceReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 200:
@@ -43,7 +43,7 @@ func (o *PingDriverInstanceReader) ReadResponse(response client.Response, consum
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -63,7 +63,7 @@ func (o *PingDriverInstanceOK) Error() string {
 	return fmt.Sprintf("[GET /driver_instances/{driver_instance_id}/ping][%d] pingDriverInstanceOK ", 200)
 }
 
-func (o *PingDriverInstanceOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *PingDriverInstanceOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -84,7 +84,7 @@ func (o *PingDriverInstanceNotFound) Error() string {
 	return fmt.Sprintf("[GET /driver_instances/{driver_instance_id}/ping][%d] pingDriverInstanceNotFound ", 404)
 }
 
-func (o *PingDriverInstanceNotFound) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *PingDriverInstanceNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -106,7 +106,7 @@ func (o *PingDriverInstanceInternalServerError) Error() string {
 	return fmt.Sprintf("[GET /driver_instances/{driver_instance_id}/ping][%d] pingDriverInstanceInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *PingDriverInstanceInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *PingDriverInstanceInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

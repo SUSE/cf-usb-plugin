@@ -4,9 +4,10 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/errors"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 )
 
 // NewGetDriverSchemaParams creates a new GetDriverSchemaParams object
@@ -29,13 +30,13 @@ type GetDriverSchemaParams struct {
 }
 
 // WithDriverID adds the driverId to the get driver schema params
-func (o *GetDriverSchemaParams) WithDriverID(driverId string) *GetDriverSchemaParams {
-	o.DriverID = driverId
+func (o *GetDriverSchemaParams) WithDriverID(DriverID string) *GetDriverSchemaParams {
+	o.DriverID = DriverID
 	return o
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *GetDriverSchemaParams) WriteToRequest(r client.Request, reg strfmt.Registry) error {
+func (o *GetDriverSchemaParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	var res []error
 

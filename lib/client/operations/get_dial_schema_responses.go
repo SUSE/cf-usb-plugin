@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -20,7 +20,7 @@ type GetDialSchemaReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *GetDialSchemaReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *GetDialSchemaReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 200:
@@ -45,7 +45,7 @@ func (o *GetDialSchemaReader) ReadResponse(response client.Response, consumer ht
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -66,7 +66,7 @@ func (o *GetDialSchemaOK) Error() string {
 	return fmt.Sprintf("[GET /drivers/{driver_id}/dial_schema][%d] getDialSchemaOK  %+v", 200, o.Payload)
 }
 
-func (o *GetDialSchemaOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDialSchemaOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
@@ -92,7 +92,7 @@ func (o *GetDialSchemaNotFound) Error() string {
 	return fmt.Sprintf("[GET /drivers/{driver_id}/dial_schema][%d] getDialSchemaNotFound ", 404)
 }
 
-func (o *GetDialSchemaNotFound) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDialSchemaNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -114,7 +114,7 @@ func (o *GetDialSchemaInternalServerError) Error() string {
 	return fmt.Sprintf("[GET /drivers/{driver_id}/dial_schema][%d] getDialSchemaInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *GetDialSchemaInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDialSchemaInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

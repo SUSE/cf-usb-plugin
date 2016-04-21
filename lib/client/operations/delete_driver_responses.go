@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 )
 
 // DeleteDriverReader is a Reader for the DeleteDriver structure.
@@ -18,7 +18,7 @@ type DeleteDriverReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *DeleteDriverReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *DeleteDriverReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 204:
@@ -43,7 +43,7 @@ func (o *DeleteDriverReader) ReadResponse(response client.Response, consumer htt
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -63,7 +63,7 @@ func (o *DeleteDriverNoContent) Error() string {
 	return fmt.Sprintf("[DELETE /drivers/{driver_id}][%d] deleteDriverNoContent ", 204)
 }
 
-func (o *DeleteDriverNoContent) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *DeleteDriverNoContent) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -84,7 +84,7 @@ func (o *DeleteDriverNotFound) Error() string {
 	return fmt.Sprintf("[DELETE /drivers/{driver_id}][%d] deleteDriverNotFound ", 404)
 }
 
-func (o *DeleteDriverNotFound) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *DeleteDriverNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -106,7 +106,7 @@ func (o *DeleteDriverInternalServerError) Error() string {
 	return fmt.Sprintf("[DELETE /drivers/{driver_id}][%d] deleteDriverInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *DeleteDriverInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *DeleteDriverInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

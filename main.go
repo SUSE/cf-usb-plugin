@@ -10,9 +10,11 @@ import (
 
 	"github.com/cloudfoundry/cli/cf/terminal"
 	"github.com/cloudfoundry/cli/plugin"
-	swaggerclient "github.com/go-swagger/go-swagger/client"
-	httptransport "github.com/go-swagger/go-swagger/httpkit/client"
-	"github.com/go-swagger/go-swagger/strfmt"
+
+	"github.com/go-openapi/runtime"
+	httptransport "github.com/go-openapi/runtime/client"
+
+	strfmt "github.com/go-openapi/strfmt"
 	"github.com/hpcloud/cf-plugin-usb/commands"
 	"github.com/hpcloud/cf-plugin-usb/config"
 	"github.com/hpcloud/cf-plugin-usb/lib"
@@ -25,7 +27,7 @@ var target string
 type UsbPlugin struct {
 	argLength  int
 	ui         terminal.UI
-	token      swaggerclient.AuthInfoWriter
+	token      runtime.ClientAuthInfoWriter
 	httpClient lib.UsbClientInterface
 }
 
@@ -333,8 +335,8 @@ func (c *UsbPlugin) InfoCommand() {
 	}
 
 	c.showOk("")
-	fmt.Println("Broker API version: " + infoResp.BrokerAPIVersion)
-	fmt.Println("USB version: " + infoResp.UsbVersion)
+	fmt.Println("Broker API version: " + *infoResp.BrokerAPIVersion)
+	fmt.Println("USB version: " + *infoResp.UsbVersion)
 }
 
 //CreateDriverCommand - creates a new driver
@@ -461,16 +463,16 @@ func (c *UsbPlugin) UpdateServiceCommand(args []string) {
 			return
 		}
 
-		service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, *instance.ID)
+		service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, instance.ID)
 		if err != nil {
 			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}
-		fmt.Println("service id:", *service.ID)
-		service.DriverInstanceID = *instance.ID
+		fmt.Println("service id:", service.ID)
+		service.DriverInstanceID = &instance.ID
 
 		bindString := ""
-		if *service.Bindable {
+		if service.Bindable {
 			bindString = "y"
 		} else {
 			bindString = "n"
@@ -482,22 +484,22 @@ func (c *UsbPlugin) UpdateServiceCommand(args []string) {
 			if strings.ToLower(strings.Trim(bind, " ")) == "n" {
 				bindable = false
 			}
-			service.Bindable = &bindable
+			service.Bindable = bindable
 		}
 
 		serviceName := c.ui.Ask(fmt.Sprintf("Service name (%s)", service.Name))
 		if serviceName != "" {
-			service.Name = serviceName
+			service.Name = &serviceName
 		}
 
 		oldServiceDescription := ""
-		if service.Description != nil {
-			oldServiceDescription = fmt.Sprintf("(%s)", *service.Description)
+		if service.Description != "" {
+			oldServiceDescription = fmt.Sprintf("(%s)", service.Description)
 		}
 
 		serviceDesc := c.ui.Ask(fmt.Sprintf("Service description %s", oldServiceDescription))
 		if serviceDesc != "" {
-			service.Description = &serviceDesc
+			service.Description = serviceDesc
 		}
 
 		serviceTags := c.ui.Ask(fmt.Sprintf("Tags (comma separated) (%s)", strings.Join(service.Tags, ",")))
@@ -530,14 +532,14 @@ func (c *UsbPlugin) DialsCommand(args []string) {
 			c.showOk("")
 			for _, dial := range dials {
 				fmt.Println("Dial configuration:\t", dial.Configuration)
-				fmt.Println("Dial ID:\t\t", *dial.ID)
-				fmt.Println("Plan ID:\t\t", *dial.Plan)
+				fmt.Println("Dial ID:\t\t", dial.ID)
+				fmt.Println("Plan ID:\t\t", dial.Plan)
 
-				plan, err := c.httpClient.GetPlanByID(c.token, *dial.Plan)
+				plan, err := c.httpClient.GetPlanByID(c.token, dial.Plan)
 				if err != nil {
 					c.showFailed(fmt.Sprint("ERROR:", err))
 				}
-				fmt.Println("Plan:\t\t\t Name:", plan.Name, "; Description:", *plan.Description)
+				fmt.Println("Plan:\t\t\t Name:", plan.Name, "; Description:", plan.Description)
 				fmt.Println("")
 			}
 		} else {
@@ -561,7 +563,7 @@ func (c *UsbPlugin) InstancesCommand(args []string) {
 		return
 	}
 	for _, driver := range drivers {
-		instances, err := instanceCommands.List(c.token, driver.Name)
+		instances, err := instanceCommands.List(c.token, *driver.Name)
 
 		if err != nil {
 			c.showFailed(fmt.Sprint("ERROR:", err))
@@ -570,19 +572,19 @@ func (c *UsbPlugin) InstancesCommand(args []string) {
 
 		if instances != nil {
 			for _, di := range instances {
-				fmt.Println("Driver Instance Name:\t", di.Name)
+				fmt.Println("Driver Instance Name:\t", *di.Name)
 				fmt.Println("TARGET:\t\t", di.TargetURL)
-				fmt.Println("Driver Instance Id:\t", *di.ID)
+				fmt.Println("Driver Instance Id:\t", di.ID)
 				fmt.Println("Configuration:\t\t", di.Configuration)
 				fmt.Println("Dials:\t\t\t", len(di.Dials))
 
-				service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, *di.ID)
+				service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, di.ID)
 
 				if err != nil {
 					c.showFailed(fmt.Sprint("ERROR:", err))
 				}
 
-				fmt.Println("Service:\t\t", "Name:", service.Name, "; Bindable:", *service.Bindable, "; Tags:", service.Tags)
+				fmt.Println("Service:\t\t", "Name:", *service.Name, "; Bindable:", service.Bindable, "; Tags:", service.Tags)
 				fmt.Println("")
 
 				instanceCount++
@@ -609,7 +611,7 @@ func (c *UsbPlugin) DriversCommand() {
 		c.showOk("")
 		table := terminal.NewTable(c.ui, []string{"Name", "Id", "Type"})
 		for _, driver := range drivers {
-			table.Add(driver.Name, *driver.ID, driver.DriverType)
+			table.Add(*driver.Name, driver.ID, *driver.DriverType)
 		}
 		table.Print()
 	} else {

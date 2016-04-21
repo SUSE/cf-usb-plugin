@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 )
 
 // UpdateCatalogReader is a Reader for the UpdateCatalog structure.
@@ -18,7 +18,7 @@ type UpdateCatalogReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *UpdateCatalogReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *UpdateCatalogReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 200:
@@ -36,7 +36,7 @@ func (o *UpdateCatalogReader) ReadResponse(response client.Response, consumer ht
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -56,7 +56,7 @@ func (o *UpdateCatalogOK) Error() string {
 	return fmt.Sprintf("[POST /update_catalog][%d] updateCatalogOK ", 200)
 }
 
-func (o *UpdateCatalogOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *UpdateCatalogOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -78,7 +78,7 @@ func (o *UpdateCatalogInternalServerError) Error() string {
 	return fmt.Sprintf("[POST /update_catalog][%d] updateCatalogInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *UpdateCatalogInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *UpdateCatalogInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

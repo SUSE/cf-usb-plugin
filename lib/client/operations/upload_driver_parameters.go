@@ -6,9 +6,10 @@ package operations
 import (
 	"os"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/errors"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 )
 
 // NewUploadDriverParams creates a new UploadDriverParams object
@@ -41,25 +42,25 @@ type UploadDriverParams struct {
 }
 
 // WithDriverID adds the driverId to the upload driver params
-func (o *UploadDriverParams) WithDriverID(driverId string) *UploadDriverParams {
-	o.DriverID = driverId
+func (o *UploadDriverParams) WithDriverID(DriverID string) *UploadDriverParams {
+	o.DriverID = DriverID
 	return o
 }
 
 // WithFile adds the file to the upload driver params
-func (o *UploadDriverParams) WithFile(file os.File) *UploadDriverParams {
-	o.File = file
+func (o *UploadDriverParams) WithFile(File os.File) *UploadDriverParams {
+	o.File = File
 	return o
 }
 
 // WithSha adds the sha to the upload driver params
-func (o *UploadDriverParams) WithSha(sha string) *UploadDriverParams {
-	o.Sha = sha
+func (o *UploadDriverParams) WithSha(Sha string) *UploadDriverParams {
+	o.Sha = Sha
 	return o
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *UploadDriverParams) WriteToRequest(r client.Request, reg strfmt.Registry) error {
+func (o *UploadDriverParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	var res []error
 

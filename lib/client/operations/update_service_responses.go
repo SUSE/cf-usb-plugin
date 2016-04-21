@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -20,7 +20,7 @@ type UpdateServiceReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *UpdateServiceReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *UpdateServiceReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 200:
@@ -52,7 +52,7 @@ func (o *UpdateServiceReader) ReadResponse(response client.Response, consumer ht
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -73,7 +73,7 @@ func (o *UpdateServiceOK) Error() string {
 	return fmt.Sprintf("[PUT /services/{service_id}][%d] updateServiceOK  %+v", 200, o.Payload)
 }
 
-func (o *UpdateServiceOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *UpdateServiceOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Service)
 
@@ -101,7 +101,7 @@ func (o *UpdateServiceNotFound) Error() string {
 	return fmt.Sprintf("[PUT /services/{service_id}][%d] updateServiceNotFound ", 404)
 }
 
-func (o *UpdateServiceNotFound) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *UpdateServiceNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -122,7 +122,7 @@ func (o *UpdateServiceConflict) Error() string {
 	return fmt.Sprintf("[PUT /services/{service_id}][%d] updateServiceConflict ", 409)
 }
 
-func (o *UpdateServiceConflict) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *UpdateServiceConflict) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -144,7 +144,7 @@ func (o *UpdateServiceInternalServerError) Error() string {
 	return fmt.Sprintf("[PUT /services/{service_id}][%d] updateServiceInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *UpdateServiceInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *UpdateServiceInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

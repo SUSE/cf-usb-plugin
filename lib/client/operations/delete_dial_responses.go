@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 )
 
 // DeleteDialReader is a Reader for the DeleteDial structure.
@@ -18,7 +18,7 @@ type DeleteDialReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *DeleteDialReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *DeleteDialReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 204:
@@ -43,7 +43,7 @@ func (o *DeleteDialReader) ReadResponse(response client.Response, consumer httpk
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -63,7 +63,7 @@ func (o *DeleteDialNoContent) Error() string {
 	return fmt.Sprintf("[DELETE /dials/{dial_id}][%d] deleteDialNoContent ", 204)
 }
 
-func (o *DeleteDialNoContent) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *DeleteDialNoContent) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -84,7 +84,7 @@ func (o *DeleteDialNotFound) Error() string {
 	return fmt.Sprintf("[DELETE /dials/{dial_id}][%d] deleteDialNotFound ", 404)
 }
 
-func (o *DeleteDialNotFound) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *DeleteDialNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -106,7 +106,7 @@ func (o *DeleteDialInternalServerError) Error() string {
 	return fmt.Sprintf("[DELETE /dials/{dial_id}][%d] deleteDialInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *DeleteDialInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *DeleteDialInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -20,7 +20,7 @@ type UpdateDriverInstanceReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *UpdateDriverInstanceReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *UpdateDriverInstanceReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 200:
@@ -52,7 +52,7 @@ func (o *UpdateDriverInstanceReader) ReadResponse(response client.Response, cons
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -73,7 +73,7 @@ func (o *UpdateDriverInstanceOK) Error() string {
 	return fmt.Sprintf("[PUT /driver_instances/{driver_instance_id}][%d] updateDriverInstanceOK  %+v", 200, o.Payload)
 }
 
-func (o *UpdateDriverInstanceOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *UpdateDriverInstanceOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.DriverInstance)
 
@@ -101,7 +101,7 @@ func (o *UpdateDriverInstanceNotFound) Error() string {
 	return fmt.Sprintf("[PUT /driver_instances/{driver_instance_id}][%d] updateDriverInstanceNotFound ", 404)
 }
 
-func (o *UpdateDriverInstanceNotFound) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *UpdateDriverInstanceNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -122,7 +122,7 @@ func (o *UpdateDriverInstanceConflict) Error() string {
 	return fmt.Sprintf("[PUT /driver_instances/{driver_instance_id}][%d] updateDriverInstanceConflict ", 409)
 }
 
-func (o *UpdateDriverInstanceConflict) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *UpdateDriverInstanceConflict) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -144,7 +144,7 @@ func (o *UpdateDriverInstanceInternalServerError) Error() string {
 	return fmt.Sprintf("[PUT /driver_instances/{driver_instance_id}][%d] updateDriverInstanceInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *UpdateDriverInstanceInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *UpdateDriverInstanceInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

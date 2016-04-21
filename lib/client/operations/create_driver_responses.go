@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -20,7 +20,7 @@ type CreateDriverReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *CreateDriverReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *CreateDriverReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 201:
@@ -45,7 +45,7 @@ func (o *CreateDriverReader) ReadResponse(response client.Response, consumer htt
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -66,7 +66,7 @@ func (o *CreateDriverCreated) Error() string {
 	return fmt.Sprintf("[POST /drivers][%d] createDriverCreated  %+v", 201, o.Payload)
 }
 
-func (o *CreateDriverCreated) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *CreateDriverCreated) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Driver)
 
@@ -94,7 +94,7 @@ func (o *CreateDriverConflict) Error() string {
 	return fmt.Sprintf("[POST /drivers][%d] createDriverConflict ", 409)
 }
 
-func (o *CreateDriverConflict) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *CreateDriverConflict) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -116,7 +116,7 @@ func (o *CreateDriverInternalServerError) Error() string {
 	return fmt.Sprintf("[POST /drivers][%d] createDriverInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *CreateDriverInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *CreateDriverInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

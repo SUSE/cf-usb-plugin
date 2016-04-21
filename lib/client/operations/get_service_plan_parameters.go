@@ -4,9 +4,10 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/errors"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 )
 
 // NewGetServicePlanParams creates a new GetServicePlanParams object
@@ -29,13 +30,13 @@ type GetServicePlanParams struct {
 }
 
 // WithPlanID adds the planId to the get service plan params
-func (o *GetServicePlanParams) WithPlanID(planId string) *GetServicePlanParams {
-	o.PlanID = planId
+func (o *GetServicePlanParams) WithPlanID(PlanID string) *GetServicePlanParams {
+	o.PlanID = PlanID
 	return o
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *GetServicePlanParams) WriteToRequest(r client.Request, reg strfmt.Registry) error {
+func (o *GetServicePlanParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	var res []error
 

@@ -5,7 +5,7 @@ import (
 	//"os"
 	"sort"
 
-	swaggerclient "github.com/go-swagger/go-swagger/client"
+	"github.com/go-openapi/runtime"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 
 	"github.com/hpcloud/cf-plugin-usb/lib"
@@ -14,10 +14,10 @@ import (
 
 //DriverInterface exposes driver commands
 type DriverInterface interface {
-	Create(swaggerclient.AuthInfoWriter, []string) (string, error)
-	Delete(swaggerclient.AuthInfoWriter, string) (string, error)
-	Update(swaggerclient.AuthInfoWriter, []string) (string, error)
-	List(swaggerclient.AuthInfoWriter) ([]*models.Driver, error)
+	Create(runtime.ClientAuthInfoWriter, []string) (string, error)
+	Delete(runtime.ClientAuthInfoWriter, string) (string, error)
+	Update(runtime.ClientAuthInfoWriter, []string) (string, error)
+	List(runtime.ClientAuthInfoWriter) ([]*models.Driver, error)
 }
 
 //DriverCommands struct
@@ -31,15 +31,15 @@ func NewDriverCommands(httpClient lib.UsbClientInterface) DriverInterface {
 }
 
 //Create - creates a new driver
-func (c *DriverCommands) Create(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
+func (c *DriverCommands) Create(bearer runtime.ClientAuthInfoWriter, args []string) (string, error) {
 	// if bits path specified, check if exists
 	/*	if _, err := os.Stat(args[2]); err != nil {
 			return "", err
 		}
 	*/
 	var driver models.Driver
-	driver.DriverType = args[0]
-	driver.Name = args[1]
+	driver.DriverType = &args[0]
+	driver.Name = &args[1]
 
 	params := operations.NewCreateDriverParams()
 	params.Driver = &driver
@@ -72,11 +72,11 @@ func (c *DriverCommands) Create(bearer swaggerclient.AuthInfoWriter, args []stri
 			return "", err
 		}
 	*/
-	return *response.Payload.ID, nil
+	return response.Payload.ID, nil
 }
 
 //Delete - deletes an existing driver
-func (c *DriverCommands) Delete(bearer swaggerclient.AuthInfoWriter, driverName string) (string, error) {
+func (c *DriverCommands) Delete(bearer runtime.ClientAuthInfoWriter, driverName string) (string, error) {
 
 	driver, err := c.httpClient.GetDriverByName(bearer, driverName)
 	if err != nil {
@@ -87,18 +87,18 @@ func (c *DriverCommands) Delete(bearer swaggerclient.AuthInfoWriter, driverName 
 	}
 
 	params := operations.NewDeleteDriverParams()
-	params.DriverID = *driver.ID
+	params.DriverID = driver.ID
 
 	_, err = c.httpClient.DeleteDriver(params, bearer)
 	if err != nil {
 		return "", err
 	}
 
-	return *driver.ID, nil
+	return driver.ID, nil
 }
 
 //Update - updates an existing driver
-func (c *DriverCommands) Update(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
+func (c *DriverCommands) Update(bearer runtime.ClientAuthInfoWriter, args []string) (string, error) {
 	oldName := args[0]
 	newName := args[1]
 
@@ -109,10 +109,10 @@ func (c *DriverCommands) Update(bearer swaggerclient.AuthInfoWriter, args []stri
 	if driver == nil {
 		return "", fmt.Errorf("Driver not found")
 	}
-	driver.Name = newName
+	driver.Name = &newName
 
 	params := operations.NewUpdateDriverParams()
-	params.DriverID = *driver.ID
+	params.DriverID = driver.ID
 	params.Driver = driver
 
 	response, err := c.httpClient.UpdateDriver(params, bearer)
@@ -120,17 +120,17 @@ func (c *DriverCommands) Update(bearer swaggerclient.AuthInfoWriter, args []stri
 		return "", err
 	}
 
-	return response.Payload.Name, nil
+	return *response.Payload.Name, nil
 }
 
 type driverSorter []*models.Driver
 
 func (a driverSorter) Len() int           { return len(a) }
 func (a driverSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a driverSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
+func (a driverSorter) Less(i, j int) bool { return *a[i].Name < *a[j].Name }
 
 //List - lists existing drivers
-func (c *DriverCommands) List(bearer swaggerclient.AuthInfoWriter) ([]*models.Driver, error) {
+func (c *DriverCommands) List(bearer runtime.ClientAuthInfoWriter) ([]*models.Driver, error) {
 	response, err := c.httpClient.GetDrivers(operations.NewGetDriversParams(), bearer)
 	if err != nil {
 		return nil, err

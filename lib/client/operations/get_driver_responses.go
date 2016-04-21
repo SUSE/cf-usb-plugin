@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -20,7 +20,7 @@ type GetDriverReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *GetDriverReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *GetDriverReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 200:
@@ -45,7 +45,7 @@ func (o *GetDriverReader) ReadResponse(response client.Response, consumer httpki
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -66,7 +66,7 @@ func (o *GetDriverOK) Error() string {
 	return fmt.Sprintf("[GET /drivers/{driver_id}][%d] getDriverOK  %+v", 200, o.Payload)
 }
 
-func (o *GetDriverOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDriverOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Driver)
 
@@ -94,7 +94,7 @@ func (o *GetDriverNotFound) Error() string {
 	return fmt.Sprintf("[GET /drivers/{driver_id}][%d] getDriverNotFound ", 404)
 }
 
-func (o *GetDriverNotFound) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDriverNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -116,7 +116,7 @@ func (o *GetDriverInternalServerError) Error() string {
 	return fmt.Sprintf("[GET /drivers/{driver_id}][%d] getDriverInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *GetDriverInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetDriverInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

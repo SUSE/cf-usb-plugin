@@ -4,9 +4,10 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/errors"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 )
 
 // NewPingDriverInstanceParams creates a new PingDriverInstanceParams object
@@ -29,13 +30,13 @@ type PingDriverInstanceParams struct {
 }
 
 // WithDriverInstanceID adds the driverInstanceId to the ping driver instance params
-func (o *PingDriverInstanceParams) WithDriverInstanceID(driverInstanceId string) *PingDriverInstanceParams {
-	o.DriverInstanceID = driverInstanceId
+func (o *PingDriverInstanceParams) WithDriverInstanceID(DriverInstanceID string) *PingDriverInstanceParams {
+	o.DriverInstanceID = DriverInstanceID
 	return o
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *PingDriverInstanceParams) WriteToRequest(r client.Request, reg strfmt.Registry) error {
+func (o *PingDriverInstanceParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	var res []error
 

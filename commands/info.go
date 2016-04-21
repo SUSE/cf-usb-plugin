@@ -1,7 +1,7 @@
 package commands
 
 import (
-	swaggerclient "github.com/go-swagger/go-swagger/client"
+	"github.com/go-openapi/runtime"
 	"github.com/hpcloud/cf-plugin-usb/lib"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
@@ -9,7 +9,7 @@ import (
 
 //InfoInterface exposes GetInfo command
 type InfoInterface interface {
-	GetInfo(swaggerclient.AuthInfoWriter) (*models.Info, error)
+	GetInfo(runtime.ClientAuthInfoWriter) (*models.Info, error)
 }
 
 //InfoCommands struct
@@ -23,7 +23,7 @@ func NewInfoCommands(httpClient lib.UsbClientInterface) InfoInterface {
 }
 
 //GetInfo - retruns usb information
-func (c *InfoCommands) GetInfo(bearer swaggerclient.AuthInfoWriter) (*models.Info, error) {
+func (c *InfoCommands) GetInfo(bearer runtime.ClientAuthInfoWriter) (*models.Info, error) {
 	infoResp, err := c.httpClient.GetInfo(operations.NewGetInfoParams(), bearer)
 	if err != nil {
 		return nil, err
