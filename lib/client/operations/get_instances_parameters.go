@@ -10,21 +10,21 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// NewGetDriversParams creates a new GetDriversParams object
+// NewGetInstancesParams creates a new GetInstancesParams object
 // with the default values initialized.
-func NewGetDriversParams() *GetDriversParams {
+func NewGetInstancesParams() *GetInstancesParams {
 
-	return &GetDriversParams{}
+	return &GetInstancesParams{}
 }
 
-/*GetDriversParams contains all the parameters to send to the API endpoint
-for the get drivers operation typically these are written to a http.Request
+/*GetInstancesParams contains all the parameters to send to the API endpoint
+for the get instances operation typically these are written to a http.Request
 */
-type GetDriversParams struct {
+type GetInstancesParams struct {
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *GetDriversParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
+func (o *GetInstancesParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	var res []error
 

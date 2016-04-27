@@ -34,7 +34,7 @@ func (a dialSorter) Less(i, j int) bool { return a[i].ID < a[j].ID }
 
 //List dials of an instance
 func (c *DialCommands) List(bearer runtime.ClientAuthInfoWriter, instanceName string) ([]*models.Dial, error) {
-	instance, err := c.httpClient.GetDriverInstanceByName(bearer, instanceName)
+	instance, err := c.httpClient.GetInstanceByName(bearer, instanceName)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (c *DialCommands) List(bearer runtime.ClientAuthInfoWriter, instanceName st
 	}
 
 	params := operations.NewGetAllDialsParams()
-	params.DriverInstanceID = &instance.ID
+	params.InstanceID = &instance.ID
 
 	response, err := c.httpClient.GetAllDials(params, bearer)
 	if err != nil {

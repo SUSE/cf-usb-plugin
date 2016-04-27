@@ -18,19 +18,12 @@ pushd $GOPATH/src/github.com/hpcloud/cf-plugin-usb/lib
 swagger generate client -f $GOPATH/src/github.com/hpcloud/cf-usb/swagger-spec/api.json  -t ./  -A usb-client \
  -O updateCatalog \
  -O getInfo \
- -O getDrivers \
- -O createDriver \
- -O getDriver \
- -O updateDriver \
- -O deleteDriver \
- -O getDriverSchema \
- -O getDialSchema \
- -O getDriverInstances \
- -O createDriverInstance \
- -O getDriverInstance \
- -O updateDriverInstance \
- -O deleteDriverInstance \
- -O pingDriverInstance \
+ -O getInstances \
+ -O createInstance \
+ -O getInstance \
+ -O updateInstance \
+ -O deleteInstance \
+ -O pingInstance \
  -O getServiceByInstanceId \
  -O getService \
  -O updateService \

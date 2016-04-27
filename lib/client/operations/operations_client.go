@@ -49,56 +49,29 @@ func (a *Client) CreateDial(params *CreateDialParams, authInfo runtime.ClientAut
 }
 
 /*
-CreateDriver Create a new driver
-
+CreateInstance Create an instance
 */
-func (a *Client) CreateDriver(params *CreateDriverParams, authInfo runtime.ClientAuthInfoWriter) (*CreateDriverCreated, error) {
+func (a *Client) CreateInstance(params *CreateInstanceParams, authInfo runtime.ClientAuthInfoWriter) (*CreateInstanceCreated, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewCreateDriverParams()
+		params = NewCreateInstanceParams()
 	}
 
 	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "createDriver",
+		ID:                 "createInstance",
 		Method:             "POST",
-		PathPattern:        "/drivers",
+		PathPattern:        "/instances",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &CreateDriverReader{formats: a.formats},
+		Reader:             &CreateInstanceReader{formats: a.formats},
 		AuthInfo:           authInfo,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return result.(*CreateDriverCreated), nil
-}
-
-/*
-CreateDriverInstance Create a driver instance
-*/
-func (a *Client) CreateDriverInstance(params *CreateDriverInstanceParams, authInfo runtime.ClientAuthInfoWriter) (*CreateDriverInstanceCreated, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewCreateDriverInstanceParams()
-	}
-
-	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "createDriverInstance",
-		Method:             "POST",
-		PathPattern:        "/driver_instances",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &CreateDriverInstanceReader{formats: a.formats},
-		AuthInfo:           authInfo,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return result.(*CreateDriverInstanceCreated), nil
+	return result.(*CreateInstanceCreated), nil
 }
 
 /*
@@ -128,55 +101,29 @@ func (a *Client) DeleteDial(params *DeleteDialParams, authInfo runtime.ClientAut
 }
 
 /*
-DeleteDriver Update driver
+DeleteInstance Delete an instance
 */
-func (a *Client) DeleteDriver(params *DeleteDriverParams, authInfo runtime.ClientAuthInfoWriter) (*DeleteDriverNoContent, error) {
+func (a *Client) DeleteInstance(params *DeleteInstanceParams, authInfo runtime.ClientAuthInfoWriter) (*DeleteInstanceNoContent, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewDeleteDriverParams()
+		params = NewDeleteInstanceParams()
 	}
 
 	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "deleteDriver",
+		ID:                 "deleteInstance",
 		Method:             "DELETE",
-		PathPattern:        "/drivers/{driver_id}",
+		PathPattern:        "/instances/{instance_id}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &DeleteDriverReader{formats: a.formats},
+		Reader:             &DeleteInstanceReader{formats: a.formats},
 		AuthInfo:           authInfo,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return result.(*DeleteDriverNoContent), nil
-}
-
-/*
-DeleteDriverInstance Delete a driver instance
-*/
-func (a *Client) DeleteDriverInstance(params *DeleteDriverInstanceParams, authInfo runtime.ClientAuthInfoWriter) (*DeleteDriverInstanceNoContent, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewDeleteDriverInstanceParams()
-	}
-
-	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "deleteDriverInstance",
-		Method:             "DELETE",
-		PathPattern:        "/driver_instances/{driver_instance_id}",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &DeleteDriverInstanceReader{formats: a.formats},
-		AuthInfo:           authInfo,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return result.(*DeleteDriverInstanceNoContent), nil
+	return result.(*DeleteInstanceNoContent), nil
 }
 
 /*
@@ -232,165 +179,6 @@ func (a *Client) GetDial(params *GetDialParams, authInfo runtime.ClientAuthInfoW
 }
 
 /*
-GetDialSchema Get dial schema
-*/
-func (a *Client) GetDialSchema(params *GetDialSchemaParams, authInfo runtime.ClientAuthInfoWriter) (*GetDialSchemaOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetDialSchemaParams()
-	}
-
-	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "getDialSchema",
-		Method:             "GET",
-		PathPattern:        "/drivers/{driver_id}/dial_schema",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &GetDialSchemaReader{formats: a.formats},
-		AuthInfo:           authInfo,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return result.(*GetDialSchemaOK), nil
-}
-
-/*
-GetDriver Get driver
-*/
-func (a *Client) GetDriver(params *GetDriverParams, authInfo runtime.ClientAuthInfoWriter) (*GetDriverOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetDriverParams()
-	}
-
-	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "getDriver",
-		Method:             "GET",
-		PathPattern:        "/drivers/{driver_id}",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &GetDriverReader{formats: a.formats},
-		AuthInfo:           authInfo,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return result.(*GetDriverOK), nil
-}
-
-/*
-GetDriverInstance Gets driver configurations
-
-*/
-func (a *Client) GetDriverInstance(params *GetDriverInstanceParams, authInfo runtime.ClientAuthInfoWriter) (*GetDriverInstanceOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetDriverInstanceParams()
-	}
-
-	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "getDriverInstance",
-		Method:             "GET",
-		PathPattern:        "/driver_instances/{driver_instance_id}",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &GetDriverInstanceReader{formats: a.formats},
-		AuthInfo:           authInfo,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return result.(*GetDriverInstanceOK), nil
-}
-
-/*
-GetDriverInstances Gets driver instances for a driver
-
-*/
-func (a *Client) GetDriverInstances(params *GetDriverInstancesParams, authInfo runtime.ClientAuthInfoWriter) (*GetDriverInstancesOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetDriverInstancesParams()
-	}
-
-	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "getDriverInstances",
-		Method:             "GET",
-		PathPattern:        "/driver_instances",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &GetDriverInstancesReader{formats: a.formats},
-		AuthInfo:           authInfo,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return result.(*GetDriverInstancesOK), nil
-}
-
-/*
-GetDriverSchema Get driver config schema
-*/
-func (a *Client) GetDriverSchema(params *GetDriverSchemaParams, authInfo runtime.ClientAuthInfoWriter) (*GetDriverSchemaOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetDriverSchemaParams()
-	}
-
-	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "getDriverSchema",
-		Method:             "GET",
-		PathPattern:        "/drivers/{driver_id}/config_schema",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &GetDriverSchemaReader{formats: a.formats},
-		AuthInfo:           authInfo,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return result.(*GetDriverSchemaOK), nil
-}
-
-/*
-GetDrivers Gets information about the available `drivers`
-
-*/
-func (a *Client) GetDrivers(params *GetDriversParams, authInfo runtime.ClientAuthInfoWriter) (*GetDriversOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetDriversParams()
-	}
-
-	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "getDrivers",
-		Method:             "GET",
-		PathPattern:        "/drivers",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &GetDriversReader{formats: a.formats},
-		AuthInfo:           authInfo,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return result.(*GetDriversOK), nil
-}
-
-/*
 GetInfo Gets information about the USB.
 
 */
@@ -415,6 +203,59 @@ func (a *Client) GetInfo(params *GetInfoParams, authInfo runtime.ClientAuthInfoW
 		return nil, err
 	}
 	return result.(*GetInfoOK), nil
+}
+
+/*
+GetInstance Gets instance configurations
+
+*/
+func (a *Client) GetInstance(params *GetInstanceParams, authInfo runtime.ClientAuthInfoWriter) (*GetInstanceOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetInstanceParams()
+	}
+
+	result, err := a.transport.Submit(&runtime.ClientOperation{
+		ID:                 "getInstance",
+		Method:             "GET",
+		PathPattern:        "/instances/{instance_id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &GetInstanceReader{formats: a.formats},
+		AuthInfo:           authInfo,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*GetInstanceOK), nil
+}
+
+/*
+GetInstances Gets available instances
+*/
+func (a *Client) GetInstances(params *GetInstancesParams, authInfo runtime.ClientAuthInfoWriter) (*GetInstancesOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetInstancesParams()
+	}
+
+	result, err := a.transport.Submit(&runtime.ClientOperation{
+		ID:                 "getInstances",
+		Method:             "GET",
+		PathPattern:        "/instances",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &GetInstancesReader{formats: a.formats},
+		AuthInfo:           authInfo,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*GetInstancesOK), nil
 }
 
 /*
@@ -523,30 +364,30 @@ func (a *Client) GetServicePlans(params *GetServicePlansParams, authInfo runtime
 }
 
 /*
-PingDriverInstance Pings the driver
+PingInstance Pings the instance
 
 */
-func (a *Client) PingDriverInstance(params *PingDriverInstanceParams, authInfo runtime.ClientAuthInfoWriter) (*PingDriverInstanceOK, error) {
+func (a *Client) PingInstance(params *PingInstanceParams, authInfo runtime.ClientAuthInfoWriter) (*PingInstanceOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewPingDriverInstanceParams()
+		params = NewPingInstanceParams()
 	}
 
 	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "pingDriverInstance",
+		ID:                 "pingInstance",
 		Method:             "GET",
-		PathPattern:        "/driver_instances/{driver_instance_id}/ping",
+		PathPattern:        "/instances/{instance_id}/ping",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &PingDriverInstanceReader{formats: a.formats},
+		Reader:             &PingInstanceReader{formats: a.formats},
 		AuthInfo:           authInfo,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return result.(*PingDriverInstanceOK), nil
+	return result.(*PingInstanceOK), nil
 }
 
 /*
@@ -603,56 +444,30 @@ func (a *Client) UpdateDial(params *UpdateDialParams, authInfo runtime.ClientAut
 }
 
 /*
-UpdateDriver Update driver
+UpdateInstance Update an instance
+
 */
-func (a *Client) UpdateDriver(params *UpdateDriverParams, authInfo runtime.ClientAuthInfoWriter) (*UpdateDriverOK, error) {
+func (a *Client) UpdateInstance(params *UpdateInstanceParams, authInfo runtime.ClientAuthInfoWriter) (*UpdateInstanceOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewUpdateDriverParams()
+		params = NewUpdateInstanceParams()
 	}
 
 	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "updateDriver",
+		ID:                 "updateInstance",
 		Method:             "PUT",
-		PathPattern:        "/drivers/{driver_id}",
+		PathPattern:        "/instances/{instance_id}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &UpdateDriverReader{formats: a.formats},
+		Reader:             &UpdateInstanceReader{formats: a.formats},
 		AuthInfo:           authInfo,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return result.(*UpdateDriverOK), nil
-}
-
-/*
-UpdateDriverInstance Update a driver instance
-
-*/
-func (a *Client) UpdateDriverInstance(params *UpdateDriverInstanceParams, authInfo runtime.ClientAuthInfoWriter) (*UpdateDriverInstanceOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewUpdateDriverInstanceParams()
-	}
-
-	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "updateDriverInstance",
-		Method:             "PUT",
-		PathPattern:        "/driver_instances/{driver_instance_id}",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &UpdateDriverInstanceReader{formats: a.formats},
-		AuthInfo:           authInfo,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return result.(*UpdateDriverInstanceOK), nil
+	return result.(*UpdateInstanceOK), nil
 }
 
 /*
@@ -705,32 +520,6 @@ func (a *Client) UpdateServicePlan(params *UpdateServicePlanParams, authInfo run
 		return nil, err
 	}
 	return result.(*UpdateServicePlanOK), nil
-}
-
-/*
-UploadDriver Upload driver bits
-*/
-func (a *Client) UploadDriver(params *UploadDriverParams, authInfo runtime.ClientAuthInfoWriter) (*UploadDriverOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewUploadDriverParams()
-	}
-
-	result, err := a.transport.Submit(&runtime.ClientOperation{
-		ID:                 "uploadDriver",
-		Method:             "PUT",
-		PathPattern:        "/drivers/{driver_id}/bits",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"multipart/form-data"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &UploadDriverReader{formats: a.formats},
-		AuthInfo:           authInfo,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return result.(*UploadDriverOK), nil
 }
 
 // SetTransport changes the transport on the client

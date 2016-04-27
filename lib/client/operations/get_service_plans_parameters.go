@@ -22,16 +22,16 @@ for the get service plans operation typically these are written to a http.Reques
 */
 type GetServicePlansParams struct {
 
-	/*DriverInstanceID
-	  Driver Instance ID
+	/*InstanceID
+	  Instance ID
 
 	*/
-	DriverInstanceID *string
+	InstanceID *string
 }
 
-// WithDriverInstanceID adds the driverInstanceId to the get service plans params
-func (o *GetServicePlansParams) WithDriverInstanceID(DriverInstanceID *string) *GetServicePlansParams {
-	o.DriverInstanceID = DriverInstanceID
+// WithInstanceID adds the instanceId to the get service plans params
+func (o *GetServicePlansParams) WithInstanceID(InstanceID *string) *GetServicePlansParams {
+	o.InstanceID = InstanceID
 	return o
 }
 
@@ -40,16 +40,16 @@ func (o *GetServicePlansParams) WriteToRequest(r runtime.ClientRequest, reg strf
 
 	var res []error
 
-	if o.DriverInstanceID != nil {
+	if o.InstanceID != nil {
 
-		// query param driver_instance_id
-		var qrDriverInstanceID string
-		if o.DriverInstanceID != nil {
-			qrDriverInstanceID = *o.DriverInstanceID
+		// query param instance_id
+		var qrInstanceID string
+		if o.InstanceID != nil {
+			qrInstanceID = *o.InstanceID
 		}
-		qDriverInstanceID := qrDriverInstanceID
-		if qDriverInstanceID != "" {
-			if err := r.SetQueryParam("driver_instance_id", qDriverInstanceID); err != nil {
+		qInstanceID := qrInstanceID
+		if qInstanceID != "" {
+			if err := r.SetQueryParam("instance_id", qInstanceID); err != nil {
 				return err
 			}
 		}

@@ -132,16 +132,10 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		c.TargetCommand(args, config)
 	case "info":
 		c.InfoCommand()
-	case "create-driver":
-		c.CreateDriverCommand(args)
-	case "delete-driver":
-		c.DeleteDriverCommand(args)
 	case "create-instance":
 		c.CreateInstanceCommand(args)
 	case "delete-instance":
 		c.DeleteInstanceCommand(args)
-	case "rename-driver":
-		c.RenameDriverCommand(args)
 	case "update-instance":
 		c.UpdateInstanceCommand(args)
 	case "update-service":
@@ -150,8 +144,6 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		c.DialsCommand(args)
 	case "instances":
 		c.InstancesCommand(args)
-	case "drivers":
-		c.DriversCommand()
 	default:
 		fmt.Printf("'%s' is not a registered command. See 'cf usb help'", args[1])
 		fmt.Println()
@@ -199,19 +191,15 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 				Name:     "usb create-instance",
 				HelpText: "Create a driver instance",
 				UsageDetails: plugin.Usage{
-					Usage: `cf usb create-instance DRIVER_NAME INSTANCE_NAME [-c PARAMETERS_AS_JSON]
+					Usage: `cf usb create-instance INSTANCE_NAME TARGET_URL -c PARAMETERS_AS_JSON
 
-    Optionally provide driver-specific configuration parameters in a valid JSON object in-line:
-    cf usb create-instance DRIVER_NAME INSTANCE_NAME -c '{"name":"value","name":"value"}'
-	
     Optionally provide a file containing driver-specific configuration parameters in a valid JSON object.
     The path to the parameters file can be an absolute or relative path to a file:
-    cf usb create-instance DRIVER_NAME INSTANCE_NAME -c PATH_TO_FILE	
+    cf usb create-instance INSTANCE_NAME TARGET_URL -c PATH_TO_FILE	
 					
 EXAMPLE:
-    cf usb create-instance mydriver myinstance (omit -c to configure driver instance interactively -- cf usb will prompt for config values)
-    cf usb create-instance mydriver myinstance -c '{"host":"localhost","port":"1234","user":"username","password":"password"}'
-    cf usb create-instance mydriver myinstance -c ~/workspace/tmp/mydriverinstance_config.json
+    cf usb create-instance mydriver myinstance http://127.0.0.1:1234 -c '{"host":"localhost","port":"1234","user":"username","password":"password"}'
+    cf usb create-instance mydriver myinstance http://127.0.0.1:1234 -c ~/workspace/tmp/mydriverinstance_config.json
 	
 OPTIONS:
     -c   Valid JSON object containing driver instance specific configuration parameters, provided in-line or in a file
@@ -339,44 +327,9 @@ func (c *UsbPlugin) InfoCommand() {
 	fmt.Println("USB version: " + *infoResp.UsbVersion)
 }
 
-//CreateDriverCommand - creates a new driver
-func (c *UsbPlugin) CreateDriverCommand(args []string) {
-	if c.argLength == 4 {
-		createdDriverID, err := commands.NewDriverCommands(c.httpClient).Create(c.token, args[2:c.argLength])
-		if err != nil {
-			c.showFailed(fmt.Sprint("ERROR:", err))
-			return
-		}
-
-		c.showOk(fmt.Sprint("Driver created with ID:", createdDriverID))
-	} else {
-		c.showIncorrectUsage("Requires driver type, driver name, driver bits path as arguments\n", args)
-	}
-}
-
-//DeleteDriverCommand - deletes an existing driver
-func (c *UsbPlugin) DeleteDriverCommand(args []string) {
-	if c.argLength == 3 {
-		if c.ui.Confirm(fmt.Sprintf("Really delete the driver %v", args[2])) {
-			deletedDriverID, err := commands.NewDriverCommands(c.httpClient).Delete(c.token, args[2])
-			if err != nil {
-				c.showFailed(fmt.Sprint("ERROR:", err))
-				return
-			}
-			if deletedDriverID == "" {
-				c.showFailed("Driver not found")
-			} else {
-				c.showOk(fmt.Sprint("Driver deleted:", deletedDriverID))
-			}
-		}
-	} else {
-		c.showIncorrectUsage("Requires driver name as argument\n", args)
-	}
-}
-
 //CreateInstanceCommand - creates an instance of a driver
 func (c *UsbPlugin) CreateInstanceCommand(args []string) {
-	if c.argLength == 7 || c.argLength == 5 {
+	if c.argLength == 6 {
 		schemaParser := schema.NewSchemaParser(c.ui)
 		createdInstanceID, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Create(c.token, args[2:c.argLength])
 		if err != nil {
@@ -414,24 +367,6 @@ func (c *UsbPlugin) DeleteInstanceCommand(args []string) {
 	}
 }
 
-//RenameDriverCommand - allows user to change a drivers name
-func (c *UsbPlugin) RenameDriverCommand(args []string) {
-	if c.argLength == 4 {
-		updatedDriverName, err := commands.NewDriverCommands(c.httpClient).Update(c.token, args[2:c.argLength])
-		if err != nil {
-			c.showFailed(fmt.Sprint("ERROR:", err))
-			return
-		}
-		if updatedDriverName == "" {
-			c.showFailed("Driver not found")
-		} else {
-			c.showOk(fmt.Sprint("Driver updated:", updatedDriverName))
-		}
-	} else {
-		c.showIncorrectUsage("Requires old driver name, new driver name as arguments\n", args)
-	}
-}
-
 //UpdateInstanceCommand - allows user to update the instance of a driver
 func (c *UsbPlugin) UpdateInstanceCommand(args []string) {
 	if c.argLength == 5 || c.argLength == 3 {
@@ -453,7 +388,7 @@ func (c *UsbPlugin) UpdateInstanceCommand(args []string) {
 //UpdateServiceCommand - allows user to update the service provided by a driver instance
 func (c *UsbPlugin) UpdateServiceCommand(args []string) {
 	if c.argLength == 3 {
-		instance, err := c.httpClient.GetDriverInstanceByName(c.token, args[2])
+		instance, err := c.httpClient.GetInstanceByName(c.token, args[2])
 		if err != nil {
 			c.showFailed(fmt.Sprint("ERROR - get driver instance:", err))
 			return
@@ -469,7 +404,7 @@ func (c *UsbPlugin) UpdateServiceCommand(args []string) {
 			return
 		}
 		fmt.Println("service id:", service.ID)
-		service.DriverInstanceID = &instance.ID
+		service.InstanceID = &instance.ID
 
 		bindString := ""
 		if service.Bindable {
@@ -556,66 +491,36 @@ func (c *UsbPlugin) InstancesCommand(args []string) {
 	instanceCommands := commands.NewInstanceCommands(c.httpClient, schemaParser)
 	instanceCount := 0
 
-	drivers, err := commands.NewDriverCommands(c.httpClient).List(c.token)
+	instances, err := instanceCommands.List(c.token)
 
 	if err != nil {
 		c.showFailed(fmt.Sprint("ERROR:", err))
 		return
 	}
-	for _, driver := range drivers {
-		instances, err := instanceCommands.List(c.token, *driver.Name)
 
-		if err != nil {
-			c.showFailed(fmt.Sprint("ERROR:", err))
-			return
-		}
+	if instances != nil {
+		for _, di := range instances {
+			fmt.Println("Driver Instance Name:\t", *di.Name)
+			fmt.Println("TARGET:\t\t", di.TargetURL)
+			fmt.Println("Driver Instance Id:\t", di.ID)
+			fmt.Println("Configuration:\t\t", di.Configuration)
+			fmt.Println("Dials:\t\t\t", len(di.Dials))
 
-		if instances != nil {
-			for _, di := range instances {
-				fmt.Println("Driver Instance Name:\t", *di.Name)
-				fmt.Println("TARGET:\t\t", di.TargetURL)
-				fmt.Println("Driver Instance Id:\t", di.ID)
-				fmt.Println("Configuration:\t\t", di.Configuration)
-				fmt.Println("Dials:\t\t\t", len(di.Dials))
+			service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, di.ID)
 
-				service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, di.ID)
-
-				if err != nil {
-					c.showFailed(fmt.Sprint("ERROR:", err))
-				}
-
-				fmt.Println("Service:\t\t", "Name:", *service.Name, "; Bindable:", service.Bindable, "; Tags:", service.Tags)
-				fmt.Println("")
-
-				instanceCount++
+			if err != nil {
+				c.showFailed(fmt.Sprint("ERROR:", err))
 			}
+
+			fmt.Println("Service:\t\t", "Name:", *service.Name, "; Bindable:", service.Bindable, "; Tags:", service.Tags)
+			fmt.Println("")
+
+			instanceCount++
 		}
 	}
 
 	if instanceCount == 0 {
 		c.showFailed("No instances found")
-	}
-}
-
-//DriversCommand - list existing drivers
-func (c *UsbPlugin) DriversCommand() {
-	drivers, err := commands.NewDriverCommands(c.httpClient).List(c.token)
-	if err != nil {
-		c.showFailed(fmt.Sprint("ERROR:", err))
-		return
-	}
-
-	driversCount := len(drivers)
-
-	if driversCount > 0 {
-		c.showOk("")
-		table := terminal.NewTable(c.ui, []string{"Name", "Id", "Type"})
-		for _, driver := range drivers {
-			table.Add(*driver.Name, driver.ID, *driver.DriverType)
-		}
-		table.Print()
-	} else {
-		c.showFailed("No drivers found")
 	}
 }
 
