@@ -4,9 +4,10 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/errors"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 )
 
 // NewGetAllDialsParams creates a new GetAllDialsParams object
@@ -21,34 +22,34 @@ for the get all dials operation typically these are written to a http.Request
 */
 type GetAllDialsParams struct {
 
-	/*DriverInstanceID
-	  Driver instance ID
+	/*InstanceID
+	  Instance ID
 
 	*/
-	DriverInstanceID *string
+	InstanceID *string
 }
 
-// WithDriverInstanceID adds the driverInstanceId to the get all dials params
-func (o *GetAllDialsParams) WithDriverInstanceID(driverInstanceId *string) *GetAllDialsParams {
-	o.DriverInstanceID = driverInstanceId
+// WithInstanceID adds the instanceId to the get all dials params
+func (o *GetAllDialsParams) WithInstanceID(InstanceID *string) *GetAllDialsParams {
+	o.InstanceID = InstanceID
 	return o
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *GetAllDialsParams) WriteToRequest(r client.Request, reg strfmt.Registry) error {
+func (o *GetAllDialsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	var res []error
 
-	if o.DriverInstanceID != nil {
+	if o.InstanceID != nil {
 
-		// query param driver_instance_id
-		var qrDriverInstanceID string
-		if o.DriverInstanceID != nil {
-			qrDriverInstanceID = *o.DriverInstanceID
+		// query param instance_id
+		var qrInstanceID string
+		if o.InstanceID != nil {
+			qrInstanceID = *o.InstanceID
 		}
-		qDriverInstanceID := qrDriverInstanceID
-		if qDriverInstanceID != "" {
-			if err := r.SetQueryParam("driver_instance_id", qDriverInstanceID); err != nil {
+		qInstanceID := qrInstanceID
+		if qInstanceID != "" {
+			if err := r.SetQueryParam("instance_id", qInstanceID); err != nil {
 				return err
 			}
 		}

@@ -10,21 +10,21 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// NewUpdateCatalogParams creates a new UpdateCatalogParams object
+// NewGetInstancesParams creates a new GetInstancesParams object
 // with the default values initialized.
-func NewUpdateCatalogParams() *UpdateCatalogParams {
+func NewGetInstancesParams() *GetInstancesParams {
 
-	return &UpdateCatalogParams{}
+	return &GetInstancesParams{}
 }
 
-/*UpdateCatalogParams contains all the parameters to send to the API endpoint
-for the update catalog operation typically these are written to a http.Request
+/*GetInstancesParams contains all the parameters to send to the API endpoint
+for the get instances operation typically these are written to a http.Request
 */
-type UpdateCatalogParams struct {
+type GetInstancesParams struct {
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *UpdateCatalogParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
+func (o *GetInstancesParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	var res []error
 

@@ -1,7 +1,8 @@
 package commands
 
 import (
-	swaggerclient "github.com/go-swagger/go-swagger/client"
+	"github.com/go-openapi/runtime"
+
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 
 	"github.com/hpcloud/cf-plugin-usb/lib"
@@ -10,7 +11,7 @@ import (
 
 //ServiceInterface exposes service commands
 type ServiceInterface interface {
-	Update(swaggerclient.AuthInfoWriter, *models.Service) (string, error)
+	Update(runtime.ClientAuthInfoWriter, *models.Service) (string, error)
 }
 
 //ServiceCommands struct
@@ -24,9 +25,9 @@ func NewServiceCommands(httpClient lib.UsbClientInterface) ServiceInterface {
 }
 
 //Update - updates a service's details
-func (c *ServiceCommands) Update(bearer swaggerclient.AuthInfoWriter, service *models.Service) (string, error) {
+func (c *ServiceCommands) Update(bearer runtime.ClientAuthInfoWriter, service *models.Service) (string, error) {
 	params := operations.NewUpdateServiceParams()
-	params.ServiceID = *service.ID
+	params.ServiceID = service.ID
 	params.Service = service
 
 	response, err := c.httpClient.UpdateService(params, bearer)
@@ -34,5 +35,5 @@ func (c *ServiceCommands) Update(bearer swaggerclient.AuthInfoWriter, service *m
 		return "", err
 	}
 
-	return *response.Payload.ID, nil
+	return response.Payload.ID, nil
 }

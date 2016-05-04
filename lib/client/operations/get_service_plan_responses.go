@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -20,7 +20,7 @@ type GetServicePlanReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *GetServicePlanReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *GetServicePlanReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 200:
@@ -45,7 +45,7 @@ func (o *GetServicePlanReader) ReadResponse(response client.Response, consumer h
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -66,7 +66,7 @@ func (o *GetServicePlanOK) Error() string {
 	return fmt.Sprintf("[GET /plans/{plan_id}][%d] getServicePlanOK  %+v", 200, o.Payload)
 }
 
-func (o *GetServicePlanOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetServicePlanOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Plan)
 
@@ -94,7 +94,7 @@ func (o *GetServicePlanNotFound) Error() string {
 	return fmt.Sprintf("[GET /plans/{plan_id}][%d] getServicePlanNotFound ", 404)
 }
 
-func (o *GetServicePlanNotFound) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetServicePlanNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -116,7 +116,7 @@ func (o *GetServicePlanInternalServerError) Error() string {
 	return fmt.Sprintf("[GET /plans/{plan_id}][%d] getServicePlanInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *GetServicePlanInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *GetServicePlanInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {

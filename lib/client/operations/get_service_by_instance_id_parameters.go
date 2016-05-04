@@ -4,9 +4,10 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/errors"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 )
 
 // NewGetServiceByInstanceIDParams creates a new GetServiceByInstanceIDParams object
@@ -17,33 +18,33 @@ func NewGetServiceByInstanceIDParams() *GetServiceByInstanceIDParams {
 }
 
 /*GetServiceByInstanceIDParams contains all the parameters to send to the API endpoint
-for the get service by instance id operation typically these are written to a http.Request
+for the get service by instance Id operation typically these are written to a http.Request
 */
 type GetServiceByInstanceIDParams struct {
 
-	/*DriverInstanceID
-	  Driver instance ID
+	/*InstanceID
+	  Instance ID
 
 	*/
-	DriverInstanceID string
+	InstanceID string
 }
 
-// WithDriverInstanceID adds the driverInstanceId to the get service by instance id params
-func (o *GetServiceByInstanceIDParams) WithDriverInstanceID(driverInstanceId string) *GetServiceByInstanceIDParams {
-	o.DriverInstanceID = driverInstanceId
+// WithInstanceID adds the instanceId to the get service by instance Id params
+func (o *GetServiceByInstanceIDParams) WithInstanceID(InstanceID string) *GetServiceByInstanceIDParams {
+	o.InstanceID = InstanceID
 	return o
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *GetServiceByInstanceIDParams) WriteToRequest(r client.Request, reg strfmt.Registry) error {
+func (o *GetServiceByInstanceIDParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	var res []error
 
-	// query param driver_instance_id
-	qrDriverInstanceID := o.DriverInstanceID
-	qDriverInstanceID := qrDriverInstanceID
-	if qDriverInstanceID != "" {
-		if err := r.SetQueryParam("driver_instance_id", qDriverInstanceID); err != nil {
+	// query param instance_id
+	qrInstanceID := o.InstanceID
+	qInstanceID := qrInstanceID
+	if qInstanceID != "" {
+		if err := r.SetQueryParam("instance_id", qInstanceID); err != nil {
 			return err
 		}
 	}

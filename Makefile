@@ -36,7 +36,6 @@ vet:
 build:
 	$(call print_status, Building)
 	export GOPATH=$(shell godep path):$(GOPATH)
-	godep restore
 	$(call gobuild,linux,amd64)
 	$(call gobuild,windows,amd64,.exe)
 	$(call gobuild,darwin,amd64)

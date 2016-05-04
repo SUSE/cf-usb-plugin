@@ -4,9 +4,10 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/errors"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -36,19 +37,19 @@ type UpdateDialParams struct {
 }
 
 // WithDial adds the dial to the update dial params
-func (o *UpdateDialParams) WithDial(dial *models.Dial) *UpdateDialParams {
-	o.Dial = dial
+func (o *UpdateDialParams) WithDial(Dial *models.Dial) *UpdateDialParams {
+	o.Dial = Dial
 	return o
 }
 
 // WithDialID adds the dialId to the update dial params
-func (o *UpdateDialParams) WithDialID(dialId string) *UpdateDialParams {
-	o.DialID = dialId
+func (o *UpdateDialParams) WithDialID(DialID string) *UpdateDialParams {
+	o.DialID = DialID
 	return o
 }
 
 // WriteToRequest writes these params to a swagger request
-func (o *UpdateDialParams) WriteToRequest(r client.Request, reg strfmt.Registry) error {
+func (o *UpdateDialParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
 	var res []error
 

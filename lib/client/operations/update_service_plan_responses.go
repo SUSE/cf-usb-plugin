@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/go-swagger/go-swagger/client"
-	"github.com/go-swagger/go-swagger/httpkit"
-	"github.com/go-swagger/go-swagger/strfmt"
+	"github.com/go-openapi/runtime"
+
+	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
@@ -20,7 +20,7 @@ type UpdateServicePlanReader struct {
 }
 
 // ReadResponse reads a server response into the recieved o.
-func (o *UpdateServicePlanReader) ReadResponse(response client.Response, consumer httpkit.Consumer) (interface{}, error) {
+func (o *UpdateServicePlanReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 
 	case 200:
@@ -45,7 +45,7 @@ func (o *UpdateServicePlanReader) ReadResponse(response client.Response, consume
 		return nil, result
 
 	default:
-		return nil, NewAPIError("unknown error", response, response.Code())
+		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
 }
 
@@ -66,7 +66,7 @@ func (o *UpdateServicePlanOK) Error() string {
 	return fmt.Sprintf("[PUT /plans/{plan_id}][%d] updateServicePlanOK  %+v", 200, o.Payload)
 }
 
-func (o *UpdateServicePlanOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *UpdateServicePlanOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Plan)
 
@@ -94,7 +94,7 @@ func (o *UpdateServicePlanNotFound) Error() string {
 	return fmt.Sprintf("[PUT /plans/{plan_id}][%d] updateServicePlanNotFound ", 404)
 }
 
-func (o *UpdateServicePlanNotFound) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *UpdateServicePlanNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -116,7 +116,7 @@ func (o *UpdateServicePlanInternalServerError) Error() string {
 	return fmt.Sprintf("[PUT /plans/{plan_id}][%d] updateServicePlanInternalServerError  %+v", 500, o.Payload)
 }
 
-func (o *UpdateServicePlanInternalServerError) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
+func (o *UpdateServicePlanInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
