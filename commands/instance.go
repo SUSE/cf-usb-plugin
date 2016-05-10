@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"sort"
 
-	swaggerclient "github.com/go-swagger/go-swagger/client"
+	"github.com/go-openapi/runtime"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 
 	"github.com/hpcloud/cf-plugin-usb/lib"
@@ -16,10 +16,10 @@ import (
 
 //InstanceInterface exposes instances commands
 type InstanceInterface interface {
-	Create(swaggerclient.AuthInfoWriter, []string) (string, error)
-	Delete(swaggerclient.AuthInfoWriter, string) (string, error)
-	Update(swaggerclient.AuthInfoWriter, []string) (string, error)
-	List(swaggerclient.AuthInfoWriter, string) ([]*models.DriverInstance, error)
+	Create(runtime.ClientAuthInfoWriter, []string) (string, error)
+	Delete(runtime.ClientAuthInfoWriter, string) (string, error)
+	Update(runtime.ClientAuthInfoWriter, []string) (string, error)
+	List(runtime.ClientAuthInfoWriter) ([]*models.DriverEndpoint, error)
 }
 
 //InstanceCommands struct
@@ -34,66 +34,49 @@ func NewInstanceCommands(httpClient lib.UsbClientInterface, schemaParser *schema
 }
 
 //Create - creates a new driver instance
-func (c *InstanceCommands) Create(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
-	driverName := args[0]
-	instanceName := args[1]
+func (c *InstanceCommands) Create(bearer runtime.ClientAuthInfoWriter, args []string) (string, error) {
+	instanceName := args[0]
+	targetUrl := args[1]
+	authKey := args[2]
 
-	targetDriver, err := c.httpClient.GetDriverByName(bearer, driverName)
-	if targetDriver == nil {
-		return "", fmt.Errorf("Driver not found")
-	}
+	var metadata models.EndpointMetadata
 
-	var driverConfig map[string]interface{}
+	if len(args) == 5 {
+		if args[3] == "-c" {
+			configValue := args[4]
 
-	if len(args) == 4 {
-	    if args[2] == "-c" {
-		configValue := args[3]
+			if _, err := ioutil.ReadFile(configValue); err == nil {
+				fileContent, err := ioutil.ReadFile(configValue)
+				if err != nil {
+					return "", fmt.Errorf("Unable to read configuration file. %s", err.Error())
+				}
+				configValue = string(fileContent)
+			}
 
-		if _, err := ioutil.ReadFile(configValue); err == nil {
-		    fileContent, err := ioutil.ReadFile(configValue)
-		    if err != nil {
-		    	return "", fmt.Errorf("Unable to read configuration file. %s", err.Error())
-		    }
-		    configValue = string(fileContent)
-		}
-
-		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
-		    return "", fmt.Errorf("Invalid JSON format %s", err.Error())
-		}
-	    }
-	} else if len(args) == 2 {
-		configSchema, err := c.httpClient.GetDriverSchema(&operations.GetDriverSchemaParams{DriverID: *targetDriver.ID}, bearer)
-		if err != nil {
-			return "", err
-		}
-
-		configValue, err := c.schemaParser.ParseSchema(string(configSchema.Payload))
-		if err != nil {
-			return "", err
-		}
-
-		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
-			return "", fmt.Errorf("Invalid JSON format %s", err.Error())
+			if err := json.Unmarshal([]byte(configValue), &metadata); err != nil {
+				return "", fmt.Errorf("Invalid JSON format %s", err.Error())
+			}
 		}
 	}
 
-	newDriver := models.DriverInstance{
-		Name:          instanceName,
-		DriverID:      *targetDriver.ID,
-		Configuration: driverConfig,
+	newDriver := models.DriverEndpoint{
+		Name:              &instanceName,
+		EndpointURL:       targetUrl,
+		AuthenticationKey: authKey,
+		Metadata:          &metadata,
 	}
 
-	response, err := c.httpClient.CreateDriverInstance(&operations.CreateDriverInstanceParams{DriverInstance: &newDriver}, bearer)
+	response, err := c.httpClient.RegisterDriverEndpoint(&operations.RegisterDriverEndpointParams{DriverEndpoint: &newDriver}, bearer)
 	if err != nil {
 		return "", err
 	}
 
-	return *response.Payload.ID, nil
+	return response.Payload.ID, nil
 }
 
 //Delete - deletes an existing driver instance
-func (c *InstanceCommands) Delete(bearer swaggerclient.AuthInfoWriter, instanceName string) (string, error) {
-	instance, err := c.httpClient.GetDriverInstanceByName(bearer, instanceName)
+func (c *InstanceCommands) Delete(bearer runtime.ClientAuthInfoWriter, instanceName string) (string, error) {
+	instance, err := c.httpClient.GetDriverEndpointByName(instanceName, bearer)
 	if err != nil {
 		return "", err
 	}
@@ -101,79 +84,42 @@ func (c *InstanceCommands) Delete(bearer swaggerclient.AuthInfoWriter, instanceN
 		return "", fmt.Errorf("Driver instance not found")
 	}
 
-	params := operations.NewDeleteDriverInstanceParams()
-	params.DriverInstanceID = *instance.ID
+	params := operations.NewUnregisterDriverInstanceParams()
+	params.DriverEndpointID = instance.ID
 
-	_, err = c.httpClient.DeleteDriverInstance(params, bearer)
+	_, err = c.httpClient.UnregisterDriverEndpoint(params, bearer)
 	if err != nil {
 		return "", err
 	}
 
-	return *instance.ID, nil
+	return instance.ID, nil
 }
 
 //Update - updates an existing driver instance
-func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []string) (string, error) {
+func (c *InstanceCommands) Update(bearer runtime.ClientAuthInfoWriter, args []string) (string, error) {
 	instanceName := args[0]
 
-	instance, err := c.httpClient.GetDriverInstanceByName(bearer, instanceName)
-	if err != nil {
-		return "", err
-	}
-
-	if instance.DriverID == "" {
-		return "", fmt.Errorf("Empty driver id provided by cf-usb")
-	}
-
-	getDriverParams := operations.NewGetDriverParams()
-	getDriverParams.DriverID = instance.DriverID
-	targetDriverResult, err := c.httpClient.GetDriver(getDriverParams, bearer)
-	if err != nil {
-		return "", err
-	}
-
-	targetDriver := targetDriverResult.Payload
-
-	if targetDriver == nil {
-		return "", fmt.Errorf("Driver not found")
-	}
-
-	var driverConfig map[string]interface{}
+	var metadata models.EndpointMetadata
 
 	if len(args) == 3 {
-	    if args[1] == "-c" {
-		configValue := args[2]
+		if args[1] == "-c" {
+			configValue := args[2]
 
-		if _, err := ioutil.ReadFile(configValue); err == nil {
-		    fileContent, err := ioutil.ReadFile(configValue)
-		    if err != nil {
-		    	return "", fmt.Errorf("Unable to read configuration file. %s", err.Error())
-		    }
-		    configValue = string(fileContent)
-		}
+			if _, err := ioutil.ReadFile(configValue); err == nil {
+				fileContent, err := ioutil.ReadFile(configValue)
+				if err != nil {
+					return "", fmt.Errorf("Unable to read configuration file. %s", err.Error())
+				}
+				configValue = string(fileContent)
+			}
 
-		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
-		    return "", fmt.Errorf("Invalid JSON format %s", err.Error())
-		}
-	    }
-	} else if len(args) == 1 {
-
-		configSchema, err := c.httpClient.GetDriverSchema(&operations.GetDriverSchemaParams{DriverID: *targetDriver.ID}, bearer)
-		if err != nil {
-			return "", err
-		}
-
-		configValue, err := c.schemaParser.ParseSchema(string(configSchema.Payload))
-		if err != nil {
-			return "", err
-		}
-
-		if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
-			return "", fmt.Errorf("Invalid JSON format %s", err.Error())
+			if err := json.Unmarshal([]byte(configValue), &metadata); err != nil {
+				return "", fmt.Errorf("Invalid JSON format %s", err.Error())
+			}
 		}
 	}
 
-	oldInstance, err := c.httpClient.GetDriverInstanceByName(bearer, instanceName)
+	oldInstance, err := c.httpClient.GetDriverEndpointByName(instanceName, bearer)
 	if err != nil {
 		return "", err
 	}
@@ -181,40 +127,30 @@ func (c *InstanceCommands) Update(bearer swaggerclient.AuthInfoWriter, args []st
 		return "", fmt.Errorf("Driver instance not found")
 	}
 
-	oldInstance.Configuration = driverConfig
-	params := operations.NewUpdateDriverInstanceParams()
-	params.DriverConfig = oldInstance
-	params.DriverInstanceID = *oldInstance.ID
-	params.DriverConfig.DriverID = *targetDriver.ID
+	params := operations.NewUpdateDriverEndpointParams()
+	params.DriverEndpointID = oldInstance.ID
+	params.DriverEndpoint = &models.DriverEndpoint{}
+	params.DriverEndpoint.Metadata = &metadata
 
-	response, err := c.httpClient.UpdateDriverInstance(params, bearer)
+	response, err := c.httpClient.UpdateDriverEndpoint(params, bearer)
 	if err != nil {
 		return "", err
 	}
 
-	return response.Payload.Name, nil
+	return *response.Payload.Name, nil
 }
 
-type instanceSorter []*models.DriverInstance
+type instanceSorter []*models.DriverEndpoint
 
 func (a instanceSorter) Len() int           { return len(a) }
 func (a instanceSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a instanceSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
+func (a instanceSorter) Less(i, j int) bool { return *a[i].Name < *a[j].Name }
 
 //List - lists existing instances for a specific driver
-func (c *InstanceCommands) List(bearer swaggerclient.AuthInfoWriter, driverName string) ([]*models.DriverInstance, error) {
-	targetDriver, err := c.httpClient.GetDriverByName(bearer, driverName)
-	if err != nil {
-		return nil, err
-	}
-	if targetDriver == nil {
-		return nil, fmt.Errorf("Driver not found")
-	}
+func (c *InstanceCommands) List(bearer runtime.ClientAuthInfoWriter) ([]*models.DriverEndpoint, error) {
 
-	params := operations.NewGetDriverInstancesParams()
-	params.DriverID = *targetDriver.ID
-
-	response, err := c.httpClient.GetDriverInstances(params, bearer)
+	params := operations.NewGetDriverEndpointsParams()
+	response, err := c.httpClient.GetDriverEndpoints(params, bearer)
 	if err != nil {
 		return nil, err
 	}

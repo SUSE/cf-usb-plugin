@@ -4,811 +4,285 @@ package fakes
 import (
 	"sync"
 
-	client "github.com/go-swagger/go-swagger/client"
+	"github.com/go-openapi/runtime"
 	"github.com/hpcloud/cf-plugin-usb/lib"
 	operations "github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 )
 
 type FakeUsbClientInterface struct {
-	CreateDialStub        func(params *operations.CreateDialParams, authInfo client.AuthInfoWriter) (*operations.CreateDialCreated, error)
-	createDialMutex       sync.RWMutex
-	createDialArgsForCall []struct {
-		params   *operations.CreateDialParams
-		authInfo client.AuthInfoWriter
+	RegisterDriverEndpointStub        func(params *operations.RegisterDriverEndpointParams, authInfo runtime.ClientAuthInfoWriter) (*operations.RegisterDriverEndpointCreated, error)
+	registerDriverEndpointMutex       sync.RWMutex
+	registerDriverEndpointArgsForCall []struct {
+		params   *operations.RegisterDriverEndpointParams
+		authInfo runtime.ClientAuthInfoWriter
 	}
-	createDialReturns struct {
-		result1 *operations.CreateDialCreated
+	registerDriverEndpointReturns struct {
+		result1 *operations.RegisterDriverEndpointCreated
 		result2 error
 	}
-	CreateDriverStub        func(params *operations.CreateDriverParams, authInfo client.AuthInfoWriter) (*operations.CreateDriverCreated, error)
-	createDriverMutex       sync.RWMutex
-	createDriverArgsForCall []struct {
-		params   *operations.CreateDriverParams
-		authInfo client.AuthInfoWriter
+	UnregisterDriverEndpointStub        func(params *operations.UnregisterDriverInstanceParams, authInfo runtime.ClientAuthInfoWriter) (*operations.UnregisterDriverInstanceNoContent, error)
+	unregisterDriverEndpointMutex       sync.RWMutex
+	unregisterDriverEndpointArgsForCall []struct {
+		params   *operations.UnregisterDriverInstanceParams
+		authInfo runtime.ClientAuthInfoWriter
 	}
-	createDriverReturns struct {
-		result1 *operations.CreateDriverCreated
+	unregisterDriverEndpointReturns struct {
+		result1 *operations.UnregisterDriverInstanceNoContent
 		result2 error
 	}
-	CreateDriverInstanceStub        func(params *operations.CreateDriverInstanceParams, authInfo client.AuthInfoWriter) (*operations.CreateDriverInstanceCreated, error)
-	createDriverInstanceMutex       sync.RWMutex
-	createDriverInstanceArgsForCall []struct {
-		params   *operations.CreateDriverInstanceParams
-		authInfo client.AuthInfoWriter
+	GetDriverEndpointStub        func(params *operations.GetDriverEndpointParams, authInfo runtime.ClientAuthInfoWriter) (*operations.GetDriverEndpointOK, error)
+	getDriverEndpointMutex       sync.RWMutex
+	getDriverEndpointArgsForCall []struct {
+		params   *operations.GetDriverEndpointParams
+		authInfo runtime.ClientAuthInfoWriter
 	}
-	createDriverInstanceReturns struct {
-		result1 *operations.CreateDriverInstanceCreated
+	getDriverEndpointReturns struct {
+		result1 *operations.GetDriverEndpointOK
 		result2 error
 	}
-	DeleteDialStub        func(params *operations.DeleteDialParams, authInfo client.AuthInfoWriter) (*operations.DeleteDialNoContent, error)
-	deleteDialMutex       sync.RWMutex
-	deleteDialArgsForCall []struct {
-		params   *operations.DeleteDialParams
-		authInfo client.AuthInfoWriter
+	GetDriverEndpointByNameStub        func(instanceName string, authInfo runtime.ClientAuthInfoWriter) (*models.DriverEndpoint, error)
+	getDriverEndpointByNameMutex       sync.RWMutex
+	getDriverEndpointByNameArgsForCall []struct {
+		instanceName string
+		authInfo     runtime.ClientAuthInfoWriter
 	}
-	deleteDialReturns struct {
-		result1 *operations.DeleteDialNoContent
+	getDriverEndpointByNameReturns struct {
+		result1 *models.DriverEndpoint
 		result2 error
 	}
-	DeleteDriverStub        func(params *operations.DeleteDriverParams, authInfo client.AuthInfoWriter) (*operations.DeleteDriverNoContent, error)
-	deleteDriverMutex       sync.RWMutex
-	deleteDriverArgsForCall []struct {
-		params   *operations.DeleteDriverParams
-		authInfo client.AuthInfoWriter
+	GetDriverEndpointsStub        func(params *operations.GetDriverEndpointsParams, authInfo runtime.ClientAuthInfoWriter) (*operations.GetDriverEndpointsOK, error)
+	getDriverEndpointsMutex       sync.RWMutex
+	getDriverEndpointsArgsForCall []struct {
+		params   *operations.GetDriverEndpointsParams
+		authInfo runtime.ClientAuthInfoWriter
 	}
-	deleteDriverReturns struct {
-		result1 *operations.DeleteDriverNoContent
+	getDriverEndpointsReturns struct {
+		result1 *operations.GetDriverEndpointsOK
 		result2 error
 	}
-	DeleteDriverInstanceStub        func(params *operations.DeleteDriverInstanceParams, authInfo client.AuthInfoWriter) (*operations.DeleteDriverInstanceNoContent, error)
-	deleteDriverInstanceMutex       sync.RWMutex
-	deleteDriverInstanceArgsForCall []struct {
-		params   *operations.DeleteDriverInstanceParams
-		authInfo client.AuthInfoWriter
-	}
-	deleteDriverInstanceReturns struct {
-		result1 *operations.DeleteDriverInstanceNoContent
-		result2 error
-	}
-	GetAllDialsStub        func(params *operations.GetAllDialsParams, authInfo client.AuthInfoWriter) (*operations.GetAllDialsOK, error)
-	getAllDialsMutex       sync.RWMutex
-	getAllDialsArgsForCall []struct {
-		params   *operations.GetAllDialsParams
-		authInfo client.AuthInfoWriter
-	}
-	getAllDialsReturns struct {
-		result1 *operations.GetAllDialsOK
-		result2 error
-	}
-	GetDialStub        func(params *operations.GetDialParams, authInfo client.AuthInfoWriter) (*operations.GetDialOK, error)
-	getDialMutex       sync.RWMutex
-	getDialArgsForCall []struct {
-		params   *operations.GetDialParams
-		authInfo client.AuthInfoWriter
-	}
-	getDialReturns struct {
-		result1 *operations.GetDialOK
-		result2 error
-	}
-	GetDialSchemaStub        func(params *operations.GetDialSchemaParams, authInfo client.AuthInfoWriter) (*operations.GetDialSchemaOK, error)
-	getDialSchemaMutex       sync.RWMutex
-	getDialSchemaArgsForCall []struct {
-		params   *operations.GetDialSchemaParams
-		authInfo client.AuthInfoWriter
-	}
-	getDialSchemaReturns struct {
-		result1 *operations.GetDialSchemaOK
-		result2 error
-	}
-	GetDriverStub        func(params *operations.GetDriverParams, authInfo client.AuthInfoWriter) (*operations.GetDriverOK, error)
-	getDriverMutex       sync.RWMutex
-	getDriverArgsForCall []struct {
-		params   *operations.GetDriverParams
-		authInfo client.AuthInfoWriter
-	}
-	getDriverReturns struct {
-		result1 *operations.GetDriverOK
-		result2 error
-	}
-	GetDriverInstanceStub        func(params *operations.GetDriverInstanceParams, authInfo client.AuthInfoWriter) (*operations.GetDriverInstanceOK, error)
-	getDriverInstanceMutex       sync.RWMutex
-	getDriverInstanceArgsForCall []struct {
-		params   *operations.GetDriverInstanceParams
-		authInfo client.AuthInfoWriter
-	}
-	getDriverInstanceReturns struct {
-		result1 *operations.GetDriverInstanceOK
-		result2 error
-	}
-	GetDriverInstancesStub        func(params *operations.GetDriverInstancesParams, authInfo client.AuthInfoWriter) (*operations.GetDriverInstancesOK, error)
-	getDriverInstancesMutex       sync.RWMutex
-	getDriverInstancesArgsForCall []struct {
-		params   *operations.GetDriverInstancesParams
-		authInfo client.AuthInfoWriter
-	}
-	getDriverInstancesReturns struct {
-		result1 *operations.GetDriverInstancesOK
-		result2 error
-	}
-	GetDriverSchemaStub        func(params *operations.GetDriverSchemaParams, authInfo client.AuthInfoWriter) (*operations.GetDriverSchemaOK, error)
-	getDriverSchemaMutex       sync.RWMutex
-	getDriverSchemaArgsForCall []struct {
-		params   *operations.GetDriverSchemaParams
-		authInfo client.AuthInfoWriter
-	}
-	getDriverSchemaReturns struct {
-		result1 *operations.GetDriverSchemaOK
-		result2 error
-	}
-	GetDriversStub        func(params *operations.GetDriversParams, authInfo client.AuthInfoWriter) (*operations.GetDriversOK, error)
-	getDriversMutex       sync.RWMutex
-	getDriversArgsForCall []struct {
-		params   *operations.GetDriversParams
-		authInfo client.AuthInfoWriter
-	}
-	getDriversReturns struct {
-		result1 *operations.GetDriversOK
-		result2 error
-	}
-	GetInfoStub        func(params *operations.GetInfoParams, authInfo client.AuthInfoWriter) (*operations.GetInfoOK, error)
+	GetInfoStub        func(params *operations.GetInfoParams, authInfo runtime.ClientAuthInfoWriter) (*operations.GetInfoOK, error)
 	getInfoMutex       sync.RWMutex
 	getInfoArgsForCall []struct {
 		params   *operations.GetInfoParams
-		authInfo client.AuthInfoWriter
+		authInfo runtime.ClientAuthInfoWriter
 	}
 	getInfoReturns struct {
 		result1 *operations.GetInfoOK
 		result2 error
 	}
-	GetServiceStub        func(params *operations.GetServiceParams, authInfo client.AuthInfoWriter) (*operations.GetServiceOK, error)
-	getServiceMutex       sync.RWMutex
-	getServiceArgsForCall []struct {
-		params   *operations.GetServiceParams
-		authInfo client.AuthInfoWriter
+	PingEndpointStub        func(params *operations.PingDriverEndpointParams, authInfo runtime.ClientAuthInfoWriter) (*operations.PingDriverEndpointOK, error)
+	pingEndpointMutex       sync.RWMutex
+	pingEndpointArgsForCall []struct {
+		params   *operations.PingDriverEndpointParams
+		authInfo runtime.ClientAuthInfoWriter
 	}
-	getServiceReturns struct {
-		result1 *operations.GetServiceOK
+	pingEndpointReturns struct {
+		result1 *operations.PingDriverEndpointOK
 		result2 error
 	}
-	GetServiceByInstanceIDStub        func(params *operations.GetServiceByInstanceIDParams, authInfo client.AuthInfoWriter) (*operations.GetServiceByInstanceIDOK, error)
-	getServiceByInstanceIDMutex       sync.RWMutex
-	getServiceByInstanceIDArgsForCall []struct {
-		params   *operations.GetServiceByInstanceIDParams
-		authInfo client.AuthInfoWriter
-	}
-	getServiceByInstanceIDReturns struct {
-		result1 *operations.GetServiceByInstanceIDOK
-		result2 error
-	}
-	GetServicePlanStub        func(params *operations.GetServicePlanParams, authInfo client.AuthInfoWriter) (*operations.GetServicePlanOK, error)
-	getServicePlanMutex       sync.RWMutex
-	getServicePlanArgsForCall []struct {
-		params   *operations.GetServicePlanParams
-		authInfo client.AuthInfoWriter
-	}
-	getServicePlanReturns struct {
-		result1 *operations.GetServicePlanOK
-		result2 error
-	}
-	GetServicePlansStub        func(params *operations.GetServicePlansParams, authInfo client.AuthInfoWriter) (*operations.GetServicePlansOK, error)
-	getServicePlansMutex       sync.RWMutex
-	getServicePlansArgsForCall []struct {
-		params   *operations.GetServicePlansParams
-		authInfo client.AuthInfoWriter
-	}
-	getServicePlansReturns struct {
-		result1 *operations.GetServicePlansOK
-		result2 error
-	}
-	PingDriverInstanceStub        func(params *operations.PingDriverInstanceParams, authInfo client.AuthInfoWriter) (*operations.PingDriverInstanceOK, error)
-	pingDriverInstanceMutex       sync.RWMutex
-	pingDriverInstanceArgsForCall []struct {
-		params   *operations.PingDriverInstanceParams
-		authInfo client.AuthInfoWriter
-	}
-	pingDriverInstanceReturns struct {
-		result1 *operations.PingDriverInstanceOK
-		result2 error
-	}
-	UpdateCatalogStub        func(params *operations.UpdateCatalogParams, authInfo client.AuthInfoWriter) (*operations.UpdateCatalogOK, error)
+	UpdateCatalogStub        func(params *operations.UpdateCatalogParams, authInfo runtime.ClientAuthInfoWriter) (*operations.UpdateCatalogOK, error)
 	updateCatalogMutex       sync.RWMutex
 	updateCatalogArgsForCall []struct {
 		params   *operations.UpdateCatalogParams
-		authInfo client.AuthInfoWriter
+		authInfo runtime.ClientAuthInfoWriter
 	}
 	updateCatalogReturns struct {
 		result1 *operations.UpdateCatalogOK
 		result2 error
 	}
-	UpdateDialStub        func(params *operations.UpdateDialParams, authInfo client.AuthInfoWriter) (*operations.UpdateDialOK, error)
-	updateDialMutex       sync.RWMutex
-	updateDialArgsForCall []struct {
-		params   *operations.UpdateDialParams
-		authInfo client.AuthInfoWriter
+	UpdateDriverEndpointStub        func(params *operations.UpdateDriverEndpointParams, authInfo runtime.ClientAuthInfoWriter) (*operations.UpdateDriverEndpointOK, error)
+	updateDriverEndpointMutex       sync.RWMutex
+	updateDriverEndpointArgsForCall []struct {
+		params   *operations.UpdateDriverEndpointParams
+		authInfo runtime.ClientAuthInfoWriter
 	}
-	updateDialReturns struct {
-		result1 *operations.UpdateDialOK
+	updateDriverEndpointReturns struct {
+		result1 *operations.UpdateDriverEndpointOK
 		result2 error
 	}
-	UpdateDriverStub        func(params *operations.UpdateDriverParams, authInfo client.AuthInfoWriter) (*operations.UpdateDriverOK, error)
-	updateDriverMutex       sync.RWMutex
-	updateDriverArgsForCall []struct {
-		params   *operations.UpdateDriverParams
-		authInfo client.AuthInfoWriter
-	}
-	updateDriverReturns struct {
-		result1 *operations.UpdateDriverOK
-		result2 error
-	}
-	UpdateDriverInstanceStub        func(params *operations.UpdateDriverInstanceParams, authInfo client.AuthInfoWriter) (*operations.UpdateDriverInstanceOK, error)
-	updateDriverInstanceMutex       sync.RWMutex
-	updateDriverInstanceArgsForCall []struct {
-		params   *operations.UpdateDriverInstanceParams
-		authInfo client.AuthInfoWriter
-	}
-	updateDriverInstanceReturns struct {
-		result1 *operations.UpdateDriverInstanceOK
-		result2 error
-	}
-	UpdateServiceStub        func(params *operations.UpdateServiceParams, authInfo client.AuthInfoWriter) (*operations.UpdateServiceOK, error)
-	updateServiceMutex       sync.RWMutex
-	updateServiceArgsForCall []struct {
-		params   *operations.UpdateServiceParams
-		authInfo client.AuthInfoWriter
-	}
-	updateServiceReturns struct {
-		result1 *operations.UpdateServiceOK
-		result2 error
-	}
-	UpdateServicePlanStub        func(params *operations.UpdateServicePlanParams, authInfo client.AuthInfoWriter) (*operations.UpdateServicePlanOK, error)
-	updateServicePlanMutex       sync.RWMutex
-	updateServicePlanArgsForCall []struct {
-		params   *operations.UpdateServicePlanParams
-		authInfo client.AuthInfoWriter
-	}
-	updateServicePlanReturns struct {
-		result1 *operations.UpdateServicePlanOK
-		result2 error
-	}
-	UploadDriverStub        func(params *operations.UploadDriverParams, authInfo client.AuthInfoWriter) (*operations.UploadDriverOK, error)
-	uploadDriverMutex       sync.RWMutex
-	uploadDriverArgsForCall []struct {
-		params   *operations.UploadDriverParams
-		authInfo client.AuthInfoWriter
-	}
-	uploadDriverReturns struct {
-		result1 *operations.UploadDriverOK
-		result2 error
-	}
-	SetTransportStub        func(transport client.Transport)
+	SetTransportStub        func(transport runtime.ClientTransport)
 	setTransportMutex       sync.RWMutex
 	setTransportArgsForCall []struct {
-		transport client.Transport
-	}
-	GetDriverByNameStub        func(authInfo client.AuthInfoWriter, driverName string) (*models.Driver, error)
-	getDriverByNameMutex       sync.RWMutex
-	getDriverByNameArgsForCall []struct {
-		authInfo   client.AuthInfoWriter
-		driverName string
-	}
-	getDriverByNameReturns struct {
-		result1 *models.Driver
-		result2 error
-	}
-	GetDriverInstanceByNameStub        func(authHeader client.AuthInfoWriter, driverInstanceName string) (*models.DriverInstance, error)
-	getDriverInstanceByNameMutex       sync.RWMutex
-	getDriverInstanceByNameArgsForCall []struct {
-		authHeader         client.AuthInfoWriter
-		driverInstanceName string
-	}
-	getDriverInstanceByNameReturns struct {
-		result1 *models.DriverInstance
-		result2 error
-	}
-	GetServiceByDriverInstanceIDStub        func(authInfo client.AuthInfoWriter, driverInstanceID string) (*models.Service, error)
-	getServiceByDriverInstanceIDMutex       sync.RWMutex
-	getServiceByDriverInstanceIDArgsForCall []struct {
-		authInfo         client.AuthInfoWriter
-		driverInstanceID string
-	}
-	getServiceByDriverInstanceIDReturns struct {
-		result1 *models.Service
-		result2 error
-	}
-	GetPlanByIDStub        func(authInfo client.AuthInfoWriter, planID string) (*models.Plan, error)
-	getPlanByIDMutex       sync.RWMutex
-	getPlanByIDArgsForCall []struct {
-		authInfo client.AuthInfoWriter
-		planID   string
-	}
-	getPlanByIDReturns struct {
-		result1 *models.Plan
-		result2 error
+		transport runtime.ClientTransport
 	}
 }
 
-func (fake *FakeUsbClientInterface) CreateDial(params *operations.CreateDialParams, authInfo client.AuthInfoWriter) (*operations.CreateDialCreated, error) {
-	fake.createDialMutex.Lock()
-	fake.createDialArgsForCall = append(fake.createDialArgsForCall, struct {
-		params   *operations.CreateDialParams
-		authInfo client.AuthInfoWriter
+func (fake *FakeUsbClientInterface) RegisterDriverEndpoint(params *operations.RegisterDriverEndpointParams, authInfo runtime.ClientAuthInfoWriter) (*operations.RegisterDriverEndpointCreated, error) {
+	fake.registerDriverEndpointMutex.Lock()
+	fake.registerDriverEndpointArgsForCall = append(fake.registerDriverEndpointArgsForCall, struct {
+		params   *operations.RegisterDriverEndpointParams
+		authInfo runtime.ClientAuthInfoWriter
 	}{params, authInfo})
-	fake.createDialMutex.Unlock()
-	if fake.CreateDialStub != nil {
-		return fake.CreateDialStub(params, authInfo)
+	fake.registerDriverEndpointMutex.Unlock()
+	if fake.RegisterDriverEndpointStub != nil {
+		return fake.RegisterDriverEndpointStub(params, authInfo)
 	} else {
-		return fake.createDialReturns.result1, fake.createDialReturns.result2
+		return fake.registerDriverEndpointReturns.result1, fake.registerDriverEndpointReturns.result2
 	}
 }
 
-func (fake *FakeUsbClientInterface) CreateDialCallCount() int {
-	fake.createDialMutex.RLock()
-	defer fake.createDialMutex.RUnlock()
-	return len(fake.createDialArgsForCall)
+func (fake *FakeUsbClientInterface) RegisterDriverEndpointCallCount() int {
+	fake.registerDriverEndpointMutex.RLock()
+	defer fake.registerDriverEndpointMutex.RUnlock()
+	return len(fake.registerDriverEndpointArgsForCall)
 }
 
-func (fake *FakeUsbClientInterface) CreateDialArgsForCall(i int) (*operations.CreateDialParams, client.AuthInfoWriter) {
-	fake.createDialMutex.RLock()
-	defer fake.createDialMutex.RUnlock()
-	return fake.createDialArgsForCall[i].params, fake.createDialArgsForCall[i].authInfo
+func (fake *FakeUsbClientInterface) RegisterDriverEndpointArgsForCall(i int) (*operations.RegisterDriverEndpointParams, runtime.ClientAuthInfoWriter) {
+	fake.registerDriverEndpointMutex.RLock()
+	defer fake.registerDriverEndpointMutex.RUnlock()
+	return fake.registerDriverEndpointArgsForCall[i].params, fake.registerDriverEndpointArgsForCall[i].authInfo
 }
 
-func (fake *FakeUsbClientInterface) CreateDialReturns(result1 *operations.CreateDialCreated, result2 error) {
-	fake.CreateDialStub = nil
-	fake.createDialReturns = struct {
-		result1 *operations.CreateDialCreated
+func (fake *FakeUsbClientInterface) RegisterDriverEndpointReturns(result1 *operations.RegisterDriverEndpointCreated, result2 error) {
+	fake.RegisterDriverEndpointStub = nil
+	fake.registerDriverEndpointReturns = struct {
+		result1 *operations.RegisterDriverEndpointCreated
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeUsbClientInterface) CreateDriver(params *operations.CreateDriverParams, authInfo client.AuthInfoWriter) (*operations.CreateDriverCreated, error) {
-	fake.createDriverMutex.Lock()
-	fake.createDriverArgsForCall = append(fake.createDriverArgsForCall, struct {
-		params   *operations.CreateDriverParams
-		authInfo client.AuthInfoWriter
+func (fake *FakeUsbClientInterface) UnregisterDriverEndpoint(params *operations.UnregisterDriverInstanceParams, authInfo runtime.ClientAuthInfoWriter) (*operations.UnregisterDriverInstanceNoContent, error) {
+	fake.unregisterDriverEndpointMutex.Lock()
+	fake.unregisterDriverEndpointArgsForCall = append(fake.unregisterDriverEndpointArgsForCall, struct {
+		params   *operations.UnregisterDriverInstanceParams
+		authInfo runtime.ClientAuthInfoWriter
 	}{params, authInfo})
-	fake.createDriverMutex.Unlock()
-	if fake.CreateDriverStub != nil {
-		return fake.CreateDriverStub(params, authInfo)
+	fake.unregisterDriverEndpointMutex.Unlock()
+	if fake.UnregisterDriverEndpointStub != nil {
+		return fake.UnregisterDriverEndpointStub(params, authInfo)
 	} else {
-		return fake.createDriverReturns.result1, fake.createDriverReturns.result2
+		return fake.unregisterDriverEndpointReturns.result1, fake.unregisterDriverEndpointReturns.result2
 	}
 }
 
-func (fake *FakeUsbClientInterface) CreateDriverCallCount() int {
-	fake.createDriverMutex.RLock()
-	defer fake.createDriverMutex.RUnlock()
-	return len(fake.createDriverArgsForCall)
+func (fake *FakeUsbClientInterface) UnregisterDriverEndpointCallCount() int {
+	fake.unregisterDriverEndpointMutex.RLock()
+	defer fake.unregisterDriverEndpointMutex.RUnlock()
+	return len(fake.unregisterDriverEndpointArgsForCall)
 }
 
-func (fake *FakeUsbClientInterface) CreateDriverArgsForCall(i int) (*operations.CreateDriverParams, client.AuthInfoWriter) {
-	fake.createDriverMutex.RLock()
-	defer fake.createDriverMutex.RUnlock()
-	return fake.createDriverArgsForCall[i].params, fake.createDriverArgsForCall[i].authInfo
+func (fake *FakeUsbClientInterface) UnregisterDriverEndpointArgsForCall(i int) (*operations.UnregisterDriverInstanceParams, runtime.ClientAuthInfoWriter) {
+	fake.unregisterDriverEndpointMutex.RLock()
+	defer fake.unregisterDriverEndpointMutex.RUnlock()
+	return fake.unregisterDriverEndpointArgsForCall[i].params, fake.unregisterDriverEndpointArgsForCall[i].authInfo
 }
 
-func (fake *FakeUsbClientInterface) CreateDriverReturns(result1 *operations.CreateDriverCreated, result2 error) {
-	fake.CreateDriverStub = nil
-	fake.createDriverReturns = struct {
-		result1 *operations.CreateDriverCreated
+func (fake *FakeUsbClientInterface) UnregisterDriverEndpointReturns(result1 *operations.UnregisterDriverInstanceNoContent, result2 error) {
+	fake.UnregisterDriverEndpointStub = nil
+	fake.unregisterDriverEndpointReturns = struct {
+		result1 *operations.UnregisterDriverInstanceNoContent
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeUsbClientInterface) CreateDriverInstance(params *operations.CreateDriverInstanceParams, authInfo client.AuthInfoWriter) (*operations.CreateDriverInstanceCreated, error) {
-	fake.createDriverInstanceMutex.Lock()
-	fake.createDriverInstanceArgsForCall = append(fake.createDriverInstanceArgsForCall, struct {
-		params   *operations.CreateDriverInstanceParams
-		authInfo client.AuthInfoWriter
+func (fake *FakeUsbClientInterface) GetDriverEndpoint(params *operations.GetDriverEndpointParams, authInfo runtime.ClientAuthInfoWriter) (*operations.GetDriverEndpointOK, error) {
+	fake.getDriverEndpointMutex.Lock()
+	fake.getDriverEndpointArgsForCall = append(fake.getDriverEndpointArgsForCall, struct {
+		params   *operations.GetDriverEndpointParams
+		authInfo runtime.ClientAuthInfoWriter
 	}{params, authInfo})
-	fake.createDriverInstanceMutex.Unlock()
-	if fake.CreateDriverInstanceStub != nil {
-		return fake.CreateDriverInstanceStub(params, authInfo)
+	fake.getDriverEndpointMutex.Unlock()
+	if fake.GetDriverEndpointStub != nil {
+		return fake.GetDriverEndpointStub(params, authInfo)
 	} else {
-		return fake.createDriverInstanceReturns.result1, fake.createDriverInstanceReturns.result2
+		return fake.getDriverEndpointReturns.result1, fake.getDriverEndpointReturns.result2
 	}
 }
 
-func (fake *FakeUsbClientInterface) CreateDriverInstanceCallCount() int {
-	fake.createDriverInstanceMutex.RLock()
-	defer fake.createDriverInstanceMutex.RUnlock()
-	return len(fake.createDriverInstanceArgsForCall)
+func (fake *FakeUsbClientInterface) GetDriverEndpointCallCount() int {
+	fake.getDriverEndpointMutex.RLock()
+	defer fake.getDriverEndpointMutex.RUnlock()
+	return len(fake.getDriverEndpointArgsForCall)
 }
 
-func (fake *FakeUsbClientInterface) CreateDriverInstanceArgsForCall(i int) (*operations.CreateDriverInstanceParams, client.AuthInfoWriter) {
-	fake.createDriverInstanceMutex.RLock()
-	defer fake.createDriverInstanceMutex.RUnlock()
-	return fake.createDriverInstanceArgsForCall[i].params, fake.createDriverInstanceArgsForCall[i].authInfo
+func (fake *FakeUsbClientInterface) GetDriverEndpointArgsForCall(i int) (*operations.GetDriverEndpointParams, runtime.ClientAuthInfoWriter) {
+	fake.getDriverEndpointMutex.RLock()
+	defer fake.getDriverEndpointMutex.RUnlock()
+	return fake.getDriverEndpointArgsForCall[i].params, fake.getDriverEndpointArgsForCall[i].authInfo
 }
 
-func (fake *FakeUsbClientInterface) CreateDriverInstanceReturns(result1 *operations.CreateDriverInstanceCreated, result2 error) {
-	fake.CreateDriverInstanceStub = nil
-	fake.createDriverInstanceReturns = struct {
-		result1 *operations.CreateDriverInstanceCreated
+func (fake *FakeUsbClientInterface) GetDriverEndpointReturns(result1 *operations.GetDriverEndpointOK, result2 error) {
+	fake.GetDriverEndpointStub = nil
+	fake.getDriverEndpointReturns = struct {
+		result1 *operations.GetDriverEndpointOK
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeUsbClientInterface) DeleteDial(params *operations.DeleteDialParams, authInfo client.AuthInfoWriter) (*operations.DeleteDialNoContent, error) {
-	fake.deleteDialMutex.Lock()
-	fake.deleteDialArgsForCall = append(fake.deleteDialArgsForCall, struct {
-		params   *operations.DeleteDialParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.deleteDialMutex.Unlock()
-	if fake.DeleteDialStub != nil {
-		return fake.DeleteDialStub(params, authInfo)
+func (fake *FakeUsbClientInterface) GetDriverEndpointByName(instanceName string, authInfo runtime.ClientAuthInfoWriter) (*models.DriverEndpoint, error) {
+	fake.getDriverEndpointByNameMutex.Lock()
+	fake.getDriverEndpointByNameArgsForCall = append(fake.getDriverEndpointByNameArgsForCall, struct {
+		instanceName string
+		authInfo     runtime.ClientAuthInfoWriter
+	}{instanceName, authInfo})
+	fake.getDriverEndpointByNameMutex.Unlock()
+	if fake.GetDriverEndpointByNameStub != nil {
+		return fake.GetDriverEndpointByNameStub(instanceName, authInfo)
 	} else {
-		return fake.deleteDialReturns.result1, fake.deleteDialReturns.result2
+		return fake.getDriverEndpointByNameReturns.result1, fake.getDriverEndpointByNameReturns.result2
 	}
 }
 
-func (fake *FakeUsbClientInterface) DeleteDialCallCount() int {
-	fake.deleteDialMutex.RLock()
-	defer fake.deleteDialMutex.RUnlock()
-	return len(fake.deleteDialArgsForCall)
+func (fake *FakeUsbClientInterface) GetDriverEndpointByNameCallCount() int {
+	fake.getDriverEndpointByNameMutex.RLock()
+	defer fake.getDriverEndpointByNameMutex.RUnlock()
+	return len(fake.getDriverEndpointByNameArgsForCall)
 }
 
-func (fake *FakeUsbClientInterface) DeleteDialArgsForCall(i int) (*operations.DeleteDialParams, client.AuthInfoWriter) {
-	fake.deleteDialMutex.RLock()
-	defer fake.deleteDialMutex.RUnlock()
-	return fake.deleteDialArgsForCall[i].params, fake.deleteDialArgsForCall[i].authInfo
+func (fake *FakeUsbClientInterface) GetDriverEndpointByNameArgsForCall(i int) (string, runtime.ClientAuthInfoWriter) {
+	fake.getDriverEndpointByNameMutex.RLock()
+	defer fake.getDriverEndpointByNameMutex.RUnlock()
+	return fake.getDriverEndpointByNameArgsForCall[i].instanceName, fake.getDriverEndpointByNameArgsForCall[i].authInfo
 }
 
-func (fake *FakeUsbClientInterface) DeleteDialReturns(result1 *operations.DeleteDialNoContent, result2 error) {
-	fake.DeleteDialStub = nil
-	fake.deleteDialReturns = struct {
-		result1 *operations.DeleteDialNoContent
+func (fake *FakeUsbClientInterface) GetDriverEndpointByNameReturns(result1 *models.DriverEndpoint, result2 error) {
+	fake.GetDriverEndpointByNameStub = nil
+	fake.getDriverEndpointByNameReturns = struct {
+		result1 *models.DriverEndpoint
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeUsbClientInterface) DeleteDriver(params *operations.DeleteDriverParams, authInfo client.AuthInfoWriter) (*operations.DeleteDriverNoContent, error) {
-	fake.deleteDriverMutex.Lock()
-	fake.deleteDriverArgsForCall = append(fake.deleteDriverArgsForCall, struct {
-		params   *operations.DeleteDriverParams
-		authInfo client.AuthInfoWriter
+func (fake *FakeUsbClientInterface) GetDriverEndpoints(params *operations.GetDriverEndpointsParams, authInfo runtime.ClientAuthInfoWriter) (*operations.GetDriverEndpointsOK, error) {
+	fake.getDriverEndpointsMutex.Lock()
+	fake.getDriverEndpointsArgsForCall = append(fake.getDriverEndpointsArgsForCall, struct {
+		params   *operations.GetDriverEndpointsParams
+		authInfo runtime.ClientAuthInfoWriter
 	}{params, authInfo})
-	fake.deleteDriverMutex.Unlock()
-	if fake.DeleteDriverStub != nil {
-		return fake.DeleteDriverStub(params, authInfo)
+	fake.getDriverEndpointsMutex.Unlock()
+	if fake.GetDriverEndpointsStub != nil {
+		return fake.GetDriverEndpointsStub(params, authInfo)
 	} else {
-		return fake.deleteDriverReturns.result1, fake.deleteDriverReturns.result2
+		return fake.getDriverEndpointsReturns.result1, fake.getDriverEndpointsReturns.result2
 	}
 }
 
-func (fake *FakeUsbClientInterface) DeleteDriverCallCount() int {
-	fake.deleteDriverMutex.RLock()
-	defer fake.deleteDriverMutex.RUnlock()
-	return len(fake.deleteDriverArgsForCall)
+func (fake *FakeUsbClientInterface) GetDriverEndpointsCallCount() int {
+	fake.getDriverEndpointsMutex.RLock()
+	defer fake.getDriverEndpointsMutex.RUnlock()
+	return len(fake.getDriverEndpointsArgsForCall)
 }
 
-func (fake *FakeUsbClientInterface) DeleteDriverArgsForCall(i int) (*operations.DeleteDriverParams, client.AuthInfoWriter) {
-	fake.deleteDriverMutex.RLock()
-	defer fake.deleteDriverMutex.RUnlock()
-	return fake.deleteDriverArgsForCall[i].params, fake.deleteDriverArgsForCall[i].authInfo
+func (fake *FakeUsbClientInterface) GetDriverEndpointsArgsForCall(i int) (*operations.GetDriverEndpointsParams, runtime.ClientAuthInfoWriter) {
+	fake.getDriverEndpointsMutex.RLock()
+	defer fake.getDriverEndpointsMutex.RUnlock()
+	return fake.getDriverEndpointsArgsForCall[i].params, fake.getDriverEndpointsArgsForCall[i].authInfo
 }
 
-func (fake *FakeUsbClientInterface) DeleteDriverReturns(result1 *operations.DeleteDriverNoContent, result2 error) {
-	fake.DeleteDriverStub = nil
-	fake.deleteDriverReturns = struct {
-		result1 *operations.DeleteDriverNoContent
+func (fake *FakeUsbClientInterface) GetDriverEndpointsReturns(result1 *operations.GetDriverEndpointsOK, result2 error) {
+	fake.GetDriverEndpointsStub = nil
+	fake.getDriverEndpointsReturns = struct {
+		result1 *operations.GetDriverEndpointsOK
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeUsbClientInterface) DeleteDriverInstance(params *operations.DeleteDriverInstanceParams, authInfo client.AuthInfoWriter) (*operations.DeleteDriverInstanceNoContent, error) {
-	fake.deleteDriverInstanceMutex.Lock()
-	fake.deleteDriverInstanceArgsForCall = append(fake.deleteDriverInstanceArgsForCall, struct {
-		params   *operations.DeleteDriverInstanceParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.deleteDriverInstanceMutex.Unlock()
-	if fake.DeleteDriverInstanceStub != nil {
-		return fake.DeleteDriverInstanceStub(params, authInfo)
-	} else {
-		return fake.deleteDriverInstanceReturns.result1, fake.deleteDriverInstanceReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) DeleteDriverInstanceCallCount() int {
-	fake.deleteDriverInstanceMutex.RLock()
-	defer fake.deleteDriverInstanceMutex.RUnlock()
-	return len(fake.deleteDriverInstanceArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) DeleteDriverInstanceArgsForCall(i int) (*operations.DeleteDriverInstanceParams, client.AuthInfoWriter) {
-	fake.deleteDriverInstanceMutex.RLock()
-	defer fake.deleteDriverInstanceMutex.RUnlock()
-	return fake.deleteDriverInstanceArgsForCall[i].params, fake.deleteDriverInstanceArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) DeleteDriverInstanceReturns(result1 *operations.DeleteDriverInstanceNoContent, result2 error) {
-	fake.DeleteDriverInstanceStub = nil
-	fake.deleteDriverInstanceReturns = struct {
-		result1 *operations.DeleteDriverInstanceNoContent
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetAllDials(params *operations.GetAllDialsParams, authInfo client.AuthInfoWriter) (*operations.GetAllDialsOK, error) {
-	fake.getAllDialsMutex.Lock()
-	fake.getAllDialsArgsForCall = append(fake.getAllDialsArgsForCall, struct {
-		params   *operations.GetAllDialsParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.getAllDialsMutex.Unlock()
-	if fake.GetAllDialsStub != nil {
-		return fake.GetAllDialsStub(params, authInfo)
-	} else {
-		return fake.getAllDialsReturns.result1, fake.getAllDialsReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetAllDialsCallCount() int {
-	fake.getAllDialsMutex.RLock()
-	defer fake.getAllDialsMutex.RUnlock()
-	return len(fake.getAllDialsArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetAllDialsArgsForCall(i int) (*operations.GetAllDialsParams, client.AuthInfoWriter) {
-	fake.getAllDialsMutex.RLock()
-	defer fake.getAllDialsMutex.RUnlock()
-	return fake.getAllDialsArgsForCall[i].params, fake.getAllDialsArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) GetAllDialsReturns(result1 *operations.GetAllDialsOK, result2 error) {
-	fake.GetAllDialsStub = nil
-	fake.getAllDialsReturns = struct {
-		result1 *operations.GetAllDialsOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetDial(params *operations.GetDialParams, authInfo client.AuthInfoWriter) (*operations.GetDialOK, error) {
-	fake.getDialMutex.Lock()
-	fake.getDialArgsForCall = append(fake.getDialArgsForCall, struct {
-		params   *operations.GetDialParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.getDialMutex.Unlock()
-	if fake.GetDialStub != nil {
-		return fake.GetDialStub(params, authInfo)
-	} else {
-		return fake.getDialReturns.result1, fake.getDialReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetDialCallCount() int {
-	fake.getDialMutex.RLock()
-	defer fake.getDialMutex.RUnlock()
-	return len(fake.getDialArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetDialArgsForCall(i int) (*operations.GetDialParams, client.AuthInfoWriter) {
-	fake.getDialMutex.RLock()
-	defer fake.getDialMutex.RUnlock()
-	return fake.getDialArgsForCall[i].params, fake.getDialArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) GetDialReturns(result1 *operations.GetDialOK, result2 error) {
-	fake.GetDialStub = nil
-	fake.getDialReturns = struct {
-		result1 *operations.GetDialOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetDialSchema(params *operations.GetDialSchemaParams, authInfo client.AuthInfoWriter) (*operations.GetDialSchemaOK, error) {
-	fake.getDialSchemaMutex.Lock()
-	fake.getDialSchemaArgsForCall = append(fake.getDialSchemaArgsForCall, struct {
-		params   *operations.GetDialSchemaParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.getDialSchemaMutex.Unlock()
-	if fake.GetDialSchemaStub != nil {
-		return fake.GetDialSchemaStub(params, authInfo)
-	} else {
-		return fake.getDialSchemaReturns.result1, fake.getDialSchemaReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetDialSchemaCallCount() int {
-	fake.getDialSchemaMutex.RLock()
-	defer fake.getDialSchemaMutex.RUnlock()
-	return len(fake.getDialSchemaArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetDialSchemaArgsForCall(i int) (*operations.GetDialSchemaParams, client.AuthInfoWriter) {
-	fake.getDialSchemaMutex.RLock()
-	defer fake.getDialSchemaMutex.RUnlock()
-	return fake.getDialSchemaArgsForCall[i].params, fake.getDialSchemaArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) GetDialSchemaReturns(result1 *operations.GetDialSchemaOK, result2 error) {
-	fake.GetDialSchemaStub = nil
-	fake.getDialSchemaReturns = struct {
-		result1 *operations.GetDialSchemaOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetDriver(params *operations.GetDriverParams, authInfo client.AuthInfoWriter) (*operations.GetDriverOK, error) {
-	fake.getDriverMutex.Lock()
-	fake.getDriverArgsForCall = append(fake.getDriverArgsForCall, struct {
-		params   *operations.GetDriverParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.getDriverMutex.Unlock()
-	if fake.GetDriverStub != nil {
-		return fake.GetDriverStub(params, authInfo)
-	} else {
-		return fake.getDriverReturns.result1, fake.getDriverReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetDriverCallCount() int {
-	fake.getDriverMutex.RLock()
-	defer fake.getDriverMutex.RUnlock()
-	return len(fake.getDriverArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetDriverArgsForCall(i int) (*operations.GetDriverParams, client.AuthInfoWriter) {
-	fake.getDriverMutex.RLock()
-	defer fake.getDriverMutex.RUnlock()
-	return fake.getDriverArgsForCall[i].params, fake.getDriverArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) GetDriverReturns(result1 *operations.GetDriverOK, result2 error) {
-	fake.GetDriverStub = nil
-	fake.getDriverReturns = struct {
-		result1 *operations.GetDriverOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetDriverInstance(params *operations.GetDriverInstanceParams, authInfo client.AuthInfoWriter) (*operations.GetDriverInstanceOK, error) {
-	fake.getDriverInstanceMutex.Lock()
-	fake.getDriverInstanceArgsForCall = append(fake.getDriverInstanceArgsForCall, struct {
-		params   *operations.GetDriverInstanceParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.getDriverInstanceMutex.Unlock()
-	if fake.GetDriverInstanceStub != nil {
-		return fake.GetDriverInstanceStub(params, authInfo)
-	} else {
-		return fake.getDriverInstanceReturns.result1, fake.getDriverInstanceReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetDriverInstanceCallCount() int {
-	fake.getDriverInstanceMutex.RLock()
-	defer fake.getDriverInstanceMutex.RUnlock()
-	return len(fake.getDriverInstanceArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetDriverInstanceArgsForCall(i int) (*operations.GetDriverInstanceParams, client.AuthInfoWriter) {
-	fake.getDriverInstanceMutex.RLock()
-	defer fake.getDriverInstanceMutex.RUnlock()
-	return fake.getDriverInstanceArgsForCall[i].params, fake.getDriverInstanceArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) GetDriverInstanceReturns(result1 *operations.GetDriverInstanceOK, result2 error) {
-	fake.GetDriverInstanceStub = nil
-	fake.getDriverInstanceReturns = struct {
-		result1 *operations.GetDriverInstanceOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetDriverInstances(params *operations.GetDriverInstancesParams, authInfo client.AuthInfoWriter) (*operations.GetDriverInstancesOK, error) {
-	fake.getDriverInstancesMutex.Lock()
-	fake.getDriverInstancesArgsForCall = append(fake.getDriverInstancesArgsForCall, struct {
-		params   *operations.GetDriverInstancesParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.getDriverInstancesMutex.Unlock()
-	if fake.GetDriverInstancesStub != nil {
-		return fake.GetDriverInstancesStub(params, authInfo)
-	} else {
-		return fake.getDriverInstancesReturns.result1, fake.getDriverInstancesReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetDriverInstancesCallCount() int {
-	fake.getDriverInstancesMutex.RLock()
-	defer fake.getDriverInstancesMutex.RUnlock()
-	return len(fake.getDriverInstancesArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetDriverInstancesArgsForCall(i int) (*operations.GetDriverInstancesParams, client.AuthInfoWriter) {
-	fake.getDriverInstancesMutex.RLock()
-	defer fake.getDriverInstancesMutex.RUnlock()
-	return fake.getDriverInstancesArgsForCall[i].params, fake.getDriverInstancesArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) GetDriverInstancesReturns(result1 *operations.GetDriverInstancesOK, result2 error) {
-	fake.GetDriverInstancesStub = nil
-	fake.getDriverInstancesReturns = struct {
-		result1 *operations.GetDriverInstancesOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetDriverSchema(params *operations.GetDriverSchemaParams, authInfo client.AuthInfoWriter) (*operations.GetDriverSchemaOK, error) {
-	fake.getDriverSchemaMutex.Lock()
-	fake.getDriverSchemaArgsForCall = append(fake.getDriverSchemaArgsForCall, struct {
-		params   *operations.GetDriverSchemaParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.getDriverSchemaMutex.Unlock()
-	if fake.GetDriverSchemaStub != nil {
-		return fake.GetDriverSchemaStub(params, authInfo)
-	} else {
-		return fake.getDriverSchemaReturns.result1, fake.getDriverSchemaReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetDriverSchemaCallCount() int {
-	fake.getDriverSchemaMutex.RLock()
-	defer fake.getDriverSchemaMutex.RUnlock()
-	return len(fake.getDriverSchemaArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetDriverSchemaArgsForCall(i int) (*operations.GetDriverSchemaParams, client.AuthInfoWriter) {
-	fake.getDriverSchemaMutex.RLock()
-	defer fake.getDriverSchemaMutex.RUnlock()
-	return fake.getDriverSchemaArgsForCall[i].params, fake.getDriverSchemaArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) GetDriverSchemaReturns(result1 *operations.GetDriverSchemaOK, result2 error) {
-	fake.GetDriverSchemaStub = nil
-	fake.getDriverSchemaReturns = struct {
-		result1 *operations.GetDriverSchemaOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetDrivers(params *operations.GetDriversParams, authInfo client.AuthInfoWriter) (*operations.GetDriversOK, error) {
-	fake.getDriversMutex.Lock()
-	fake.getDriversArgsForCall = append(fake.getDriversArgsForCall, struct {
-		params   *operations.GetDriversParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.getDriversMutex.Unlock()
-	if fake.GetDriversStub != nil {
-		return fake.GetDriversStub(params, authInfo)
-	} else {
-		return fake.getDriversReturns.result1, fake.getDriversReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetDriversCallCount() int {
-	fake.getDriversMutex.RLock()
-	defer fake.getDriversMutex.RUnlock()
-	return len(fake.getDriversArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetDriversArgsForCall(i int) (*operations.GetDriversParams, client.AuthInfoWriter) {
-	fake.getDriversMutex.RLock()
-	defer fake.getDriversMutex.RUnlock()
-	return fake.getDriversArgsForCall[i].params, fake.getDriversArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) GetDriversReturns(result1 *operations.GetDriversOK, result2 error) {
-	fake.GetDriversStub = nil
-	fake.getDriversReturns = struct {
-		result1 *operations.GetDriversOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetInfo(params *operations.GetInfoParams, authInfo client.AuthInfoWriter) (*operations.GetInfoOK, error) {
+func (fake *FakeUsbClientInterface) GetInfo(params *operations.GetInfoParams, authInfo runtime.ClientAuthInfoWriter) (*operations.GetInfoOK, error) {
 	fake.getInfoMutex.Lock()
 	fake.getInfoArgsForCall = append(fake.getInfoArgsForCall, struct {
 		params   *operations.GetInfoParams
-		authInfo client.AuthInfoWriter
+		authInfo runtime.ClientAuthInfoWriter
 	}{params, authInfo})
 	fake.getInfoMutex.Unlock()
 	if fake.GetInfoStub != nil {
@@ -824,7 +298,7 @@ func (fake *FakeUsbClientInterface) GetInfoCallCount() int {
 	return len(fake.getInfoArgsForCall)
 }
 
-func (fake *FakeUsbClientInterface) GetInfoArgsForCall(i int) (*operations.GetInfoParams, client.AuthInfoWriter) {
+func (fake *FakeUsbClientInterface) GetInfoArgsForCall(i int) (*operations.GetInfoParams, runtime.ClientAuthInfoWriter) {
 	fake.getInfoMutex.RLock()
 	defer fake.getInfoMutex.RUnlock()
 	return fake.getInfoArgsForCall[i].params, fake.getInfoArgsForCall[i].authInfo
@@ -838,181 +312,45 @@ func (fake *FakeUsbClientInterface) GetInfoReturns(result1 *operations.GetInfoOK
 	}{result1, result2}
 }
 
-func (fake *FakeUsbClientInterface) GetService(params *operations.GetServiceParams, authInfo client.AuthInfoWriter) (*operations.GetServiceOK, error) {
-	fake.getServiceMutex.Lock()
-	fake.getServiceArgsForCall = append(fake.getServiceArgsForCall, struct {
-		params   *operations.GetServiceParams
-		authInfo client.AuthInfoWriter
+func (fake *FakeUsbClientInterface) PingEndpoint(params *operations.PingDriverEndpointParams, authInfo runtime.ClientAuthInfoWriter) (*operations.PingDriverEndpointOK, error) {
+	fake.pingEndpointMutex.Lock()
+	fake.pingEndpointArgsForCall = append(fake.pingEndpointArgsForCall, struct {
+		params   *operations.PingDriverEndpointParams
+		authInfo runtime.ClientAuthInfoWriter
 	}{params, authInfo})
-	fake.getServiceMutex.Unlock()
-	if fake.GetServiceStub != nil {
-		return fake.GetServiceStub(params, authInfo)
+	fake.pingEndpointMutex.Unlock()
+	if fake.PingEndpointStub != nil {
+		return fake.PingEndpointStub(params, authInfo)
 	} else {
-		return fake.getServiceReturns.result1, fake.getServiceReturns.result2
+		return fake.pingEndpointReturns.result1, fake.pingEndpointReturns.result2
 	}
 }
 
-func (fake *FakeUsbClientInterface) GetServiceCallCount() int {
-	fake.getServiceMutex.RLock()
-	defer fake.getServiceMutex.RUnlock()
-	return len(fake.getServiceArgsForCall)
+func (fake *FakeUsbClientInterface) PingEndpointCallCount() int {
+	fake.pingEndpointMutex.RLock()
+	defer fake.pingEndpointMutex.RUnlock()
+	return len(fake.pingEndpointArgsForCall)
 }
 
-func (fake *FakeUsbClientInterface) GetServiceArgsForCall(i int) (*operations.GetServiceParams, client.AuthInfoWriter) {
-	fake.getServiceMutex.RLock()
-	defer fake.getServiceMutex.RUnlock()
-	return fake.getServiceArgsForCall[i].params, fake.getServiceArgsForCall[i].authInfo
+func (fake *FakeUsbClientInterface) PingEndpointArgsForCall(i int) (*operations.PingDriverEndpointParams, runtime.ClientAuthInfoWriter) {
+	fake.pingEndpointMutex.RLock()
+	defer fake.pingEndpointMutex.RUnlock()
+	return fake.pingEndpointArgsForCall[i].params, fake.pingEndpointArgsForCall[i].authInfo
 }
 
-func (fake *FakeUsbClientInterface) GetServiceReturns(result1 *operations.GetServiceOK, result2 error) {
-	fake.GetServiceStub = nil
-	fake.getServiceReturns = struct {
-		result1 *operations.GetServiceOK
+func (fake *FakeUsbClientInterface) PingEndpointReturns(result1 *operations.PingDriverEndpointOK, result2 error) {
+	fake.PingEndpointStub = nil
+	fake.pingEndpointReturns = struct {
+		result1 *operations.PingDriverEndpointOK
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeUsbClientInterface) GetServiceByInstanceID(params *operations.GetServiceByInstanceIDParams, authInfo client.AuthInfoWriter) (*operations.GetServiceByInstanceIDOK, error) {
-	fake.getServiceByInstanceIDMutex.Lock()
-	fake.getServiceByInstanceIDArgsForCall = append(fake.getServiceByInstanceIDArgsForCall, struct {
-		params   *operations.GetServiceByInstanceIDParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.getServiceByInstanceIDMutex.Unlock()
-	if fake.GetServiceByInstanceIDStub != nil {
-		return fake.GetServiceByInstanceIDStub(params, authInfo)
-	} else {
-		return fake.getServiceByInstanceIDReturns.result1, fake.getServiceByInstanceIDReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetServiceByInstanceIDCallCount() int {
-	fake.getServiceByInstanceIDMutex.RLock()
-	defer fake.getServiceByInstanceIDMutex.RUnlock()
-	return len(fake.getServiceByInstanceIDArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetServiceByInstanceIDArgsForCall(i int) (*operations.GetServiceByInstanceIDParams, client.AuthInfoWriter) {
-	fake.getServiceByInstanceIDMutex.RLock()
-	defer fake.getServiceByInstanceIDMutex.RUnlock()
-	return fake.getServiceByInstanceIDArgsForCall[i].params, fake.getServiceByInstanceIDArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) GetServiceByInstanceIDReturns(result1 *operations.GetServiceByInstanceIDOK, result2 error) {
-	fake.GetServiceByInstanceIDStub = nil
-	fake.getServiceByInstanceIDReturns = struct {
-		result1 *operations.GetServiceByInstanceIDOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetServicePlan(params *operations.GetServicePlanParams, authInfo client.AuthInfoWriter) (*operations.GetServicePlanOK, error) {
-	fake.getServicePlanMutex.Lock()
-	fake.getServicePlanArgsForCall = append(fake.getServicePlanArgsForCall, struct {
-		params   *operations.GetServicePlanParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.getServicePlanMutex.Unlock()
-	if fake.GetServicePlanStub != nil {
-		return fake.GetServicePlanStub(params, authInfo)
-	} else {
-		return fake.getServicePlanReturns.result1, fake.getServicePlanReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetServicePlanCallCount() int {
-	fake.getServicePlanMutex.RLock()
-	defer fake.getServicePlanMutex.RUnlock()
-	return len(fake.getServicePlanArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetServicePlanArgsForCall(i int) (*operations.GetServicePlanParams, client.AuthInfoWriter) {
-	fake.getServicePlanMutex.RLock()
-	defer fake.getServicePlanMutex.RUnlock()
-	return fake.getServicePlanArgsForCall[i].params, fake.getServicePlanArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) GetServicePlanReturns(result1 *operations.GetServicePlanOK, result2 error) {
-	fake.GetServicePlanStub = nil
-	fake.getServicePlanReturns = struct {
-		result1 *operations.GetServicePlanOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetServicePlans(params *operations.GetServicePlansParams, authInfo client.AuthInfoWriter) (*operations.GetServicePlansOK, error) {
-	fake.getServicePlansMutex.Lock()
-	fake.getServicePlansArgsForCall = append(fake.getServicePlansArgsForCall, struct {
-		params   *operations.GetServicePlansParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.getServicePlansMutex.Unlock()
-	if fake.GetServicePlansStub != nil {
-		return fake.GetServicePlansStub(params, authInfo)
-	} else {
-		return fake.getServicePlansReturns.result1, fake.getServicePlansReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetServicePlansCallCount() int {
-	fake.getServicePlansMutex.RLock()
-	defer fake.getServicePlansMutex.RUnlock()
-	return len(fake.getServicePlansArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetServicePlansArgsForCall(i int) (*operations.GetServicePlansParams, client.AuthInfoWriter) {
-	fake.getServicePlansMutex.RLock()
-	defer fake.getServicePlansMutex.RUnlock()
-	return fake.getServicePlansArgsForCall[i].params, fake.getServicePlansArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) GetServicePlansReturns(result1 *operations.GetServicePlansOK, result2 error) {
-	fake.GetServicePlansStub = nil
-	fake.getServicePlansReturns = struct {
-		result1 *operations.GetServicePlansOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) PingDriverInstance(params *operations.PingDriverInstanceParams, authInfo client.AuthInfoWriter) (*operations.PingDriverInstanceOK, error) {
-	fake.pingDriverInstanceMutex.Lock()
-	fake.pingDriverInstanceArgsForCall = append(fake.pingDriverInstanceArgsForCall, struct {
-		params   *operations.PingDriverInstanceParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.pingDriverInstanceMutex.Unlock()
-	if fake.PingDriverInstanceStub != nil {
-		return fake.PingDriverInstanceStub(params, authInfo)
-	} else {
-		return fake.pingDriverInstanceReturns.result1, fake.pingDriverInstanceReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) PingDriverInstanceCallCount() int {
-	fake.pingDriverInstanceMutex.RLock()
-	defer fake.pingDriverInstanceMutex.RUnlock()
-	return len(fake.pingDriverInstanceArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) PingDriverInstanceArgsForCall(i int) (*operations.PingDriverInstanceParams, client.AuthInfoWriter) {
-	fake.pingDriverInstanceMutex.RLock()
-	defer fake.pingDriverInstanceMutex.RUnlock()
-	return fake.pingDriverInstanceArgsForCall[i].params, fake.pingDriverInstanceArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) PingDriverInstanceReturns(result1 *operations.PingDriverInstanceOK, result2 error) {
-	fake.PingDriverInstanceStub = nil
-	fake.pingDriverInstanceReturns = struct {
-		result1 *operations.PingDriverInstanceOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) UpdateCatalog(params *operations.UpdateCatalogParams, authInfo client.AuthInfoWriter) (*operations.UpdateCatalogOK, error) {
+func (fake *FakeUsbClientInterface) UpdateCatalog(params *operations.UpdateCatalogParams, authInfo runtime.ClientAuthInfoWriter) (*operations.UpdateCatalogOK, error) {
 	fake.updateCatalogMutex.Lock()
 	fake.updateCatalogArgsForCall = append(fake.updateCatalogArgsForCall, struct {
 		params   *operations.UpdateCatalogParams
-		authInfo client.AuthInfoWriter
+		authInfo runtime.ClientAuthInfoWriter
 	}{params, authInfo})
 	fake.updateCatalogMutex.Unlock()
 	if fake.UpdateCatalogStub != nil {
@@ -1028,7 +366,7 @@ func (fake *FakeUsbClientInterface) UpdateCatalogCallCount() int {
 	return len(fake.updateCatalogArgsForCall)
 }
 
-func (fake *FakeUsbClientInterface) UpdateCatalogArgsForCall(i int) (*operations.UpdateCatalogParams, client.AuthInfoWriter) {
+func (fake *FakeUsbClientInterface) UpdateCatalogArgsForCall(i int) (*operations.UpdateCatalogParams, runtime.ClientAuthInfoWriter) {
 	fake.updateCatalogMutex.RLock()
 	defer fake.updateCatalogMutex.RUnlock()
 	return fake.updateCatalogArgsForCall[i].params, fake.updateCatalogArgsForCall[i].authInfo
@@ -1042,214 +380,44 @@ func (fake *FakeUsbClientInterface) UpdateCatalogReturns(result1 *operations.Upd
 	}{result1, result2}
 }
 
-func (fake *FakeUsbClientInterface) UpdateDial(params *operations.UpdateDialParams, authInfo client.AuthInfoWriter) (*operations.UpdateDialOK, error) {
-	fake.updateDialMutex.Lock()
-	fake.updateDialArgsForCall = append(fake.updateDialArgsForCall, struct {
-		params   *operations.UpdateDialParams
-		authInfo client.AuthInfoWriter
+func (fake *FakeUsbClientInterface) UpdateDriverEndpoint(params *operations.UpdateDriverEndpointParams, authInfo runtime.ClientAuthInfoWriter) (*operations.UpdateDriverEndpointOK, error) {
+	fake.updateDriverEndpointMutex.Lock()
+	fake.updateDriverEndpointArgsForCall = append(fake.updateDriverEndpointArgsForCall, struct {
+		params   *operations.UpdateDriverEndpointParams
+		authInfo runtime.ClientAuthInfoWriter
 	}{params, authInfo})
-	fake.updateDialMutex.Unlock()
-	if fake.UpdateDialStub != nil {
-		return fake.UpdateDialStub(params, authInfo)
+	fake.updateDriverEndpointMutex.Unlock()
+	if fake.UpdateDriverEndpointStub != nil {
+		return fake.UpdateDriverEndpointStub(params, authInfo)
 	} else {
-		return fake.updateDialReturns.result1, fake.updateDialReturns.result2
+		return fake.updateDriverEndpointReturns.result1, fake.updateDriverEndpointReturns.result2
 	}
 }
 
-func (fake *FakeUsbClientInterface) UpdateDialCallCount() int {
-	fake.updateDialMutex.RLock()
-	defer fake.updateDialMutex.RUnlock()
-	return len(fake.updateDialArgsForCall)
+func (fake *FakeUsbClientInterface) UpdateDriverEndpointCallCount() int {
+	fake.updateDriverEndpointMutex.RLock()
+	defer fake.updateDriverEndpointMutex.RUnlock()
+	return len(fake.updateDriverEndpointArgsForCall)
 }
 
-func (fake *FakeUsbClientInterface) UpdateDialArgsForCall(i int) (*operations.UpdateDialParams, client.AuthInfoWriter) {
-	fake.updateDialMutex.RLock()
-	defer fake.updateDialMutex.RUnlock()
-	return fake.updateDialArgsForCall[i].params, fake.updateDialArgsForCall[i].authInfo
+func (fake *FakeUsbClientInterface) UpdateDriverEndpointArgsForCall(i int) (*operations.UpdateDriverEndpointParams, runtime.ClientAuthInfoWriter) {
+	fake.updateDriverEndpointMutex.RLock()
+	defer fake.updateDriverEndpointMutex.RUnlock()
+	return fake.updateDriverEndpointArgsForCall[i].params, fake.updateDriverEndpointArgsForCall[i].authInfo
 }
 
-func (fake *FakeUsbClientInterface) UpdateDialReturns(result1 *operations.UpdateDialOK, result2 error) {
-	fake.UpdateDialStub = nil
-	fake.updateDialReturns = struct {
-		result1 *operations.UpdateDialOK
+func (fake *FakeUsbClientInterface) UpdateDriverEndpointReturns(result1 *operations.UpdateDriverEndpointOK, result2 error) {
+	fake.UpdateDriverEndpointStub = nil
+	fake.updateDriverEndpointReturns = struct {
+		result1 *operations.UpdateDriverEndpointOK
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeUsbClientInterface) UpdateDriver(params *operations.UpdateDriverParams, authInfo client.AuthInfoWriter) (*operations.UpdateDriverOK, error) {
-	fake.updateDriverMutex.Lock()
-	fake.updateDriverArgsForCall = append(fake.updateDriverArgsForCall, struct {
-		params   *operations.UpdateDriverParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.updateDriverMutex.Unlock()
-	if fake.UpdateDriverStub != nil {
-		return fake.UpdateDriverStub(params, authInfo)
-	} else {
-		return fake.updateDriverReturns.result1, fake.updateDriverReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) UpdateDriverCallCount() int {
-	fake.updateDriverMutex.RLock()
-	defer fake.updateDriverMutex.RUnlock()
-	return len(fake.updateDriverArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) UpdateDriverArgsForCall(i int) (*operations.UpdateDriverParams, client.AuthInfoWriter) {
-	fake.updateDriverMutex.RLock()
-	defer fake.updateDriverMutex.RUnlock()
-	return fake.updateDriverArgsForCall[i].params, fake.updateDriverArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) UpdateDriverReturns(result1 *operations.UpdateDriverOK, result2 error) {
-	fake.UpdateDriverStub = nil
-	fake.updateDriverReturns = struct {
-		result1 *operations.UpdateDriverOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) UpdateDriverInstance(params *operations.UpdateDriverInstanceParams, authInfo client.AuthInfoWriter) (*operations.UpdateDriverInstanceOK, error) {
-	fake.updateDriverInstanceMutex.Lock()
-	fake.updateDriverInstanceArgsForCall = append(fake.updateDriverInstanceArgsForCall, struct {
-		params   *operations.UpdateDriverInstanceParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.updateDriverInstanceMutex.Unlock()
-	if fake.UpdateDriverInstanceStub != nil {
-		return fake.UpdateDriverInstanceStub(params, authInfo)
-	} else {
-		return fake.updateDriverInstanceReturns.result1, fake.updateDriverInstanceReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) UpdateDriverInstanceCallCount() int {
-	fake.updateDriverInstanceMutex.RLock()
-	defer fake.updateDriverInstanceMutex.RUnlock()
-	return len(fake.updateDriverInstanceArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) UpdateDriverInstanceArgsForCall(i int) (*operations.UpdateDriverInstanceParams, client.AuthInfoWriter) {
-	fake.updateDriverInstanceMutex.RLock()
-	defer fake.updateDriverInstanceMutex.RUnlock()
-	return fake.updateDriverInstanceArgsForCall[i].params, fake.updateDriverInstanceArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) UpdateDriverInstanceReturns(result1 *operations.UpdateDriverInstanceOK, result2 error) {
-	fake.UpdateDriverInstanceStub = nil
-	fake.updateDriverInstanceReturns = struct {
-		result1 *operations.UpdateDriverInstanceOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) UpdateService(params *operations.UpdateServiceParams, authInfo client.AuthInfoWriter) (*operations.UpdateServiceOK, error) {
-	fake.updateServiceMutex.Lock()
-	fake.updateServiceArgsForCall = append(fake.updateServiceArgsForCall, struct {
-		params   *operations.UpdateServiceParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.updateServiceMutex.Unlock()
-	if fake.UpdateServiceStub != nil {
-		return fake.UpdateServiceStub(params, authInfo)
-	} else {
-		return fake.updateServiceReturns.result1, fake.updateServiceReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) UpdateServiceCallCount() int {
-	fake.updateServiceMutex.RLock()
-	defer fake.updateServiceMutex.RUnlock()
-	return len(fake.updateServiceArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) UpdateServiceArgsForCall(i int) (*operations.UpdateServiceParams, client.AuthInfoWriter) {
-	fake.updateServiceMutex.RLock()
-	defer fake.updateServiceMutex.RUnlock()
-	return fake.updateServiceArgsForCall[i].params, fake.updateServiceArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) UpdateServiceReturns(result1 *operations.UpdateServiceOK, result2 error) {
-	fake.UpdateServiceStub = nil
-	fake.updateServiceReturns = struct {
-		result1 *operations.UpdateServiceOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) UpdateServicePlan(params *operations.UpdateServicePlanParams, authInfo client.AuthInfoWriter) (*operations.UpdateServicePlanOK, error) {
-	fake.updateServicePlanMutex.Lock()
-	fake.updateServicePlanArgsForCall = append(fake.updateServicePlanArgsForCall, struct {
-		params   *operations.UpdateServicePlanParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.updateServicePlanMutex.Unlock()
-	if fake.UpdateServicePlanStub != nil {
-		return fake.UpdateServicePlanStub(params, authInfo)
-	} else {
-		return fake.updateServicePlanReturns.result1, fake.updateServicePlanReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) UpdateServicePlanCallCount() int {
-	fake.updateServicePlanMutex.RLock()
-	defer fake.updateServicePlanMutex.RUnlock()
-	return len(fake.updateServicePlanArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) UpdateServicePlanArgsForCall(i int) (*operations.UpdateServicePlanParams, client.AuthInfoWriter) {
-	fake.updateServicePlanMutex.RLock()
-	defer fake.updateServicePlanMutex.RUnlock()
-	return fake.updateServicePlanArgsForCall[i].params, fake.updateServicePlanArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) UpdateServicePlanReturns(result1 *operations.UpdateServicePlanOK, result2 error) {
-	fake.UpdateServicePlanStub = nil
-	fake.updateServicePlanReturns = struct {
-		result1 *operations.UpdateServicePlanOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) UploadDriver(params *operations.UploadDriverParams, authInfo client.AuthInfoWriter) (*operations.UploadDriverOK, error) {
-	fake.uploadDriverMutex.Lock()
-	fake.uploadDriverArgsForCall = append(fake.uploadDriverArgsForCall, struct {
-		params   *operations.UploadDriverParams
-		authInfo client.AuthInfoWriter
-	}{params, authInfo})
-	fake.uploadDriverMutex.Unlock()
-	if fake.UploadDriverStub != nil {
-		return fake.UploadDriverStub(params, authInfo)
-	} else {
-		return fake.uploadDriverReturns.result1, fake.uploadDriverReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) UploadDriverCallCount() int {
-	fake.uploadDriverMutex.RLock()
-	defer fake.uploadDriverMutex.RUnlock()
-	return len(fake.uploadDriverArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) UploadDriverArgsForCall(i int) (*operations.UploadDriverParams, client.AuthInfoWriter) {
-	fake.uploadDriverMutex.RLock()
-	defer fake.uploadDriverMutex.RUnlock()
-	return fake.uploadDriverArgsForCall[i].params, fake.uploadDriverArgsForCall[i].authInfo
-}
-
-func (fake *FakeUsbClientInterface) UploadDriverReturns(result1 *operations.UploadDriverOK, result2 error) {
-	fake.UploadDriverStub = nil
-	fake.uploadDriverReturns = struct {
-		result1 *operations.UploadDriverOK
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) SetTransport(transport client.Transport) {
+func (fake *FakeUsbClientInterface) SetTransport(transport runtime.ClientTransport) {
 	fake.setTransportMutex.Lock()
 	fake.setTransportArgsForCall = append(fake.setTransportArgsForCall, struct {
-		transport client.Transport
+		transport runtime.ClientTransport
 	}{transport})
 	fake.setTransportMutex.Unlock()
 	if fake.SetTransportStub != nil {
@@ -1263,146 +431,10 @@ func (fake *FakeUsbClientInterface) SetTransportCallCount() int {
 	return len(fake.setTransportArgsForCall)
 }
 
-func (fake *FakeUsbClientInterface) SetTransportArgsForCall(i int) client.Transport {
+func (fake *FakeUsbClientInterface) SetTransportArgsForCall(i int) runtime.ClientTransport {
 	fake.setTransportMutex.RLock()
 	defer fake.setTransportMutex.RUnlock()
 	return fake.setTransportArgsForCall[i].transport
-}
-
-func (fake *FakeUsbClientInterface) GetDriverByName(authInfo client.AuthInfoWriter, driverName string) (*models.Driver, error) {
-	fake.getDriverByNameMutex.Lock()
-	fake.getDriverByNameArgsForCall = append(fake.getDriverByNameArgsForCall, struct {
-		authInfo   client.AuthInfoWriter
-		driverName string
-	}{authInfo, driverName})
-	fake.getDriverByNameMutex.Unlock()
-	if fake.GetDriverByNameStub != nil {
-		return fake.GetDriverByNameStub(authInfo, driverName)
-	} else {
-		return fake.getDriverByNameReturns.result1, fake.getDriverByNameReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetDriverByNameCallCount() int {
-	fake.getDriverByNameMutex.RLock()
-	defer fake.getDriverByNameMutex.RUnlock()
-	return len(fake.getDriverByNameArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetDriverByNameArgsForCall(i int) (client.AuthInfoWriter, string) {
-	fake.getDriverByNameMutex.RLock()
-	defer fake.getDriverByNameMutex.RUnlock()
-	return fake.getDriverByNameArgsForCall[i].authInfo, fake.getDriverByNameArgsForCall[i].driverName
-}
-
-func (fake *FakeUsbClientInterface) GetDriverByNameReturns(result1 *models.Driver, result2 error) {
-	fake.GetDriverByNameStub = nil
-	fake.getDriverByNameReturns = struct {
-		result1 *models.Driver
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetDriverInstanceByName(authHeader client.AuthInfoWriter, driverInstanceName string) (*models.DriverInstance, error) {
-	fake.getDriverInstanceByNameMutex.Lock()
-	fake.getDriverInstanceByNameArgsForCall = append(fake.getDriverInstanceByNameArgsForCall, struct {
-		authHeader         client.AuthInfoWriter
-		driverInstanceName string
-	}{authHeader, driverInstanceName})
-	fake.getDriverInstanceByNameMutex.Unlock()
-	if fake.GetDriverInstanceByNameStub != nil {
-		return fake.GetDriverInstanceByNameStub(authHeader, driverInstanceName)
-	} else {
-		return fake.getDriverInstanceByNameReturns.result1, fake.getDriverInstanceByNameReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetDriverInstanceByNameCallCount() int {
-	fake.getDriverInstanceByNameMutex.RLock()
-	defer fake.getDriverInstanceByNameMutex.RUnlock()
-	return len(fake.getDriverInstanceByNameArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetDriverInstanceByNameArgsForCall(i int) (client.AuthInfoWriter, string) {
-	fake.getDriverInstanceByNameMutex.RLock()
-	defer fake.getDriverInstanceByNameMutex.RUnlock()
-	return fake.getDriverInstanceByNameArgsForCall[i].authHeader, fake.getDriverInstanceByNameArgsForCall[i].driverInstanceName
-}
-
-func (fake *FakeUsbClientInterface) GetDriverInstanceByNameReturns(result1 *models.DriverInstance, result2 error) {
-	fake.GetDriverInstanceByNameStub = nil
-	fake.getDriverInstanceByNameReturns = struct {
-		result1 *models.DriverInstance
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetServiceByDriverInstanceID(authInfo client.AuthInfoWriter, driverInstanceID string) (*models.Service, error) {
-	fake.getServiceByDriverInstanceIDMutex.Lock()
-	fake.getServiceByDriverInstanceIDArgsForCall = append(fake.getServiceByDriverInstanceIDArgsForCall, struct {
-		authInfo         client.AuthInfoWriter
-		driverInstanceID string
-	}{authInfo, driverInstanceID})
-	fake.getServiceByDriverInstanceIDMutex.Unlock()
-	if fake.GetServiceByDriverInstanceIDStub != nil {
-		return fake.GetServiceByDriverInstanceIDStub(authInfo, driverInstanceID)
-	} else {
-		return fake.getServiceByDriverInstanceIDReturns.result1, fake.getServiceByDriverInstanceIDReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetServiceByDriverInstanceIDCallCount() int {
-	fake.getServiceByDriverInstanceIDMutex.RLock()
-	defer fake.getServiceByDriverInstanceIDMutex.RUnlock()
-	return len(fake.getServiceByDriverInstanceIDArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetServiceByDriverInstanceIDArgsForCall(i int) (client.AuthInfoWriter, string) {
-	fake.getServiceByDriverInstanceIDMutex.RLock()
-	defer fake.getServiceByDriverInstanceIDMutex.RUnlock()
-	return fake.getServiceByDriverInstanceIDArgsForCall[i].authInfo, fake.getServiceByDriverInstanceIDArgsForCall[i].driverInstanceID
-}
-
-func (fake *FakeUsbClientInterface) GetServiceByDriverInstanceIDReturns(result1 *models.Service, result2 error) {
-	fake.GetServiceByDriverInstanceIDStub = nil
-	fake.getServiceByDriverInstanceIDReturns = struct {
-		result1 *models.Service
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeUsbClientInterface) GetPlanByID(authInfo client.AuthInfoWriter, planID string) (*models.Plan, error) {
-	fake.getPlanByIDMutex.Lock()
-	fake.getPlanByIDArgsForCall = append(fake.getPlanByIDArgsForCall, struct {
-		authInfo client.AuthInfoWriter
-		planID   string
-	}{authInfo, planID})
-	fake.getPlanByIDMutex.Unlock()
-	if fake.GetPlanByIDStub != nil {
-		return fake.GetPlanByIDStub(authInfo, planID)
-	} else {
-		return fake.getPlanByIDReturns.result1, fake.getPlanByIDReturns.result2
-	}
-}
-
-func (fake *FakeUsbClientInterface) GetPlanByIDCallCount() int {
-	fake.getPlanByIDMutex.RLock()
-	defer fake.getPlanByIDMutex.RUnlock()
-	return len(fake.getPlanByIDArgsForCall)
-}
-
-func (fake *FakeUsbClientInterface) GetPlanByIDArgsForCall(i int) (client.AuthInfoWriter, string) {
-	fake.getPlanByIDMutex.RLock()
-	defer fake.getPlanByIDMutex.RUnlock()
-	return fake.getPlanByIDArgsForCall[i].authInfo, fake.getPlanByIDArgsForCall[i].planID
-}
-
-func (fake *FakeUsbClientInterface) GetPlanByIDReturns(result1 *models.Plan, result2 error) {
-	fake.GetPlanByIDStub = nil
-	fake.getPlanByIDReturns = struct {
-		result1 *models.Plan
-		result2 error
-	}{result1, result2}
 }
 
 var _ lib.UsbClientInterface = new(FakeUsbClientInterface)

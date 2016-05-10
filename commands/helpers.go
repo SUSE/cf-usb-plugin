@@ -3,17 +3,17 @@ package commands
 import (
 	"crypto/sha1"
 	"encoding/base64"
+	httptransport "github.com/go-openapi/runtime/client"
 	"io"
 	"os"
 	"strings"
 
 	"github.com/cloudfoundry/cli/plugin"
-	swaggerclient "github.com/go-swagger/go-swagger/client"
-	httptransport "github.com/go-swagger/go-swagger/httpkit/client"
+	"github.com/go-openapi/runtime"
 )
 
 //GetBearerToken - returns token from cf cli
-func GetBearerToken(cliConnection plugin.CliConnection) (swaggerclient.AuthInfoWriter, error) {
+func GetBearerToken(cliConnection plugin.CliConnection) (runtime.ClientAuthInfoWriter, error) {
 	token, err := cliConnection.AccessToken()
 	if err != nil {
 		return nil, err

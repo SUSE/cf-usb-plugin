@@ -14,35 +14,5 @@ popd
 
 pushd $GOPATH/src/github.com/hpcloud/cf-plugin-usb/lib
 
-# uploadDriver operation will is not correctly generated, ignore it for now
-swagger generate client -f $GOPATH/src/github.com/hpcloud/cf-usb/swagger-spec/api.json  -t ./  -A usb-client \
- -O updateCatalog \
- -O getInfo \
- -O getDrivers \
- -O createDriver \
- -O getDriver \
- -O updateDriver \
- -O deleteDriver \
- -O getDriverSchema \
- -O getDialSchema \
- -O getDriverInstances \
- -O createDriverInstance \
- -O getDriverInstance \
- -O updateDriverInstance \
- -O deleteDriverInstance \
- -O pingDriverInstance \
- -O getServiceByInstanceId \
- -O getService \
- -O updateService \
- -O getServicePlans \
- -O getServicePlan \
- -O updateServicePlan \
- -O getAllDials \
- -O createDial \
- -O getDial \
- -O updateDial \
- -O deleteDial \
- -O getDriver \
- -O uploadDriver
-
+swagger generate client -f $GOPATH/src/github.com/hpcloud/cf-usb/swagger-spec/management-api.json  -t ./  -A usb-client 
 popd

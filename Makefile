@@ -35,16 +35,13 @@ vet:
 
 build:
 	$(call print_status, Building)
-	export GOPATH=$(shell godep path):$(GOPATH)
-	godep restore
 	$(call gobuild,linux,amd64)
 	$(call gobuild,windows,amd64,.exe)
 	$(call gobuild,darwin,amd64)
-	
 
 gobuild = GOARCH=$(2) GOOS=$(1) go build \
 		-ldflags="-X main.version=$(APP_VERSION)" \
-		-o="build/$(1)-$(2)/cf-plugin-usb$(3)" main.go
+		-o="build/$(1)-$(2)/cf-plugin-usb$(3)" ./
 
 linux_dist: build
 	$(call print_status, Disting linux)
@@ -70,12 +67,10 @@ tools:
 	go get -u golang.org/x/tools/cmd/goimports
 	go get -u golang.org/x/tools/cmd/cover
 	go get -u github.com/golang/lint/golint
-	go get -u github.com/tools/godep
 
 test:
 	$(call print_status, Testing)
-	export GOPATH=$(shell godep path):$(GOPATH) &&\
-		godep go test -cover ./...
+	go test -cover ./...
 
 docker:
 	$(call print_status, Creating docker image)

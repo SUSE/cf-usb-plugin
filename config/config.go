@@ -8,14 +8,14 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/cloudfoundry/cli/cf/configuration/config_helpers"
+	"github.com/cloudfoundry/cli/cf/configuration/confighelpers"
 )
 
 //UsbConfigPluginInterface exposes config commands
 type UsbConfigPluginInterface interface {
 	GetTarget() (string, error)
 	SetTarget(string) error
-	GetUsbConfigFile() string
+	GetUsbConfigFile() (string, error)
 }
 
 //UsbConfigPlugin struct
@@ -29,11 +29,15 @@ func NewConfig() UsbConfigPluginInterface {
 
 //GetTarget returns selected usb target
 func (configfile *UsbConfigPlugin) GetTarget() (target string, err error) {
-	if _, err := os.Stat(configfile.GetUsbConfigFile()); err != nil {
+	configFilePath, err := configfile.GetUsbConfigFile()
+	if err != nil {
+		return "", err
+	}
+	if _, err = os.Stat(configFilePath); err != nil {
 		return "", errors.New("Usb management target not set. Use cf usb target <usb-mgmt-endpoint> to set the target")
 	}
 
-	jsonConf, err := ioutil.ReadFile(configfile.GetUsbConfigFile())
+	jsonConf, err := ioutil.ReadFile(configFilePath)
 	if err != nil {
 		return "", err
 	}
@@ -54,7 +58,12 @@ func (configfile *UsbConfigPlugin) SetTarget(target string) (err error) {
 		target = fmt.Sprintf("http://%[1]s", target)
 	}
 
-	file, err := os.OpenFile(configfile.GetUsbConfigFile(), os.O_RDWR|os.O_CREATE, 0755)
+	configFilePath, err := configfile.GetUsbConfigFile()
+	if err != nil {
+		return err
+	}
+
+	file, err := os.OpenFile(configFilePath, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		return err
 	}
@@ -69,7 +78,7 @@ func (configfile *UsbConfigPlugin) SetTarget(target string) (err error) {
 		return err
 	}
 
-	err = ioutil.WriteFile(configfile.GetUsbConfigFile(), output, 0600)
+	err = ioutil.WriteFile(configFilePath, output, 0600)
 	if err != nil {
 		return err
 	}
@@ -78,6 +87,10 @@ func (configfile *UsbConfigPlugin) SetTarget(target string) (err error) {
 }
 
 //GetUsbConfigFile returns the path to the usb config file
-func (*UsbConfigPlugin) GetUsbConfigFile() string {
-	return filepath.Join(filepath.Dir(config_helpers.DefaultFilePath()), "usb-config.json")
+func (*UsbConfigPlugin) GetUsbConfigFile() (string, error) {
+	defaultPath, err := confighelpers.DefaultFilePath()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(filepath.Dir(defaultPath), "usb-config.json"), nil
 }
