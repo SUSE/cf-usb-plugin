@@ -9,12 +9,11 @@ import (
 	"strings"
 
 	"github.com/cloudfoundry/cli/cf/terminal"
+	"github.com/cloudfoundry/cli/cf/trace"
 	"github.com/cloudfoundry/cli/plugin"
 
 	"github.com/go-openapi/runtime"
-	httptransport "github.com/go-openapi/runtime/client"
 
-	strfmt "github.com/go-openapi/strfmt"
 	"github.com/hpcloud/cf-plugin-usb/commands"
 	"github.com/hpcloud/cf-plugin-usb/config"
 	"github.com/hpcloud/cf-plugin-usb/lib"
@@ -39,8 +38,15 @@ func main() {
 func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	c.argLength = len(args)
 
+	traceEnv := os.Getenv("CF_TRACE")
+	traceLogger := trace.NewLogger(Writer, false, traceEnv, "")
+
 	config := config.NewConfig()
-	configFile := config.GetUsbConfigFile()
+	configFile, err := config.GetUsbConfigFile()
+	if err != nil {
+		c.showFailed(fmt.Sprint("ERROR:", err))
+		return
+	}
 
 	if _, err := os.Stat(configFile); err != nil {
 		_, err := cliConnection.HasAPIEndpoint()
@@ -78,7 +84,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 	}
 
-	c.ui = terminal.NewUI(os.Stdin, terminal.NewTeePrinter())
+	c.ui = terminal.NewUI(os.Stdin, Writer, terminal.NewTeePrinter(Writer), traceLogger)
 
 	bearer, err := commands.GetBearerToken(cliConnection)
 	if err != nil {
@@ -118,13 +124,9 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
 		}
-		transport := httptransport.New(u.Host, "/", []string{u.Scheme})
 
 		debug, _ := strconv.ParseBool(os.Getenv("CF_TRACE"))
-
-		transport.Debug = debug
-
-		c.httpClient = lib.NewUsbClient(transport, strfmt.Default)
+		c.httpClient = lib.NewUsbClient(u, debug)
 	}
 
 	switch args[1] {
@@ -132,17 +134,13 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		c.TargetCommand(args, config)
 	case "info":
 		c.InfoCommand()
-	case "create-instance":
+	case "create-driver-endpoint":
 		c.CreateInstanceCommand(args)
-	case "delete-instance":
+	case "delete-driver-endpoint":
 		c.DeleteInstanceCommand(args)
-	case "update-instance":
+	case "update-driver-endpoint":
 		c.UpdateInstanceCommand(args)
-	case "update-service":
-		c.UpdateServiceCommand(args)
-	case "dials":
-		c.DialsCommand(args)
-	case "instances":
+	case "driver-endpoints":
 		c.InstancesCommand(args)
 	default:
 		fmt.Printf("'%s' is not a registered command. See 'cf usb help'", args[1])
@@ -188,102 +186,55 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 				},
 			},
 			plugin.Command{
-				Name:     "usb create-instance",
-				HelpText: "Create a driver instance",
+				Name:     "usb create-driver-endpoint",
+				HelpText: "Create a driver endpoint",
 				UsageDetails: plugin.Usage{
-					Usage: `cf usb create-instance INSTANCE_NAME TARGET_URL -c PARAMETERS_AS_JSON
+					Usage: `cf usb create-driver-endpoint NAME ENDPOINT_URL AUTHENTICATION_KEY [-c METADATA_AS_JSON]
 
-    Optionally provide a file containing driver-specific configuration parameters in a valid JSON object.
+    Optionally provide a file containing the driver endpoint metadata in a valid JSON object.
     The path to the parameters file can be an absolute or relative path to a file:
-    cf usb create-instance INSTANCE_NAME TARGET_URL -c PATH_TO_FILE	
+    cf usb create-driver-endpoint NAME ENDPOINT_URL AUTHENTICATION_KEY -c PATH_TO_FILE	
 					
 EXAMPLE:
-    cf usb create-instance mydriver myinstance http://127.0.0.1:1234 -c '{"host":"localhost","port":"1234","user":"username","password":"password"}'
-    cf usb create-instance mydriver myinstance http://127.0.0.1:1234 -c ~/workspace/tmp/mydriverinstance_config.json
+    cf usb create-driver-endpoint mydriver http://127.0.0.1:1234 authkey -c '{"display_name":"My Driver","image_url":"http://127.0.0.1:8080/image","long_description":"Long description","provider_display_name":"ProvidedName", "documentation_url":"http://127.0.0.1:8080/doc", "support_url":"http://127.0.0.1:8080/support"}'
+    cf usb create-driver-endpoint mydriver http://127.0.0.1:1234 authkey -c ~/workspace/tmp/driver_metadata.json
 	
 OPTIONS:
-    -c   Valid JSON object containing driver instance specific configuration parameters, provided in-line or in a file
+    -c   Valid JSON object containing the driver endpoint metadata, provided in-line or in a file
 `,
 				},
 			},
 			plugin.Command{
-				Name:     "usb delete-instance",
+				Name:     "usb delete-driver-endpoint",
 				HelpText: "Delete a driver instance",
 				UsageDetails: plugin.Usage{
-					Usage: "cf usb delete-instance INSTANCE_NAME",
+					Usage: "cf usb delete-driver-endpoint NAME",
 				},
 			},
 			plugin.Command{
-				Name:     "usb create-driver",
-				HelpText: "Create a driver and upload driver bits",
-				UsageDetails: plugin.Usage{
-					Usage: "cf usb create-driver DRIVER_TYPE DRIVER_NAME DRIVER_BITS_PATH",
-				},
-			},
-			plugin.Command{
-				Name:     "usb rename-driver",
-				HelpText: "Rename a driver",
-				UsageDetails: plugin.Usage{
-					Usage: "cf usb rename-driver OLD_DRIVER_NAME NEW_DRIVER_NAME",
-				},
-			},
-			plugin.Command{
-				Name:     "usb update-instance",
+				Name:     "usb update-driver-endpoint",
 				HelpText: "Update a driver instance",
 				UsageDetails: plugin.Usage{
-					Usage: `cf usb update-instance INSTANCE_NAME [-c PARAMETERS_AS_JSON]
+					Usage: `cf usb update-driver-endpoint NAME [-c METADATA_AS_JSON]
 
-    Optionally provide driver-specific configuration parameters in a valid JSON object in-line:
-    cf usb update-instance INSTANCE_NAME -c '{"name":"value","name":"value"}'
-	
-    Optionally provide a file containing driver-specific configuration parameters in a valid JSON object.
+    Optionally provide a file containing the driver endpoint metadata in a valid JSON object.
     The path to the parameters file can be an absolute or relative path to a file:
-    cf usb update-instance INSTANCE_NAME -c PATH_TO_FILE	
+    cf usb update-driver-endpoint NAME ENDPOINT_URL AUTHENTICATION_KEY -c PATH_TO_FILE	
 					
 EXAMPLE:
-    cf usb update-instance myinstance (omit -c to configure driver instance interactively -- cf usb will prompt for config values)
-    cf usb update-instance myinstance -c '{"host":"localhost","port":"1234","user":"username","password":"password"}'
-    cf usb update-instance myinstance -c ~/workspace/tmp/myinstance_config.json
+    cf usb update-driver-endpoint mydriver -c '{"display_name":"My Driver","image_url":"http://127.0.0.1:8080/image","long_description":"Long description","provider_display_name":"ProvidedName", "documentation_url":"http://127.0.0.1:8080/doc", "support_url":"http://127.0.0.1:8080/support"}'
+    cf usb update-driver-endpoint mydriver -c ~/workspace/tmp/driver_metadata.json
 	
 OPTIONS:
-    -c   Valid JSON object containing driver instance specific configuration parameters, provided in-line or in a file
+    -c   Valid JSON object containing the driver endpoint metadata, provided in-line or in a file
 `,
 				},
 			},
 			plugin.Command{
-				Name:     "usb update-service",
-				HelpText: "Update a service",
+				Name:     "usb driver-endpoints",
+				HelpText: "List existing driver endpoints",
 				UsageDetails: plugin.Usage{
-					Usage: "cf usb update-service INSTANCE_NAME",
-				},
-			},
-			plugin.Command{
-				Name:     "usb delete-driver",
-				HelpText: "Delete a driver",
-				UsageDetails: plugin.Usage{
-					Usage: "cf usb delete-driver DRIVER_NAME",
-				},
-			},
-			plugin.Command{
-				Name:     "usb drivers",
-				HelpText: "List existing drivers",
-				UsageDetails: plugin.Usage{
-					Usage: "cf usb drivers",
-				},
-			},
-			plugin.Command{
-				Name:     "usb instances",
-				HelpText: "List existing driver instances for a driver",
-				UsageDetails: plugin.Usage{
-					Usage: "cf usb instances DRIVER_NAME",
-				},
-			},
-			plugin.Command{
-				Name:     "usb dials",
-				HelpText: "List existing dials for a driver instance",
-
-				UsageDetails: plugin.Usage{
-					Usage: "cf usb dials INSTANCE_NAME",
+					Usage: "cf usb driver-endpoints",
 				},
 			},
 		},
@@ -329,7 +280,7 @@ func (c *UsbPlugin) InfoCommand() {
 
 //CreateInstanceCommand - creates an instance of a driver
 func (c *UsbPlugin) CreateInstanceCommand(args []string) {
-	if c.argLength == 6 {
+	if c.argLength == 7 {
 		schemaParser := schema.NewSchemaParser(c.ui)
 		createdInstanceID, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Create(c.token, args[2:c.argLength])
 		if err != nil {
@@ -337,18 +288,18 @@ func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 			return
 		}
 		if createdInstanceID != "" {
-			c.showOk(fmt.Sprint("New driver instance created. ID:" + createdInstanceID))
+			c.showOk(fmt.Sprint("New driver endpoint created. ID:" + createdInstanceID))
 		}
 
 	} else {
-		c.showIncorrectUsage("Requires driver name, instance name as arguments\n", args)
+		c.showIncorrectUsage("Requires name, endpoint and auth key as arguments\n", args)
 	}
 }
 
 //DeleteInstanceCommand - deletes the instance of a driver
 func (c *UsbPlugin) DeleteInstanceCommand(args []string) {
 	if c.argLength == 3 {
-		if c.ui.Confirm(fmt.Sprintf("Really delete the driver instance %v", args[2])) {
+		if c.ui.Confirm(fmt.Sprintf("Really delete the driver endpoint %v", args[2])) {
 			schemaParser := schema.NewSchemaParser(c.ui)
 
 			deletedInstanceID, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Delete(c.token, args[2])
@@ -357,13 +308,13 @@ func (c *UsbPlugin) DeleteInstanceCommand(args []string) {
 				return
 			}
 			if deletedInstanceID == "" {
-				c.showFailed("Driver instance not found")
+				c.showFailed("Driver endpoint not found")
 			} else {
-				c.showOk(fmt.Sprint("Deleted driver instance:", deletedInstanceID))
+				c.showOk(fmt.Sprint("Deleted driver endpoint:", deletedInstanceID))
 			}
 		}
 	} else {
-		c.showIncorrectUsage("Requires instance name as argument\n", args)
+		c.showIncorrectUsage("Requires endpoint name as argument\n", args)
 	}
 }
 
@@ -378,114 +329,14 @@ func (c *UsbPlugin) UpdateInstanceCommand(args []string) {
 			return
 		}
 		if updateInstanceName != "" {
-			c.showOk(fmt.Sprint("Driver instance updated:" + updateInstanceName))
+			c.showOk(fmt.Sprint("Driver endpoint updated:" + updateInstanceName))
 		}
 	} else {
-		c.showIncorrectUsage("Requires instance name as argument\n", args)
+		c.showIncorrectUsage("Requires endpoint name as argument\n", args)
 	}
 }
 
-//UpdateServiceCommand - allows user to update the service provided by a driver instance
-func (c *UsbPlugin) UpdateServiceCommand(args []string) {
-	if c.argLength == 3 {
-		instance, err := c.httpClient.GetInstanceByName(c.token, args[2])
-		if err != nil {
-			c.showFailed(fmt.Sprint("ERROR - get driver instance:", err))
-			return
-		}
-		if instance == nil {
-			c.showFailed("Driver instance not found")
-			return
-		}
-
-		service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, instance.ID)
-		if err != nil {
-			c.showFailed(fmt.Sprint("ERROR:", err))
-			return
-		}
-		fmt.Println("service id:", service.ID)
-		service.InstanceID = &instance.ID
-
-		bindString := ""
-		if service.Bindable {
-			bindString = "y"
-		} else {
-			bindString = "n"
-		}
-
-		bind := c.ui.Ask(fmt.Sprintf("Is service bindable ? (%s)", bindString))
-		if bind != "" {
-			bindable := true
-			if strings.ToLower(strings.Trim(bind, " ")) == "n" {
-				bindable = false
-			}
-			service.Bindable = bindable
-		}
-
-		serviceName := c.ui.Ask(fmt.Sprintf("Service name (%s)", service.Name))
-		if serviceName != "" {
-			service.Name = &serviceName
-		}
-
-		oldServiceDescription := ""
-		if service.Description != "" {
-			oldServiceDescription = fmt.Sprintf("(%s)", service.Description)
-		}
-
-		serviceDesc := c.ui.Ask(fmt.Sprintf("Service description %s", oldServiceDescription))
-		if serviceDesc != "" {
-			service.Description = serviceDesc
-		}
-
-		serviceTags := c.ui.Ask(fmt.Sprintf("Tags (comma separated) (%s)", strings.Join(service.Tags, ",")))
-		if serviceTags != "" {
-			service.Tags = strings.Split(serviceTags, ",")
-		}
-
-		serviceID, err := commands.NewServiceCommands(c.httpClient).Update(c.token, service)
-		if err != nil {
-			c.showFailed(fmt.Sprint("ERROR:", err))
-			return
-		}
-
-		c.showOk(fmt.Sprint("Updated service with ID:", serviceID))
-	} else {
-		c.showIncorrectUsage("Requires instance name as argument\n", args)
-	}
-}
-
-//DialsCommand - lists dials of a driver instance
-func (c *UsbPlugin) DialsCommand(args []string) {
-	if c.argLength == 3 {
-		dials, err := commands.NewDialCommands(c.httpClient).List(c.token, args[2])
-		if err != nil {
-			c.showFailed(fmt.Sprint("ERROR:", err))
-			return
-		}
-
-		if dials != nil {
-			c.showOk("")
-			for _, dial := range dials {
-				fmt.Println("Dial configuration:\t", dial.Configuration)
-				fmt.Println("Dial ID:\t\t", dial.ID)
-				fmt.Println("Plan ID:\t\t", dial.Plan)
-
-				plan, err := c.httpClient.GetPlanByID(c.token, dial.Plan)
-				if err != nil {
-					c.showFailed(fmt.Sprint("ERROR:", err))
-				}
-				fmt.Println("Plan:\t\t\t Name:", plan.Name, "; Description:", plan.Description)
-				fmt.Println("")
-			}
-		} else {
-			c.showFailed("No dials found")
-		}
-	} else {
-		c.showIncorrectUsage("Requires instance name as argument\n", args)
-	}
-}
-
-//InstancesCommand - list instances of a driver
+//InstancesCommand - list endpoints
 func (c *UsbPlugin) InstancesCommand(args []string) {
 	schemaParser := schema.NewSchemaParser(c.ui)
 	instanceCommands := commands.NewInstanceCommands(c.httpClient, schemaParser)
@@ -500,20 +351,20 @@ func (c *UsbPlugin) InstancesCommand(args []string) {
 
 	if instances != nil {
 		for _, di := range instances {
-			fmt.Println("Driver Instance Name:\t", *di.Name)
-			fmt.Println("TARGET:\t\t", di.TargetURL)
-			fmt.Println("Driver Instance Id:\t", di.ID)
-			fmt.Println("Configuration:\t\t", di.Configuration)
-			fmt.Println("Dials:\t\t\t", len(di.Dials))
+			fmt.Println("Driver Endpoint Name:\t", *di.Name)
+			fmt.Println("Endpoint URL:\t\t", di.EndpointURL)
+			fmt.Println("Driver Endpoint Id:\t", di.ID)
+			fmt.Println("Authentication Key:\t", di.AuthenticationKey)
 
-			service, err := c.httpClient.GetServiceByDriverInstanceID(c.token, di.ID)
+			fmt.Println("Metadata:")
+			fmt.Println("\tDisplayName:\t\t", di.Metadata.DisplayName)
+			fmt.Println("\tDocumentationURL:\t", di.Metadata.DocumentationURL)
+			fmt.Println("\tImageURL:\t\t", di.Metadata.ImageURL)
+			fmt.Println("\tLongDescription:\t", di.Metadata.LongDescription)
+			fmt.Println("\tProviderDisplayName:\t", di.Metadata.ProviderDisplayName)
+			fmt.Println("\tSupportURL:\t\t", di.Metadata.SupportURL)
 
-			if err != nil {
-				c.showFailed(fmt.Sprint("ERROR:", err))
-			}
-
-			fmt.Println("Service:\t\t", "Name:", *service.Name, "; Bindable:", service.Bindable, "; Tags:", service.Tags)
-			fmt.Println("")
+			fmt.Println()
 
 			instanceCount++
 		}

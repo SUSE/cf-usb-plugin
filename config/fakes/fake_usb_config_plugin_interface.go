@@ -23,11 +23,12 @@ type FakeUsbConfigPluginInterface struct {
 	setTargetReturns struct {
 		result1 error
 	}
-	GetUsbConfigFileStub        func() string
+	GetUsbConfigFileStub        func() (string, error)
 	getUsbConfigFileMutex       sync.RWMutex
 	getUsbConfigFileArgsForCall []struct{}
 	getUsbConfigFileReturns     struct {
 		result1 string
+		result2 error
 	}
 }
 
@@ -88,14 +89,14 @@ func (fake *FakeUsbConfigPluginInterface) SetTargetReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeUsbConfigPluginInterface) GetUsbConfigFile() string {
+func (fake *FakeUsbConfigPluginInterface) GetUsbConfigFile() (string, error) {
 	fake.getUsbConfigFileMutex.Lock()
 	fake.getUsbConfigFileArgsForCall = append(fake.getUsbConfigFileArgsForCall, struct{}{})
 	fake.getUsbConfigFileMutex.Unlock()
 	if fake.GetUsbConfigFileStub != nil {
 		return fake.GetUsbConfigFileStub()
 	} else {
-		return fake.getUsbConfigFileReturns.result1
+		return fake.getUsbConfigFileReturns.result1, fake.getUsbConfigFileReturns.result2
 	}
 }
 
@@ -105,11 +106,12 @@ func (fake *FakeUsbConfigPluginInterface) GetUsbConfigFileCallCount() int {
 	return len(fake.getUsbConfigFileArgsForCall)
 }
 
-func (fake *FakeUsbConfigPluginInterface) GetUsbConfigFileReturns(result1 string) {
+func (fake *FakeUsbConfigPluginInterface) GetUsbConfigFileReturns(result1 string, result2 error) {
 	fake.GetUsbConfigFileStub = nil
 	fake.getUsbConfigFileReturns = struct {
 		result1 string
-	}{result1}
+		result2 error
+	}{result1, result2}
 }
 
 var _ config.UsbConfigPluginInterface = new(FakeUsbConfigPluginInterface)

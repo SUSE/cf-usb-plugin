@@ -1,17 +1,18 @@
 package commands_test
 
 import (
-	httptransport "github.com/go-swagger/go-swagger/httpkit/client"
+	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 
 	"github.com/hpcloud/cf-plugin-usb/commands"
 
+	"testing"
+
 	testterm "github.com/cloudfoundry/cli/testhelpers/terminal"
 	fakeUsbClient "github.com/hpcloud/cf-plugin-usb/lib/fakes"
 	"github.com/hpcloud/cf-plugin-usb/lib/schema"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_CreateDriverInstance(t *testing.T) {
@@ -25,22 +26,18 @@ func Test_CreateDriverInstance(t *testing.T) {
 	bearer := httptransport.BearerToken("testToken")
 	testID := "testID"
 
-	var testDriver models.Driver
-	testDriver.Name = "testDriver"
-	testDriver.ID = &testID
-	testDriver.DriverType = "testType"
+	var createdInstance models.DriverEndpoint
+	var createResult operations.RegisterDriverEndpointCreated
 
-	usbClientMock.GetDriverByNameReturns(&testDriver, nil)
-
-	var createResult operations.CreateDriverInstanceCreated
-	var createdInstance models.DriverInstance
-	createdInstance.Name = "testInstance"
-	createdInstance.DriverID = "testID"
+	name := "testInstance"
+	id := "testID"
+	createdInstance.Name = &name
+	createdInstance.ID = id
 	createResult.Payload = &createdInstance
-	createdInstance.ID = &testID
-	usbClientMock.CreateDriverInstanceReturns(&createResult, nil)
+	createdInstance.ID = id
+	usbClientMock.RegisterDriverEndpointReturns(&createResult, nil)
 
-	response, err := instanceCommands.Create(bearer, []string{"testDriver", "testInstance", "json", `{"a":"b"}`})
+	response, err := instanceCommands.Create(bearer, []string{"testDriver", "http://127.0.0.1", "key", "-c", `{"display_name":"name"}`})
 	assert.Equal(response, testID)
 	assert.NoError(err)
 }
@@ -55,16 +52,17 @@ func Test_DeleteInstance(t *testing.T) {
 
 	bearer := httptransport.BearerToken("testToken")
 	testID := "testID"
+	name := "testDriver"
 
-	var testDriverInstance models.DriverInstance
-	testDriverInstance.Name = "testDriver"
-	testDriverInstance.ID = &testID
+	var testDriverInstance models.DriverEndpoint
+	testDriverInstance.Name = &name
+	testDriverInstance.ID = testID
 
-	usbClientMock.GetDriverInstanceByNameReturns(&testDriverInstance, nil)
+	usbClientMock.GetDriverEndpointByNameReturns(&testDriverInstance, nil)
 
-	var deleteResult operations.DeleteDriverInstanceNoContent
+	var deleteResult operations.UnregisterDriverInstanceNoContent
 
-	usbClientMock.DeleteDriverInstanceReturns(&deleteResult, nil)
+	usbClientMock.UnregisterDriverEndpointReturns(&deleteResult, nil)
 
 	_, err := instanceCommands.Delete(bearer, "testID")
 	assert.NoError(err)
@@ -80,36 +78,37 @@ func Test_UpdateInstance(t *testing.T) {
 
 	bearer := httptransport.BearerToken("testToken")
 	testID := "testID"
+	testName := "testDriver"
 
-	var testDriverResult operations.GetDriverOK
+	var testDriverResult operations.GetDriverEndpointOK
 
-	var testDriver models.Driver
-	testDriver.Name = "testDriver"
-	testDriver.ID = &testID
-	testDriver.DriverType = "testType"
+	var testDriver models.DriverEndpoint
+	testDriver.Name = &testName
+	testDriver.ID = testID
+	testDriver.AuthenticationKey = "auth"
 
 	testDriverResult.Payload = &testDriver
 
-	usbClientMock.GetDriverReturns(&testDriverResult, nil)
+	usbClientMock.GetDriverEndpointReturns(&testDriverResult, nil)
 
-	var oldInstance models.DriverInstance
-	oldInstance.Name = "testInstance"
-	oldInstance.DriverID = "testID"
-	oldInstance.ID = &testID
+	var oldInstance models.DriverEndpoint
+	oldInstance.Name = &testName
+	oldInstance.ID = testID
 
-	var updateResult operations.UpdateDriverInstanceOK
-	var upInstance models.DriverInstance
-	upInstance.Name = "testInstanceUpdate"
-	upInstance.DriverID = "testID"
-	upInstance.ID = &testID
+	var updateResult operations.UpdateDriverEndpointOK
+	var upInstance models.DriverEndpoint
+	newName := "testInstanceUpdate"
+
+	upInstance.Name = &newName
+	upInstance.ID = "testID"
 
 	updateResult.Payload = &upInstance
 
-	usbClientMock.UpdateDriverInstanceReturns(&updateResult, nil)
+	usbClientMock.UpdateDriverEndpointReturns(&updateResult, nil)
 
-	usbClientMock.GetDriverInstanceByNameReturns(&oldInstance, nil)
+	usbClientMock.GetDriverEndpointByNameReturns(&oldInstance, nil)
 
-	response, err := instanceCommands.Update(bearer, []string{"testDriver", "testInstanceUpdate", "json", `{"a":"b"}`})
+	response, err := instanceCommands.Update(bearer, []string{"testDriver", "-c", `{"display_name":"name"}`})
 	assert.NotEqual(response, oldInstance.Name)
 	assert.NoError(err)
 }
@@ -123,31 +122,24 @@ func Test_ListDriverInstances(t *testing.T) {
 	instanceCommands := commands.NewInstanceCommands(usbClientMock, schemaParser)
 
 	bearer := httptransport.BearerToken("testToken")
-	testID := "testID"
 
-	var testDriver models.Driver
-	testDriver.Name = "testDriver"
-	testDriver.ID = &testID
-	testDriver.DriverType = "testType"
+	var result operations.GetDriverEndpointsOK
 
-	usbClientMock.GetDriverByNameReturns(&testDriver, nil)
+	var instances []*models.DriverEndpoint
 
-	var instancesResult operations.GetDriverInstancesOK
+	var instance models.DriverEndpoint
 
-	var instaces []*models.DriverInstance
+	name := "testInstance"
 
-	var instance models.DriverInstance
-	instance.Name = "testInstance"
-	instance.DriverID = "testID"
-	testInstanceID := "testInstanceID"
-	instance.ID = &testInstanceID
+	instance.Name = &name
+	instance.ID = "testID"
 
-	instaces = append(instaces, &instance)
+	instances = append(instances, &instance)
 
-	instancesResult.Payload = instaces
-	usbClientMock.GetDriverInstancesReturns(&instancesResult, nil)
+	result.Payload = instances
+	usbClientMock.GetDriverEndpointsReturns(&result, nil)
 
-	response, err := instanceCommands.List(bearer, "testID")
+	response, err := instanceCommands.List(bearer)
 
 	assert.NotNil(response)
 	assert.NoError(err)

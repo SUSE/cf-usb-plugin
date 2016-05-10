@@ -19,7 +19,7 @@ type InstanceInterface interface {
 	Create(runtime.ClientAuthInfoWriter, []string) (string, error)
 	Delete(runtime.ClientAuthInfoWriter, string) (string, error)
 	Update(runtime.ClientAuthInfoWriter, []string) (string, error)
-	List(runtime.ClientAuthInfoWriter) ([]*models.Instance, error)
+	List(runtime.ClientAuthInfoWriter) ([]*models.DriverEndpoint, error)
 }
 
 //InstanceCommands struct
@@ -37,12 +37,13 @@ func NewInstanceCommands(httpClient lib.UsbClientInterface, schemaParser *schema
 func (c *InstanceCommands) Create(bearer runtime.ClientAuthInfoWriter, args []string) (string, error) {
 	instanceName := args[0]
 	targetUrl := args[1]
+	authKey := args[2]
 
-	var driverConfig map[string]interface{}
+	var metadata models.EndpointMetadata
 
-	if len(args) == 4 {
-		if args[2] == "-c" {
-			configValue := args[3]
+	if len(args) == 5 {
+		if args[3] == "-c" {
+			configValue := args[4]
 
 			if _, err := ioutil.ReadFile(configValue); err == nil {
 				fileContent, err := ioutil.ReadFile(configValue)
@@ -52,19 +53,20 @@ func (c *InstanceCommands) Create(bearer runtime.ClientAuthInfoWriter, args []st
 				configValue = string(fileContent)
 			}
 
-			if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
+			if err := json.Unmarshal([]byte(configValue), &metadata); err != nil {
 				return "", fmt.Errorf("Invalid JSON format %s", err.Error())
 			}
 		}
 	}
 
-	newDriver := models.Instance{
-		Name:          &instanceName,
-		Configuration: driverConfig,
-		TargetURL:     targetUrl,
+	newDriver := models.DriverEndpoint{
+		Name:              &instanceName,
+		EndpointURL:       targetUrl,
+		AuthenticationKey: authKey,
+		Metadata:          &metadata,
 	}
 
-	response, err := c.httpClient.CreateInstance(&operations.CreateInstanceParams{Instance: &newDriver}, bearer)
+	response, err := c.httpClient.RegisterDriverEndpoint(&operations.RegisterDriverEndpointParams{DriverEndpoint: &newDriver}, bearer)
 	if err != nil {
 		return "", err
 	}
@@ -74,7 +76,7 @@ func (c *InstanceCommands) Create(bearer runtime.ClientAuthInfoWriter, args []st
 
 //Delete - deletes an existing driver instance
 func (c *InstanceCommands) Delete(bearer runtime.ClientAuthInfoWriter, instanceName string) (string, error) {
-	instance, err := c.httpClient.GetInstanceByName(bearer, instanceName)
+	instance, err := c.httpClient.GetDriverEndpointByName(instanceName, bearer)
 	if err != nil {
 		return "", err
 	}
@@ -82,10 +84,10 @@ func (c *InstanceCommands) Delete(bearer runtime.ClientAuthInfoWriter, instanceN
 		return "", fmt.Errorf("Driver instance not found")
 	}
 
-	params := operations.NewDeleteInstanceParams()
-	params.InstanceID = instance.ID
+	params := operations.NewUnregisterDriverInstanceParams()
+	params.DriverEndpointID = instance.ID
 
-	_, err = c.httpClient.DeleteInstance(params, bearer)
+	_, err = c.httpClient.UnregisterDriverEndpoint(params, bearer)
 	if err != nil {
 		return "", err
 	}
@@ -97,7 +99,7 @@ func (c *InstanceCommands) Delete(bearer runtime.ClientAuthInfoWriter, instanceN
 func (c *InstanceCommands) Update(bearer runtime.ClientAuthInfoWriter, args []string) (string, error) {
 	instanceName := args[0]
 
-	var driverConfig map[string]interface{}
+	var metadata models.EndpointMetadata
 
 	if len(args) == 3 {
 		if args[1] == "-c" {
@@ -111,13 +113,13 @@ func (c *InstanceCommands) Update(bearer runtime.ClientAuthInfoWriter, args []st
 				configValue = string(fileContent)
 			}
 
-			if err := json.Unmarshal([]byte(configValue), &driverConfig); err != nil {
+			if err := json.Unmarshal([]byte(configValue), &metadata); err != nil {
 				return "", fmt.Errorf("Invalid JSON format %s", err.Error())
 			}
 		}
 	}
 
-	oldInstance, err := c.httpClient.GetInstanceByName(bearer, instanceName)
+	oldInstance, err := c.httpClient.GetDriverEndpointByName(instanceName, bearer)
 	if err != nil {
 		return "", err
 	}
@@ -125,12 +127,12 @@ func (c *InstanceCommands) Update(bearer runtime.ClientAuthInfoWriter, args []st
 		return "", fmt.Errorf("Driver instance not found")
 	}
 
-	oldInstance.Configuration = driverConfig
-	params := operations.NewUpdateInstanceParams()
-	params.InstanceConfig = oldInstance
-	params.InstanceID = oldInstance.ID
+	params := operations.NewUpdateDriverEndpointParams()
+	params.DriverEndpointID = oldInstance.ID
+	params.DriverEndpoint = &models.DriverEndpoint{}
+	params.DriverEndpoint.Metadata = &metadata
 
-	response, err := c.httpClient.UpdateInstance(params, bearer)
+	response, err := c.httpClient.UpdateDriverEndpoint(params, bearer)
 	if err != nil {
 		return "", err
 	}
@@ -138,17 +140,17 @@ func (c *InstanceCommands) Update(bearer runtime.ClientAuthInfoWriter, args []st
 	return *response.Payload.Name, nil
 }
 
-type instanceSorter []*models.Instance
+type instanceSorter []*models.DriverEndpoint
 
 func (a instanceSorter) Len() int           { return len(a) }
 func (a instanceSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a instanceSorter) Less(i, j int) bool { return *a[i].Name < *a[j].Name }
 
 //List - lists existing instances for a specific driver
-func (c *InstanceCommands) List(bearer runtime.ClientAuthInfoWriter) ([]*models.Instance, error) {
+func (c *InstanceCommands) List(bearer runtime.ClientAuthInfoWriter) ([]*models.DriverEndpoint, error) {
 
-	params := operations.NewGetInstancesParams()
-	response, err := c.httpClient.GetInstances(params, bearer)
+	params := operations.NewGetDriverEndpointsParams()
+	response, err := c.httpClient.GetDriverEndpoints(params, bearer)
 	if err != nil {
 		return nil, err
 	}
