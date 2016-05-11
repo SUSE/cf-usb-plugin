@@ -63,7 +63,9 @@ godist = GOARCH=$(2) GOOS=$(1) tar czf cf-plugin-usb-$(APP_VERSION)-$(1)-$(2).tg
 
 tools:
 	$(call print_status, Installing Tools)
-	go get -u golang.org/x/tools/cmd/vet
+	@case $$(go version) in \
+         "go version go1.[1-5]*") go get -u golang.org/x/tools/cmd/vet ;; \
+	esac
 	go get -u golang.org/x/tools/cmd/goimports
 	go get -u golang.org/x/tools/cmd/cover
 	go get -u github.com/golang/lint/golint
