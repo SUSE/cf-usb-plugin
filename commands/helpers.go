@@ -3,24 +3,20 @@ package commands
 import (
 	"crypto/sha1"
 	"encoding/base64"
-	httptransport "github.com/go-openapi/runtime/client"
 	"io"
 	"os"
 	"strings"
 
 	"github.com/cloudfoundry/cli/plugin"
-	"github.com/go-openapi/runtime"
 )
 
 //GetBearerToken - returns token from cf cli
-func GetBearerToken(cliConnection plugin.CliConnection) (runtime.ClientAuthInfoWriter, error) {
+func GetBearerToken(cliConnection plugin.CliConnection) (string, error) {
 	token, err := cliConnection.AccessToken()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	bearer := httptransport.BearerToken(strings.Replace(token, "bearer ", "", -1))
-
-	return bearer, nil
+	return strings.Replace(token, "bearer ", "", -1), nil
 }
 
 func getFileSha(filePath string) (string, error) {

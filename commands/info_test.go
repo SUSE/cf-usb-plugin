@@ -1,7 +1,6 @@
 package commands_test
 
 import (
-	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 
@@ -28,11 +27,9 @@ func Test_GetInfo(t *testing.T) {
 
 	usbClientMock.GetInfoReturns(&infoResponse, nil)
 
-	bearer := httptransport.BearerToken("testToken")
+	infoCommands := commands.NewInfoCommands(usbClientMock, testBearer)
 
-	infoCommands := commands.NewInfoCommands(usbClientMock)
-
-	response, err := infoCommands.GetInfo(bearer)
+	response, err := infoCommands.GetInfo()
 
 	assert.NotNil(response)
 	assert.Equal("testAPI", *response.BrokerAPIVersion)

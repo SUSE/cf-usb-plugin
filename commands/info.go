@@ -5,26 +5,29 @@ import (
 	"github.com/hpcloud/cf-plugin-usb/lib"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
+
+	httptransport "github.com/go-openapi/runtime/client"
 )
 
 //InfoInterface exposes GetInfo command
 type InfoInterface interface {
-	GetInfo(runtime.ClientAuthInfoWriter) (*models.Info, error)
+	GetInfo() (*models.Info, error)
 }
 
 //InfoCommands struct
 type InfoCommands struct {
 	httpClient lib.UsbClientInterface
+	token      runtime.ClientAuthInfoWriter
 }
 
 //NewInfoCommands returns an InfoCommands object
-func NewInfoCommands(httpClient lib.UsbClientInterface) InfoInterface {
-	return &InfoCommands{httpClient: httpClient}
+func NewInfoCommands(httpClient lib.UsbClientInterface, bearer string) InfoInterface {
+	return &InfoCommands{httpClient: httpClient, token: httptransport.BearerToken(bearer)}
 }
 
 //GetInfo - retruns usb information
-func (c *InfoCommands) GetInfo(bearer runtime.ClientAuthInfoWriter) (*models.Info, error) {
-	infoResp, err := c.httpClient.GetInfo(operations.NewGetInfoParams(), bearer)
+func (c *InfoCommands) GetInfo() (*models.Info, error) {
+	infoResp, err := c.httpClient.GetInfo(operations.NewGetInfoParams(), c.token)
 	if err != nil {
 		return nil, err
 	}

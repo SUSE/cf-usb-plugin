@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"net/url"
 	"os"
@@ -12,12 +14,9 @@ import (
 	"github.com/cloudfoundry/cli/cf/trace"
 	"github.com/cloudfoundry/cli/plugin"
 
-	"github.com/go-openapi/runtime"
-
 	"github.com/hpcloud/cf-plugin-usb/commands"
 	"github.com/hpcloud/cf-plugin-usb/config"
 	"github.com/hpcloud/cf-plugin-usb/lib"
-	"github.com/hpcloud/cf-plugin-usb/lib/schema"
 )
 
 var target string
@@ -26,7 +25,7 @@ var target string
 type UsbPlugin struct {
 	argLength  int
 	ui         terminal.UI
-	token      runtime.ClientAuthInfoWriter
+	token      string
 	httpClient lib.UsbClientInterface
 }
 
@@ -267,7 +266,7 @@ func (c *UsbPlugin) TargetCommand(args []string, config config.UsbConfigPluginIn
 
 //InfoCommand - returns broker information
 func (c *UsbPlugin) InfoCommand() {
-	infoResp, err := commands.NewInfoCommands(c.httpClient).GetInfo(c.token)
+	infoResp, err := commands.NewInfoCommands(c.httpClient, c.token).GetInfo()
 	if err != nil {
 		c.showFailed(fmt.Sprint("ERROR:", err))
 		return
@@ -281,8 +280,27 @@ func (c *UsbPlugin) InfoCommand() {
 //CreateInstanceCommand - creates an instance of a driver
 func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 	if c.argLength == 7 {
-		schemaParser := schema.NewSchemaParser(c.ui)
-		createdInstanceID, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Create(c.token, args[2:c.argLength])
+		instanceName := args[2]
+		targetUrl := args[3]
+		authKey := args[4]
+
+		var rawMetadata json.RawMessage
+
+		if args[5] == "-c" {
+			configValue := args[6]
+
+			if _, err := ioutil.ReadFile(configValue); err == nil {
+				fileContent, err := ioutil.ReadFile(configValue)
+				if err != nil {
+					c.showFailed(fmt.Sprint("Unable to read configuration file. %s", err.Error()))
+				}
+				configValue = string(fileContent)
+			}
+
+			rawMetadata = json.RawMessage(configValue)
+		}
+
+		createdInstanceID, err := commands.NewInstanceCommands(c.httpClient, c.token).Create(instanceName, targetUrl, authKey, &rawMetadata)
 		if err != nil {
 			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
@@ -300,9 +318,7 @@ func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 func (c *UsbPlugin) DeleteInstanceCommand(args []string) {
 	if c.argLength == 3 {
 		if c.ui.Confirm(fmt.Sprintf("Really delete the driver endpoint %v", args[2])) {
-			schemaParser := schema.NewSchemaParser(c.ui)
-
-			deletedInstanceID, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Delete(c.token, args[2])
+			deletedInstanceID, err := commands.NewInstanceCommands(c.httpClient, c.token).Delete(args[2])
 			if err != nil {
 				c.showFailed(fmt.Sprint("ERROR:", err))
 				return
@@ -320,10 +336,27 @@ func (c *UsbPlugin) DeleteInstanceCommand(args []string) {
 
 //UpdateInstanceCommand - allows user to update the instance of a driver
 func (c *UsbPlugin) UpdateInstanceCommand(args []string) {
-	if c.argLength == 5 || c.argLength == 3 {
-		schemaParser := schema.NewSchemaParser(c.ui)
+	if c.argLength == 5 {
 
-		updateInstanceName, err := commands.NewInstanceCommands(c.httpClient, schemaParser).Update(c.token, args[2:c.argLength])
+		instanceName := args[2]
+
+		var rawMetadata json.RawMessage
+
+		if args[3] == "-c" {
+			configValue := args[4]
+
+			if _, err := ioutil.ReadFile(configValue); err == nil {
+				fileContent, err := ioutil.ReadFile(configValue)
+				if err != nil {
+					c.showFailed(fmt.Sprint("Unable to read configuration file. %s", err.Error()))
+				}
+				configValue = string(fileContent)
+			}
+
+			rawMetadata = json.RawMessage(configValue)
+		}
+
+		updateInstanceName, err := commands.NewInstanceCommands(c.httpClient, c.token).Update(instanceName, &rawMetadata)
 		if err != nil {
 			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
@@ -338,11 +371,10 @@ func (c *UsbPlugin) UpdateInstanceCommand(args []string) {
 
 //InstancesCommand - list endpoints
 func (c *UsbPlugin) InstancesCommand(args []string) {
-	schemaParser := schema.NewSchemaParser(c.ui)
-	instanceCommands := commands.NewInstanceCommands(c.httpClient, schemaParser)
+	instanceCommands := commands.NewInstanceCommands(c.httpClient, c.token)
 	instanceCount := 0
 
-	instances, err := instanceCommands.List(c.token)
+	instances, err := instanceCommands.List()
 
 	if err != nil {
 		c.showFailed(fmt.Sprint("ERROR:", err))
