@@ -1,29 +1,26 @@
 package commands_test
 
 import (
-	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
 	"github.com/hpcloud/cf-plugin-usb/lib/models"
 
 	"github.com/hpcloud/cf-plugin-usb/commands"
 
+	"encoding/json"
 	"testing"
 
-	testterm "github.com/cloudfoundry/cli/testhelpers/terminal"
 	fakeUsbClient "github.com/hpcloud/cf-plugin-usb/lib/fakes"
-	"github.com/hpcloud/cf-plugin-usb/lib/schema"
 	"github.com/stretchr/testify/assert"
 )
+
+var testBearer = "testToken"
 
 func Test_CreateDriverInstance(t *testing.T) {
 	assert := assert.New(t)
 	usbClientMock := new(fakeUsbClient.FakeUsbClientInterface)
-	ui := new(testterm.FakeUI)
 
-	schemaParser := schema.NewSchemaParser(ui)
-	instanceCommands := commands.NewInstanceCommands(usbClientMock, schemaParser)
+	instanceCommands := commands.NewInstanceCommands(usbClientMock, testBearer)
 
-	bearer := httptransport.BearerToken("testToken")
 	testID := "testID"
 
 	var createdInstance models.DriverEndpoint
@@ -37,7 +34,9 @@ func Test_CreateDriverInstance(t *testing.T) {
 	createdInstance.ID = id
 	usbClientMock.RegisterDriverEndpointReturns(&createResult, nil)
 
-	response, err := instanceCommands.Create(bearer, []string{"testDriver", "http://127.0.0.1", "key", "-c", `{"display_name":"name"}`})
+	metadata := json.RawMessage(`{"display_name":"name"}`)
+
+	response, err := instanceCommands.Create("testDriver", "http://127.0.0.1", "key", &metadata)
 	assert.Equal(response, testID)
 	assert.NoError(err)
 }
@@ -45,12 +44,9 @@ func Test_CreateDriverInstance(t *testing.T) {
 func Test_DeleteInstance(t *testing.T) {
 	assert := assert.New(t)
 	usbClientMock := new(fakeUsbClient.FakeUsbClientInterface)
-	ui := new(testterm.FakeUI)
 
-	schemaParser := schema.NewSchemaParser(ui)
-	instanceCommands := commands.NewInstanceCommands(usbClientMock, schemaParser)
+	instanceCommands := commands.NewInstanceCommands(usbClientMock, testBearer)
 
-	bearer := httptransport.BearerToken("testToken")
 	testID := "testID"
 	name := "testDriver"
 
@@ -64,19 +60,16 @@ func Test_DeleteInstance(t *testing.T) {
 
 	usbClientMock.UnregisterDriverEndpointReturns(&deleteResult, nil)
 
-	_, err := instanceCommands.Delete(bearer, "testID")
+	_, err := instanceCommands.Delete("testID")
 	assert.NoError(err)
 }
 
 func Test_UpdateInstance(t *testing.T) {
 	assert := assert.New(t)
 	usbClientMock := new(fakeUsbClient.FakeUsbClientInterface)
-	ui := new(testterm.FakeUI)
 
-	schemaParser := schema.NewSchemaParser(ui)
-	instanceCommands := commands.NewInstanceCommands(usbClientMock, schemaParser)
+	instanceCommands := commands.NewInstanceCommands(usbClientMock, testBearer)
 
-	bearer := httptransport.BearerToken("testToken")
 	testID := "testID"
 	testName := "testDriver"
 
@@ -108,7 +101,9 @@ func Test_UpdateInstance(t *testing.T) {
 
 	usbClientMock.GetDriverEndpointByNameReturns(&oldInstance, nil)
 
-	response, err := instanceCommands.Update(bearer, []string{"testDriver", "-c", `{"display_name":"name"}`})
+	metadata := json.RawMessage(`{"display_name":"name"}`)
+
+	response, err := instanceCommands.Update("testDriver", &metadata)
 	assert.NotEqual(response, oldInstance.Name)
 	assert.NoError(err)
 }
@@ -116,12 +111,8 @@ func Test_UpdateInstance(t *testing.T) {
 func Test_ListDriverInstances(t *testing.T) {
 	assert := assert.New(t)
 	usbClientMock := new(fakeUsbClient.FakeUsbClientInterface)
-	ui := new(testterm.FakeUI)
 
-	schemaParser := schema.NewSchemaParser(ui)
-	instanceCommands := commands.NewInstanceCommands(usbClientMock, schemaParser)
-
-	bearer := httptransport.BearerToken("testToken")
+	instanceCommands := commands.NewInstanceCommands(usbClientMock, testBearer)
 
 	var result operations.GetDriverEndpointsOK
 
@@ -139,7 +130,7 @@ func Test_ListDriverInstances(t *testing.T) {
 	result.Payload = instances
 	usbClientMock.GetDriverEndpointsReturns(&result, nil)
 
-	response, err := instanceCommands.List(bearer)
+	response, err := instanceCommands.List()
 
 	assert.NotNil(response)
 	assert.NoError(err)
