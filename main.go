@@ -284,7 +284,7 @@ func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 		targetUrl := args[3]
 		authKey := args[4]
 
-		var rawMetadata json.RawMessage
+		var rawMetadata *json.RawMessage
 
 		if args[5] == "-c" {
 			configValue := args[6]
@@ -296,11 +296,17 @@ func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 				}
 				configValue = string(fileContent)
 			}
-
-			rawMetadata = json.RawMessage(configValue)
+			if len(configValue) > 0 {
+				meta := json.RawMessage(configValue)
+				rawMetadata = &meta
+			} else {
+				rawMetadata = nil
+			}
+		} else {
+			rawMetadata = nil
 		}
 
-		createdInstanceID, err := commands.NewInstanceCommands(c.httpClient, c.token).Create(instanceName, targetUrl, authKey, &rawMetadata)
+		createdInstanceID, err := commands.NewInstanceCommands(c.httpClient, c.token).Create(instanceName, targetUrl, authKey, rawMetadata)
 		if err != nil {
 			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
