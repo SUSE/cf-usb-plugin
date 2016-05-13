@@ -292,7 +292,7 @@ func (c *UsbPlugin) CreateInstanceCommand(args []string) {
 			if _, err := ioutil.ReadFile(configValue); err == nil {
 				fileContent, err := ioutil.ReadFile(configValue)
 				if err != nil {
-					c.showFailed(fmt.Sprint("Unable to read configuration file. %s", err.Error()))
+					c.showFailed(fmt.Sprintf("Unable to read configuration file. %s", err.Error()))
 				}
 				configValue = string(fileContent)
 			}
@@ -348,7 +348,7 @@ func (c *UsbPlugin) UpdateInstanceCommand(args []string) {
 			if _, err := ioutil.ReadFile(configValue); err == nil {
 				fileContent, err := ioutil.ReadFile(configValue)
 				if err != nil {
-					c.showFailed(fmt.Sprint("Unable to read configuration file. %s", err.Error()))
+					c.showFailed(fmt.Sprintf("Unable to read configuration file. %s", err.Error()))
 				}
 				configValue = string(fileContent)
 			}
