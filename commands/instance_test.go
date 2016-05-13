@@ -34,9 +34,11 @@ func Test_CreateDriverInstance(t *testing.T) {
 	createdInstance.ID = id
 	usbClientMock.RegisterDriverEndpointReturns(&createResult, nil)
 
-	metadata := json.RawMessage(`{"display_name":"name"}`)
+	var metadata *json.RawMessage
+	meta := json.RawMessage(`{"display_name":"name"}`)
+	metadata = &meta
 
-	response, err := instanceCommands.Create("testDriver", "http://127.0.0.1", "key", &metadata)
+	response, err := instanceCommands.Create("testDriver", "http://127.0.0.1", "key", metadata)
 	assert.Equal(response, testID)
 	assert.NoError(err)
 }

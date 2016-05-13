@@ -36,17 +36,20 @@ func NewInstanceCommands(httpClient lib.UsbClientInterface, bearer string) Insta
 //Create - creates a new driver instance
 func (c *InstanceCommands) Create(instanceName, targetUrl, authKey string, metadata *json.RawMessage) (string, error) {
 
-	var meta models.EndpointMetadata
-	err := json.Unmarshal(*metadata, &meta)
-	if err != nil {
-		return "", err
-	}
-
 	newDriver := models.DriverEndpoint{
 		Name:              &instanceName,
 		EndpointURL:       targetUrl,
 		AuthenticationKey: authKey,
-		Metadata:          &meta,
+	}
+
+	if metadata != nil {
+		var meta models.EndpointMetadata
+		err := json.Unmarshal(*metadata, &meta)
+		if err != nil {
+			return "", err
+		}
+
+		newDriver.Metadata = &meta
 	}
 
 	response, err := c.httpClient.RegisterDriverEndpoint(&operations.RegisterDriverEndpointParams{DriverEndpoint: &newDriver}, c.token)
