@@ -279,28 +279,30 @@ func (c *UsbPlugin) InfoCommand() {
 
 //CreateInstanceCommand - creates an instance of a driver
 func (c *UsbPlugin) CreateInstanceCommand(args []string) {
-	if c.argLength == 7 {
+	if c.argLength == 7 || c.argLength == 5 {
 		instanceName := args[2]
 		targetUrl := args[3]
 		authKey := args[4]
 
 		var rawMetadata *json.RawMessage
 
-		if args[5] == "-c" {
-			configValue := args[6]
+		if c.argLength == 7 {
+			if args[5] == "-c" {
+				configValue := args[6]
 
-			if _, err := ioutil.ReadFile(configValue); err == nil {
-				fileContent, err := ioutil.ReadFile(configValue)
-				if err != nil {
-					c.showFailed(fmt.Sprintf("Unable to read configuration file. %s", err.Error()))
+				if _, err := ioutil.ReadFile(configValue); err == nil {
+					fileContent, err := ioutil.ReadFile(configValue)
+					if err != nil {
+						c.showFailed(fmt.Sprintf("Unable to read configuration file. %s", err.Error()))
+					}
+					configValue = string(fileContent)
 				}
-				configValue = string(fileContent)
-			}
-			if len(configValue) > 0 {
-				meta := json.RawMessage(configValue)
-				rawMetadata = &meta
-			} else {
-				rawMetadata = nil
+				if len(configValue) > 0 {
+					meta := json.RawMessage(configValue)
+					rawMetadata = &meta
+				} else {
+					rawMetadata = nil
+				}
 			}
 		} else {
 			rawMetadata = nil
