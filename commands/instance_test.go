@@ -105,7 +105,7 @@ func Test_UpdateInstance(t *testing.T) {
 
 	metadata := json.RawMessage(`{"display_name":"name"}`)
 
-	response, err := instanceCommands.Update("testDriver", &metadata)
+	response, err := instanceCommands.Update("testDriver", "", "", &metadata)
 	assert.NotEqual(response, oldInstance.Name)
 	assert.NoError(err)
 }

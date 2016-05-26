@@ -18,7 +18,7 @@ import (
 type InstanceInterface interface {
 	Create(string, string, string, *json.RawMessage) (string, error)
 	Delete(string) (string, error)
-	Update(string, *json.RawMessage) (string, error)
+	Update(string, string, string, *json.RawMessage) (string, error)
 	List() ([]*models.DriverEndpoint, error)
 }
 
@@ -82,7 +82,7 @@ func (c *InstanceCommands) Delete(instanceName string) (string, error) {
 }
 
 //Update - updates an existing driver instance
-func (c *InstanceCommands) Update(instanceName string, metadata *json.RawMessage) (string, error) {
+func (c *InstanceCommands) Update(instanceName, targetUrl, authKey string, metadata *json.RawMessage) (string, error) {
 
 	var meta models.EndpointMetadata
 	err := json.Unmarshal(*metadata, &meta)
@@ -101,6 +101,8 @@ func (c *InstanceCommands) Update(instanceName string, metadata *json.RawMessage
 	params := operations.NewUpdateDriverEndpointParams()
 	params.DriverEndpointID = oldInstance.ID
 	params.DriverEndpoint = &models.DriverEndpoint{}
+	params.DriverEndpoint.AuthenticationKey = authKey
+	params.DriverEndpoint.EndpointURL = targetUrl
 	params.DriverEndpoint.Metadata = &meta
 
 	response, err := c.httpClient.UpdateDriverEndpoint(params, c.token)
