@@ -344,27 +344,36 @@ func (c *UsbPlugin) DeleteInstanceCommand(args []string) {
 
 //UpdateInstanceCommand - allows user to update the instance of a driver
 func (c *UsbPlugin) UpdateInstanceCommand(args []string) {
-	if c.argLength == 5 {
-
+	if c.argLength == 7 || c.argLength == 5 {
 		instanceName := args[2]
+		targetUrl := args[3]
+		authKey := args[4]
 
-		var rawMetadata json.RawMessage
+		var rawMetadata *json.RawMessage
 
-		if args[3] == "-c" {
-			configValue := args[4]
+		if c.argLength == 7 {
+			if args[5] == "-c" {
+				configValue := args[6]
 
-			if _, err := ioutil.ReadFile(configValue); err == nil {
-				fileContent, err := ioutil.ReadFile(configValue)
-				if err != nil {
-					c.showFailed(fmt.Sprintf("Unable to read configuration file. %s", err.Error()))
+				if _, err := ioutil.ReadFile(configValue); err == nil {
+					fileContent, err := ioutil.ReadFile(configValue)
+					if err != nil {
+						c.showFailed(fmt.Sprintf("Unable to read configuration file. %s", err.Error()))
+					}
+					configValue = string(fileContent)
 				}
-				configValue = string(fileContent)
+				if len(configValue) > 0 {
+					meta := json.RawMessage(configValue)
+					rawMetadata = &meta
+				} else {
+					rawMetadata = nil
+				}
 			}
-
-			rawMetadata = json.RawMessage(configValue)
+		} else {
+			rawMetadata = nil
 		}
 
-		updateInstanceName, err := commands.NewInstanceCommands(c.httpClient, c.token).Update(instanceName, &rawMetadata)
+		updateInstanceName, err := commands.NewInstanceCommands(c.httpClient, c.token).Update(instanceName, targetUrl, authKey, rawMetadata)
 		if err != nil {
 			c.showFailed(fmt.Sprint("ERROR:", err))
 			return
