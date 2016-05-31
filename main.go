@@ -93,13 +93,8 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 	c.token = bearer
 
-	if c.argLength == 1 || (c.argLength == 2 && args[1] == "help") {
+	if c.argLength == 1 {
 		c.showCommandsWithHelpText()
-		return
-	}
-
-	if c.argLength == 3 && args[1] == "help" {
-		commands.GetUsage(args)
 		return
 	}
 
@@ -201,11 +196,11 @@ OPTIONS:
 				Name:     "usb update-driver-endpoint",
 				HelpText: "Update a driver instance",
 				UsageDetails: plugin.Usage{
-					Usage: `cf usb update-driver-endpoint NAME [-c METADATA_AS_JSON]
+					Usage: `cf usb update-driver-endpoint NAME [-t ENDPOINT_URL] [-k AUTHENTICATION_KEY] [-c METADATA_AS_JSON]
 
     Optionally provide a file containing the driver endpoint metadata in a valid JSON object.
     The path to the parameters file can be an absolute or relative path to a file:
-    cf usb update-driver-endpoint NAME ENDPOINT_URL AUTHENTICATION_KEY -c PATH_TO_FILE	
+    cf usb update-driver-endpoint NAME -t ENDPOINT_URL -k AUTHENTICATION_KEY -c PATH_TO_FILE	
 					
 EXAMPLE:
     cf usb update-driver-endpoint mydriver -c '{"display_name":"My Driver","image_url":"http://127.0.0.1:8080/image","long_description":"Long description","provider_display_name":"ProvidedName", "documentation_url":"http://127.0.0.1:8080/doc", "support_url":"http://127.0.0.1:8080/support"}'

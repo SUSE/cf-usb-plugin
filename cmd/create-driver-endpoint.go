@@ -54,7 +54,7 @@ var createDriverEndpointCmd = &cobra.Command{
 			}
 
 		} else {
-			commands.ShowIncorrectUsage("Requires name, endpoint and auth key as arguments\n", []string{"create-driver-endpoint"})
+			commands.ShowIncorrectUsage("Requires name, endpoint and auth key as arguments\n", []string{"usb create-driver-endpoint"})
 		}
 	},
 }

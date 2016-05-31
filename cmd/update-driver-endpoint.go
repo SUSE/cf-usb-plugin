@@ -18,10 +18,10 @@ var updateDriverEndpointCmd = &cobra.Command{
 	Long:  `Updates the registered driver endpoint definitions in the usb`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if len(args) == 3 {
+		if len(args) == 1 {
 			instanceName := args[0]
-			targetUrl := args[1]
-			authKey := args[2]
+			targetUrl := target
+			authKey := key
 
 			var rawMetadata *json.RawMessage
 
@@ -44,7 +44,6 @@ var updateDriverEndpointCmd = &cobra.Command{
 			} else {
 				rawMetadata = nil
 			}
-
 			updateInstanceName, err := commands.NewInstanceCommands(usb.UsbClient.HttpClient, usb.UsbClient.Token).Update(instanceName, targetUrl, authKey, rawMetadata)
 			if err != nil {
 				commands.ShowFailed(fmt.Sprint("ERROR:", err))
@@ -54,13 +53,15 @@ var updateDriverEndpointCmd = &cobra.Command{
 				commands.ShowOK(fmt.Sprint("Driver endpoint updated:" + updateInstanceName))
 			}
 		} else {
-			commands.ShowIncorrectUsage("Requires endpoint name as argument\n", []string{"update-driver-endpoint"})
+			commands.ShowIncorrectUsage("Requires endpoint name as argument\n", []string{"usb update-driver-endpoint"})
 		}
 	},
 }
 
 func init() {
 	updateDriverEndpointCmd.Flags().StringVarP(&configJson, "configuration", "c", "", "metadata configuration")
+	updateDriverEndpointCmd.Flags().StringVarP(&target, "target", "t", "", "driver endpoint target url")
+	updateDriverEndpointCmd.Flags().StringVarP(&key, "authkey", "k", "", "authorization key")
 
 	RootCmd.AddCommand(updateDriverEndpointCmd)
 }

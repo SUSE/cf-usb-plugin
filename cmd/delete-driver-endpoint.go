@@ -29,7 +29,7 @@ var deleteDriverEndpointCmd = &cobra.Command{
 				}
 			}
 		} else {
-			commands.ShowIncorrectUsage("Requires endpoint name as argument\n", []string{"delete-driver-endpoint"})
+			commands.ShowIncorrectUsage("Requires endpoint name as argument\n", []string{"usb delete-driver-endpoint"})
 		}
 	},
 }

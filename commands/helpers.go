@@ -74,7 +74,7 @@ func GetUsage(args []string) string {
 			command = args[1]
 		}
 
-		if cmd.Name == fmt.Sprintf("%s %s", args[0], command) {
+		if cmd.Name == command {
 			output = "NAME:\n    "
 			output += fmt.Sprintf("%s - %s", cmd.Name, cmd.HelpText)
 			output += "\n\nUSAGE:\n    "
