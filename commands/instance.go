@@ -85,9 +85,11 @@ func (c *InstanceCommands) Delete(instanceName string) (string, error) {
 func (c *InstanceCommands) Update(instanceName, targetUrl, authKey string, metadata *json.RawMessage) (string, error) {
 
 	var meta models.EndpointMetadata
-	err := json.Unmarshal(*metadata, &meta)
-	if err != nil {
-		return "", err
+	if metadata != nil {
+		err := json.Unmarshal(*metadata, &meta)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	oldInstance, err := c.httpClient.GetDriverEndpointByName(instanceName, c.token)
@@ -101,15 +103,24 @@ func (c *InstanceCommands) Update(instanceName, targetUrl, authKey string, metad
 	params := operations.NewUpdateDriverEndpointParams()
 	params.DriverEndpointID = oldInstance.ID
 	params.DriverEndpoint = &models.DriverEndpoint{}
-	params.DriverEndpoint.AuthenticationKey = authKey
-	params.DriverEndpoint.EndpointURL = targetUrl
+	if authKey != "" {
+		params.DriverEndpoint.AuthenticationKey = authKey
+	} else {
+		params.DriverEndpoint.AuthenticationKey = oldInstance.AuthenticationKey
+	}
+	if targetUrl != "" {
+		params.DriverEndpoint.EndpointURL = targetUrl
+	} else {
+		params.DriverEndpoint.EndpointURL = oldInstance.EndpointURL
+	}
+
 	params.DriverEndpoint.Metadata = &meta
+	params.DriverEndpoint.Name = oldInstance.Name
 
 	response, err := c.httpClient.UpdateDriverEndpoint(params, c.token)
 	if err != nil {
 		return "", err
 	}
-
 	return *response.Payload.Name, nil
 }
 
