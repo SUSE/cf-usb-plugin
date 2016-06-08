@@ -51,35 +51,36 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		_, err := cliConnection.HasAPIEndpoint()
 
 		if err != nil {
-			commands.ShowFailed("The api endpoint doesn't exist")
-			return
+			commands.ShowFailed(fmt.Sprintf("The api endpoint doesn't exist. Error: %s", err.Error()))
 		}
 
-		endpoint, err1 := cliConnection.ApiEndpoint()
-		if err1 != nil {
-			commands.ShowFailed("Cannot connect to api endpoint")
-			return
+		endpoint, err := cliConnection.ApiEndpoint()
+		if err != nil {
+			commands.ShowFailed(fmt.Sprintf("Cannot connect to api endpoint. Error: %s", err.Error()))
+		}
+
+		usbEndpoint := strings.Replace(endpoint, "api.", "usb.", 1)
+		usbUrl, err := url.Parse(usbEndpoint)
+		if err != nil {
+			commands.ShowFailed(fmt.Sprintf("The endpoint %s is not a valid URL. Error: %s", usbEndpoint, err.Error()))
+		}
+
+		_, err = net.Dial("tcp", fmt.Sprintf("%s:http", usbUrl.Host))
+		if err != nil {
+			commands.ShowFailed(fmt.Sprintf("Cannot connect to usb endpoint %s on port 80. Error: %s", usbEndpoint, err.Error()))
 		}
 
 		file, err := os.OpenFile(configFile, os.O_RDWR|os.O_CREATE, 0755)
-		if err != nil {
-			commands.ShowFailed("Cannot create config file")
-			return
-		}
-
-		usbendpoint := "usb." + strings.Replace(endpoint, "https://api.", "", 1)
-		_, err2 := net.Dial("tcp", usbendpoint+":80")
-		if err2 != nil {
-			commands.ShowFailed("Cannot connect to usb endpoint on port 80")
-		}
-
-		_, err3 := file.WriteString("{\"MgmtTarget\":\"http://" + usbendpoint + "\"}")
-
-		if err3 != nil {
-			commands.ShowFailed("Error writing configuration to usb config file")
-		}
-
 		defer file.Close()
+		if err != nil {
+			commands.ShowFailed(fmt.Sprint("Cannot create config file. Error: %s", err.Error()))
+		}
+
+		_, err = file.WriteString(fmt.Sprintf(`{"MgmtTarget":"%s"}`, usbEndpoint))
+
+		if err != nil {
+			commands.ShowFailed(fmt.Sprintf("Error writing configuration to usb config file", err.Error()))
+		}
 
 	}
 
@@ -88,14 +89,12 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	bearer, err := commands.GetBearerToken(cliConnection)
 	if err != nil {
 		commands.ShowFailed(fmt.Sprint("ERROR:", err))
-		return
 	}
 
 	c.token = bearer
 
 	if c.argLength == 1 {
 		c.showCommandsWithHelpText()
-		return
 	}
 
 	// except command to set target
@@ -105,7 +104,6 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		target, err = config.GetTarget()
 		if err != nil {
 			commands.ShowFailed(fmt.Sprint("ERROR:", err))
-			return
 		}
 
 		/*sslDisabled, err := cliConnection.IsSSLDisabled()
@@ -116,7 +114,6 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		u, err := url.Parse(target)
 		if err != nil {
 			commands.ShowFailed(fmt.Sprint("ERROR:", err))
-			return
 		}
 
 		debug, _ := strconv.ParseBool(os.Getenv("CF_TRACE"))
