@@ -11,6 +11,8 @@ import (
 var cfgFile string
 
 var configJson string
+var caCert string
+var skipSSL bool
 var target string
 var key string
 
