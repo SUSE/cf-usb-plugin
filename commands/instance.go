@@ -16,7 +16,7 @@ import (
 
 //InstanceInterface exposes instances commands
 type InstanceInterface interface {
-	Create(string, string, string, *json.RawMessage) (string, error)
+	Create(string, string, string, string, *bool, *json.RawMessage) (string, error)
 	Delete(string) (string, error)
 	Update(string, string, string, *json.RawMessage) (string, error)
 	List() ([]*models.DriverEndpoint, error)
@@ -34,12 +34,14 @@ func NewInstanceCommands(httpClient lib.UsbClientInterface, bearer string) Insta
 }
 
 //Create - creates a new driver instance
-func (c *InstanceCommands) Create(instanceName, targetUrl, authKey string, metadata *json.RawMessage) (string, error) {
+func (c *InstanceCommands) Create(instanceName, targetUrl, authKey string, caCert string, skipSSL *bool, metadata *json.RawMessage) (string, error) {
 
 	newDriver := models.DriverEndpoint{
 		Name:              &instanceName,
 		EndpointURL:       targetUrl,
 		AuthenticationKey: authKey,
+		CaCertificate:     caCert,
+		SkipSSLValidation: skipSSL,
 	}
 
 	if metadata != nil {

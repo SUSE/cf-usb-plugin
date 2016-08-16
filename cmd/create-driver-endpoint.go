@@ -44,7 +44,7 @@ var createDriverEndpointCmd = &cobra.Command{
 				rawMetadata = nil
 			}
 
-			createdInstanceID, err := commands.NewInstanceCommands(usb.UsbClient.HttpClient, usb.UsbClient.Token).Create(instanceName, targetUrl, authKey, rawMetadata)
+			createdInstanceID, err := commands.NewInstanceCommands(usb.UsbClient.HttpClient, usb.UsbClient.Token).Create(instanceName, targetUrl, authKey, caCert, &skipSSL, rawMetadata)
 			if err != nil {
 				commands.ShowFailed(fmt.Sprint("ERROR:", err))
 				return
@@ -61,5 +61,7 @@ var createDriverEndpointCmd = &cobra.Command{
 
 func init() {
 	createDriverEndpointCmd.Flags().StringVarP(&configJson, "configuration", "c", "", "metadata configuration")
+	createDriverEndpointCmd.Flags().StringVarP(&caCert, "ca-certificate", "x", "", "CA Certificate for TLS")
+	createDriverEndpointCmd.Flags().BoolVarP(&skipSSL, "skip-csm-ssl-validation", "k", false, "Skip SSL Validation")
 	RootCmd.AddCommand(createDriverEndpointCmd)
 }
