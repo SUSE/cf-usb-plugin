@@ -88,13 +88,19 @@ func NewRegisterDriverEndpointConflict() *RegisterDriverEndpointConflict {
 Conflict
 */
 type RegisterDriverEndpointConflict struct {
+	Payload string
 }
 
 func (o *RegisterDriverEndpointConflict) Error() string {
-	return fmt.Sprintf("[POST /driver_endpoints][%d] registerDriverEndpointConflict ", 409)
+	return fmt.Sprintf("[POST /driver_endpoints][%d] registerDriverEndpointConflict  %+v", 409, o.Payload)
 }
 
 func (o *RegisterDriverEndpointConflict) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response payload
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }

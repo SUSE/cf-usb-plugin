@@ -116,13 +116,19 @@ func NewUpdateDriverEndpointConflict() *UpdateDriverEndpointConflict {
 Conflict
 */
 type UpdateDriverEndpointConflict struct {
+	Payload string
 }
 
 func (o *UpdateDriverEndpointConflict) Error() string {
-	return fmt.Sprintf("[PUT /driver_endpoints/{driver_endpoint_id}][%d] updateDriverEndpointConflict ", 409)
+	return fmt.Sprintf("[PUT /driver_endpoints/{driver_endpoint_id}][%d] updateDriverEndpointConflict  %+v", 409, o.Payload)
 }
 
 func (o *UpdateDriverEndpointConflict) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response payload
+	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
