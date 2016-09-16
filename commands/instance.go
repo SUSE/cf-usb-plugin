@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"encoding/json"
 	"fmt"
 	"sort"
 
@@ -16,9 +15,9 @@ import (
 
 //InstanceInterface exposes instances commands
 type InstanceInterface interface {
-	Create(string, string, string, string, *bool, *json.RawMessage) (string, error)
+	Create(string, string, string, string, *bool, map[string]string) (string, error)
 	Delete(string) (string, error)
-	Update(string, string, string, *json.RawMessage) (string, error)
+	Update(string, string, string, map[string]string) (string, error)
 	List() ([]*models.DriverEndpoint, error)
 }
 
@@ -34,7 +33,7 @@ func NewInstanceCommands(httpClient lib.UsbClientInterface, bearer string) Insta
 }
 
 //Create - creates a new driver instance
-func (c *InstanceCommands) Create(instanceName, targetUrl, authKey string, caCert string, skipSSL *bool, metadata *json.RawMessage) (string, error) {
+func (c *InstanceCommands) Create(instanceName, targetUrl, authKey string, caCert string, skipSSL *bool, metadata map[string]string) (string, error) {
 
 	newDriver := models.DriverEndpoint{
 		Name:              &instanceName,
@@ -45,13 +44,7 @@ func (c *InstanceCommands) Create(instanceName, targetUrl, authKey string, caCer
 	}
 
 	if metadata != nil {
-		var meta models.EndpointMetadata
-		err := json.Unmarshal(*metadata, &meta)
-		if err != nil {
-			return "", err
-		}
-
-		newDriver.Metadata = &meta
+		newDriver.Metadata = metadata
 	}
 
 	response, err := c.httpClient.RegisterDriverEndpoint(&operations.RegisterDriverEndpointParams{DriverEndpoint: &newDriver}, c.token)
@@ -84,15 +77,7 @@ func (c *InstanceCommands) Delete(instanceName string) (string, error) {
 }
 
 //Update - updates an existing driver instance
-func (c *InstanceCommands) Update(instanceName, targetUrl, authKey string, metadata *json.RawMessage) (string, error) {
-
-	var meta models.EndpointMetadata
-	if metadata != nil {
-		err := json.Unmarshal(*metadata, &meta)
-		if err != nil {
-			return "", err
-		}
-	}
+func (c *InstanceCommands) Update(instanceName, targetUrl, authKey string, metadata map[string]string) (string, error) {
 
 	oldInstance, err := c.httpClient.GetDriverEndpointByName(instanceName, c.token)
 	if err != nil {
@@ -116,7 +101,7 @@ func (c *InstanceCommands) Update(instanceName, targetUrl, authKey string, metad
 		params.DriverEndpoint.EndpointURL = oldInstance.EndpointURL
 	}
 
-	params.DriverEndpoint.Metadata = &meta
+	params.DriverEndpoint.Metadata = metadata
 	params.DriverEndpoint.Name = oldInstance.Name
 
 	response, err := c.httpClient.UpdateDriverEndpoint(params, c.token)

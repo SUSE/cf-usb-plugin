@@ -1,6 +1,8 @@
 package lib
 
 import (
+	"crypto/tls"
+	"net/http"
 	"net/url"
 
 	"github.com/go-openapi/runtime"
@@ -14,8 +16,11 @@ type UsbClient struct {
 	httpClient *operations.Client
 }
 
-func NewUsbClient(target *url.URL, trace bool) UsbClientInterface {
+func NewUsbClient(target *url.URL, sslDisabled, trace bool) UsbClientInterface {
 	transport := httptransport.New(target.Host, "/", []string{target.Scheme})
+	if sslDisabled {
+		transport.Transport = &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+	}
 	transport.Debug = trace
 	return &UsbClient{httpClient: operations.New(transport, strfmt.Default)}
 }

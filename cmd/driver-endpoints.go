@@ -34,12 +34,9 @@ var driverEndpointsCmd = &cobra.Command{
 				fmt.Println("Authentication Key:\t", di.AuthenticationKey)
 
 				fmt.Println("Metadata:")
-				fmt.Println("\tDisplayName:\t\t", di.Metadata.DisplayName)
-				fmt.Println("\tDocumentationURL:\t", di.Metadata.DocumentationURL)
-				fmt.Println("\tImageURL:\t\t", di.Metadata.ImageURL)
-				fmt.Println("\tLongDescription:\t", di.Metadata.LongDescription)
-				fmt.Println("\tProviderDisplayName:\t", di.Metadata.ProviderDisplayName)
-				fmt.Println("\tSupportURL:\t\t", di.Metadata.SupportURL)
+				for _, item := range di.Metadata {
+					fmt.Println(item)
+				}
 
 				fmt.Println()
 

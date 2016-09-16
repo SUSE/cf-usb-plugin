@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"strings"
 
 	"github.com/hpcloud/cf-plugin-usb/commands"
 	usb "github.com/hpcloud/cf-plugin-usb/lib/plugin"
@@ -22,29 +21,16 @@ var createDriverEndpointCmd = &cobra.Command{
 			targetUrl := args[1]
 			authKey := args[2]
 
-			var rawMetadata *json.RawMessage
+			metadata := make(map[string]string)
 
-			if len(configJson) > 0 {
-				configValue := configJson
-
-				if _, err := ioutil.ReadFile(configValue); err == nil {
-					fileContent, err := ioutil.ReadFile(configValue)
-					if err != nil {
-						commands.ShowFailed(fmt.Sprintf("Unable to read configuration file. %s", err.Error()))
-					}
-					configValue = string(fileContent)
-				}
-				if len(configValue) > 0 {
-					meta := json.RawMessage(configValue)
-					rawMetadata = &meta
-				} else {
-					rawMetadata = nil
-				}
-			} else {
-				rawMetadata = nil
+			rows := strings.Split(configJson, ";")
+			for _, row := range rows {
+				key := strings.Split(row, ":")[0]
+				value := strings.Split(row, ":")[1]
+				metadata[key] = value
 			}
 
-			createdInstanceID, err := commands.NewInstanceCommands(usb.UsbClient.HttpClient, usb.UsbClient.Token).Create(instanceName, targetUrl, authKey, caCert, &skipSSL, rawMetadata)
+			createdInstanceID, err := commands.NewInstanceCommands(usb.UsbClient.HttpClient, usb.UsbClient.Token).Create(instanceName, targetUrl, authKey, caCert, &skipSSL, metadata)
 			if err != nil {
 				commands.ShowFailed(fmt.Sprint("ERROR:", err))
 				return

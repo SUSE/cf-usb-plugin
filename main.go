@@ -117,7 +117,8 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		}
 
 		debug, _ := strconv.ParseBool(os.Getenv("CF_TRACE"))
-		c.httpClient = lib.NewUsbClient(u, debug)
+		sslDisabled, _ := cliConnection.IsSSLDisabled()
+		c.httpClient = lib.NewUsbClient(u, sslDisabled, debug)
 	}
 
 	usb.UsbClient.HttpClient = c.httpClient
@@ -167,14 +168,14 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 				Name:     "usb create-driver-endpoint",
 				HelpText: "Create a driver endpoint",
 				UsageDetails: plugin.Usage{
-					Usage: `cf usb create-driver-endpoint NAME ENDPOINT_URL AUTHENTICATION_KEY [-c METADATA_AS_JSON]
+					Usage: `cf usb create-driver-endpoint NAME ENDPOINT_URL AUTHENTICATION_KEY [-c METADATA]
 
-    Optionally provide a file containing the driver endpoint metadata in a valid JSON object.
+    Optionally provide a file containing the driver endpoint metadata in the following format mkey1:mval1;mkey2:mval2.
     The path to the parameters file can be an absolute or relative path to a file:
     cf usb create-driver-endpoint NAME ENDPOINT_URL AUTHENTICATION_KEY -c PATH_TO_FILE	
 					
 EXAMPLE:
-    cf usb create-driver-endpoint mydriver http://127.0.0.1:1234 authkey -c '{"display_name":"My Driver","image_url":"http://127.0.0.1:8080/image","long_description":"Long description","provider_display_name":"ProvidedName", "documentation_url":"http://127.0.0.1:8080/doc", "support_url":"http://127.0.0.1:8080/support"}'
+    cf usb create-driver-endpoint mydriver http://127.0.0.1:1234 authkey -c 'mkey1:mval1;mkey2:mval2'
     cf usb create-driver-endpoint mydriver http://127.0.0.1:1234 authkey -c ~/workspace/tmp/driver_metadata.json
 	
 OPTIONS:
