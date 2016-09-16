@@ -117,7 +117,8 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		}
 
 		debug, _ := strconv.ParseBool(os.Getenv("CF_TRACE"))
-		c.httpClient = lib.NewUsbClient(u, debug)
+		sslDisabled, _ := cliConnection.IsSSLDisabled()
+		c.httpClient = lib.NewUsbClient(u, sslDisabled, debug)
 	}
 
 	usb.UsbClient.HttpClient = c.httpClient
