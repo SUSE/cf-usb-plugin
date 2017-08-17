@@ -14,5 +14,5 @@ popd
 
 pushd $GOPATH/src/github.com/hpcloud/cf-plugin-usb/lib
 
-../.tools/swagger generate client -f $GOPATH/src/github.com/hpcloud/cf-usb/swagger-spec/management-api.json  -t ./  -A usb-client 
+swagger generate client -f $GOPATH/src/github.com/hpcloud/cf-usb/swagger-spec/management-api.json  -t ./  -A usb-client 
 popd
