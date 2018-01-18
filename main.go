@@ -73,13 +73,13 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		file, err := os.OpenFile(configFile, os.O_RDWR|os.O_CREATE, 0755)
 		defer file.Close()
 		if err != nil {
-			commands.ShowFailed(fmt.Sprint("Cannot create config file. Error: %s", err.Error()))
+			commands.ShowFailed(fmt.Sprintf("Cannot create config file. Error: %s", err.Error()))
 		}
 
 		_, err = file.WriteString(fmt.Sprintf(`{"MgmtTarget":"%s"}`, usbEndpoint))
 
 		if err != nil {
-			commands.ShowFailed(fmt.Sprintf("Error writing configuration to usb config file", err.Error()))
+			commands.ShowFailed(fmt.Sprintf("Error writing configuration to usb config file: %s", err.Error()))
 		}
 
 	}
