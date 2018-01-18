@@ -8,8 +8,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cloudfoundry/cli/cf/terminal"
-	"github.com/cloudfoundry/cli/cf/trace"
 	"github.com/cloudfoundry/cli/plugin"
 
 	"github.com/SUSE/cf-usb-plugin/cmd"
@@ -24,7 +22,6 @@ var target string
 //UsbPlugin struct
 type UsbPlugin struct {
 	argLength  int
-	ui         terminal.UI
 	token      string
 	httpClient lib.UsbClientInterface
 }
@@ -36,9 +33,6 @@ func main() {
 //Run method called before each command
 func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	c.argLength = len(args)
-
-	traceEnv := os.Getenv("CF_TRACE")
-	traceLogger := trace.NewLogger(commands.Writer, false, traceEnv, "")
 
 	config := config.NewConfig()
 	configFile, err := config.GetUsbConfigFile()
@@ -84,8 +78,6 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 	}
 
-	c.ui = terminal.NewUI(os.Stdin, commands.Writer, terminal.NewTeePrinter(commands.Writer), traceLogger)
-
 	bearer, err := commands.GetBearerToken(cliConnection)
 	if err != nil {
 		commands.ShowFailed(fmt.Sprint("ERROR:", err))
@@ -95,6 +87,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 	if c.argLength < 2 {
 		c.showCommandsWithHelpText()
+		return
 	}
 
 	// except command to set target
