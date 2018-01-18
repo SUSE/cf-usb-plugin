@@ -86,7 +86,11 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	c.token = bearer
 
 	if c.argLength < 2 {
-		c.showCommandsWithHelpText()
+		if c.argLength > 0 && strings.HasPrefix(args[0], "CLI-MESSAGE-") {
+			// Internal CLI command (e.g. uninstall); don't show help text
+		} else {
+			c.showCommandsWithHelpText()
+		}
 		return
 	}
 
