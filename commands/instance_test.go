@@ -6,7 +6,6 @@ import (
 
 	"github.com/SUSE/cf-usb-plugin/commands"
 
-	"encoding/json"
 	"testing"
 
 	fakeUsbClient "github.com/SUSE/cf-usb-plugin/lib/fakes"
@@ -34,11 +33,9 @@ func Test_CreateDriverInstance(t *testing.T) {
 	createdInstance.ID = id
 	usbClientMock.RegisterDriverEndpointReturns(&createResult, nil)
 
-	var metadata *json.RawMessage
-	meta := json.RawMessage(`{"display_name":"name"}`)
-	metadata = &meta
-
-	response, err := instanceCommands.Create("testDriver", "http://127.0.0.1", "key", metadata)
+	metadata := map[string]string{"display_name": "name"}
+	var skipSSL bool
+	response, err := instanceCommands.Create("testDriver", "http://127.0.0.1", "key", "", &skipSSL, metadata)
 	assert.Equal(response, testID)
 	assert.NoError(err)
 }
@@ -103,9 +100,9 @@ func Test_UpdateInstance(t *testing.T) {
 
 	usbClientMock.GetDriverEndpointByNameReturns(&oldInstance, nil)
 
-	metadata := json.RawMessage(`{"display_name":"name"}`)
+	metadata := map[string]string{"display_name": "name"}
 
-	response, err := instanceCommands.Update("testDriver", "", "", &metadata)
+	response, err := instanceCommands.Update("testDriver", "", "", metadata)
 	assert.NotEqual(response, oldInstance.Name)
 	assert.NoError(err)
 }

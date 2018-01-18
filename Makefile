@@ -72,7 +72,7 @@ tools:
 
 test:
 	$(call print_status, Testing)
-	go test -cover ./...
+	go test -cover $(PKGSDIRS)
 
 docker:
 	$(call print_status, Creating docker image)

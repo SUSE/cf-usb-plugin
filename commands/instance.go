@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/go-openapi/runtime"
 	"github.com/SUSE/cf-usb-plugin/lib/client/operations"
+	"github.com/go-openapi/runtime"
 
 	"github.com/SUSE/cf-usb-plugin/lib"
 	"github.com/SUSE/cf-usb-plugin/lib/models"
@@ -15,7 +15,7 @@ import (
 
 //InstanceInterface exposes instances commands
 type InstanceInterface interface {
-	Create(string, string, string, string, *bool, map[string]string) (string, error)
+	Create(instanceName, targetURL, authKey, CACert string, skipSSL *bool, metadata map[string]string) (string, error)
 	Delete(string) (string, error)
 	Update(string, string, string, map[string]string) (string, error)
 	List() ([]*models.DriverEndpoint, error)
@@ -33,11 +33,11 @@ func NewInstanceCommands(httpClient lib.UsbClientInterface, bearer string) Insta
 }
 
 //Create - creates a new driver instance
-func (c *InstanceCommands) Create(instanceName, targetUrl, authKey string, caCert string, skipSSL *bool, metadata map[string]string) (string, error) {
+func (c *InstanceCommands) Create(instanceName, targetURL, authKey string, caCert string, skipSSL *bool, metadata map[string]string) (string, error) {
 
 	newDriver := models.DriverEndpoint{
 		Name:              &instanceName,
-		EndpointURL:       targetUrl,
+		EndpointURL:       targetURL,
 		AuthenticationKey: authKey,
 		CaCertificate:     caCert,
 		SkipSSLValidation: skipSSL,
