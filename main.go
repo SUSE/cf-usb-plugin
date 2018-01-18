@@ -93,7 +93,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 	c.token = bearer
 
-	if c.argLength == 1 {
+	if c.argLength < 2 {
 		c.showCommandsWithHelpText()
 	}
 
