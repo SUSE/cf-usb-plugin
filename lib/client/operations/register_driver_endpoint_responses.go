@@ -11,7 +11,7 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	"github.com/hpcloud/cf-plugin-usb/lib/models"
+	"github.com/SUSE/cf-usb-plugin/lib/models"
 )
 
 // RegisterDriverEndpointReader is a Reader for the RegisterDriverEndpoint structure.

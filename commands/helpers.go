@@ -11,7 +11,7 @@ import (
 	"github.com/cloudfoundry/cli/cf/terminal"
 	"github.com/cloudfoundry/cli/cf/trace"
 
-	usb "github.com/hpcloud/cf-plugin-usb/lib/plugin"
+	usb "github.com/SUSE/cf-usb-plugin/lib/plugin"
 
 	"github.com/cloudfoundry/cli/plugin"
 )

@@ -12,11 +12,11 @@ import (
 	"github.com/cloudfoundry/cli/cf/trace"
 	"github.com/cloudfoundry/cli/plugin"
 
-	"github.com/hpcloud/cf-plugin-usb/cmd"
-	"github.com/hpcloud/cf-plugin-usb/commands"
-	"github.com/hpcloud/cf-plugin-usb/config"
-	"github.com/hpcloud/cf-plugin-usb/lib"
-	usb "github.com/hpcloud/cf-plugin-usb/lib/plugin"
+	"github.com/SUSE/cf-usb-plugin/cmd"
+	"github.com/SUSE/cf-usb-plugin/commands"
+	"github.com/SUSE/cf-usb-plugin/config"
+	"github.com/SUSE/cf-usb-plugin/lib"
+	usb "github.com/SUSE/cf-usb-plugin/lib/plugin"
 )
 
 var target string

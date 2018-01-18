@@ -2,7 +2,7 @@ package plugin
 
 import (
 	"github.com/cloudfoundry/cli/plugin"
-	"github.com/hpcloud/cf-plugin-usb/lib"
+	"github.com/SUSE/cf-usb-plugin/lib"
 )
 
 var UsbClient struct {

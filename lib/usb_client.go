@@ -8,8 +8,8 @@ import (
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
 	strfmt "github.com/go-openapi/strfmt"
-	operations "github.com/hpcloud/cf-plugin-usb/lib/client/operations"
-	"github.com/hpcloud/cf-plugin-usb/lib/models"
+	operations "github.com/SUSE/cf-usb-plugin/lib/client/operations"
+	"github.com/SUSE/cf-usb-plugin/lib/models"
 )
 
 type UsbClient struct {
