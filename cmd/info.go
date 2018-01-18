@@ -20,6 +20,14 @@ var infoCmd = &cobra.Command{
 			return
 		}
 
+		fallbackVersion := "<Error fetching version>"
+		if infoResp.BrokerAPIVersion == nil {
+			infoResp.BrokerAPIVersion = &fallbackVersion
+		}
+		if infoResp.UsbVersion == nil {
+			infoResp.UsbVersion = &fallbackVersion
+		}
+
 		commands.ShowOK("")
 		fmt.Println("Broker API version: " + *infoResp.BrokerAPIVersion)
 		fmt.Println("USB version: " + *infoResp.UsbVersion)
