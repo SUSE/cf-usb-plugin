@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/hpcloud/cf-plugin-usb/commands"
-	"github.com/hpcloud/cf-plugin-usb/config"
+	"github.com/SUSE/cf-usb-plugin/commands"
+	"github.com/SUSE/cf-usb-plugin/config"
 	"github.com/spf13/cobra"
 )
 

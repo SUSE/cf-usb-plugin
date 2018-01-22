@@ -2,9 +2,9 @@ package commands
 
 import (
 	"github.com/go-openapi/runtime"
-	"github.com/hpcloud/cf-plugin-usb/lib"
-	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
-	"github.com/hpcloud/cf-plugin-usb/lib/models"
+	"github.com/SUSE/cf-usb-plugin/lib"
+	"github.com/SUSE/cf-usb-plugin/lib/client/operations"
+	"github.com/SUSE/cf-usb-plugin/lib/models"
 
 	httptransport "github.com/go-openapi/runtime/client"
 )

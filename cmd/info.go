@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/hpcloud/cf-plugin-usb/commands"
-	usb "github.com/hpcloud/cf-plugin-usb/lib/plugin"
+	"github.com/SUSE/cf-usb-plugin/commands"
+	usb "github.com/SUSE/cf-usb-plugin/lib/plugin"
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +18,14 @@ var infoCmd = &cobra.Command{
 		if err != nil {
 			commands.ShowFailed(fmt.Sprint("ERROR:", err))
 			return
+		}
+
+		fallbackVersion := "<Error fetching version>"
+		if infoResp.BrokerAPIVersion == nil {
+			infoResp.BrokerAPIVersion = &fallbackVersion
+		}
+		if infoResp.UsbVersion == nil {
+			infoResp.UsbVersion = &fallbackVersion
 		}
 
 		commands.ShowOK("")

@@ -2,8 +2,8 @@ package lib
 
 import (
 	"github.com/go-openapi/runtime"
-	operations "github.com/hpcloud/cf-plugin-usb/lib/client/operations"
-	"github.com/hpcloud/cf-plugin-usb/lib/models"
+	operations "github.com/SUSE/cf-usb-plugin/lib/client/operations"
+	"github.com/SUSE/cf-usb-plugin/lib/models"
 )
 
 //Usb client interface

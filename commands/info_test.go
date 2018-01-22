@@ -1,14 +1,14 @@
 package commands_test
 
 import (
-	"github.com/hpcloud/cf-plugin-usb/lib/client/operations"
-	"github.com/hpcloud/cf-plugin-usb/lib/models"
+	"github.com/SUSE/cf-usb-plugin/lib/client/operations"
+	"github.com/SUSE/cf-usb-plugin/lib/models"
 
-	"github.com/hpcloud/cf-plugin-usb/commands"
+	"github.com/SUSE/cf-usb-plugin/commands"
 
 	"testing"
 
-	fakeUsbClient "github.com/hpcloud/cf-plugin-usb/lib/fakes"
+	fakeUsbClient "github.com/SUSE/cf-usb-plugin/lib/fakes"
 	"github.com/stretchr/testify/assert"
 )
 

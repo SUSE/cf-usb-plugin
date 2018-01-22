@@ -4,7 +4,7 @@ ARCH:=$(shell go env GOOS).$(shell go env GOARCH)
 COMMIT_HASH=$(shell git log --pretty=format:'%h' -n 1)
 APP_VERSION=$(VERSION)-$(COMMIT_HASH)
 
-PKGSDIRS=$(shell go list -f '{{.Dir}}' ./...)
+PKGSDIRS=$(shell go list -f '{{.ImportPath}}' ./... | grep -v /vendor/)
 
 IMAGE_NAME=helioncf/hcf-cf-plugin-usb
 IMAGE_TAG=$(subst +,_,$(APP_VERSION))
@@ -31,7 +31,7 @@ lint:
 
 vet:
 	$(call print_status, Vetting)
-	go vet ./...
+	go vet $(PKGSDIRS)
 
 build:
 	$(call print_status, Building)
@@ -72,7 +72,7 @@ tools:
 
 test:
 	$(call print_status, Testing)
-	go test -cover ./...
+	go test -cover $(PKGSDIRS)
 
 docker:
 	$(call print_status, Creating docker image)

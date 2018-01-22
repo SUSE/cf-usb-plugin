@@ -8,15 +8,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cloudfoundry/cli/cf/terminal"
-	"github.com/cloudfoundry/cli/cf/trace"
 	"github.com/cloudfoundry/cli/plugin"
 
-	"github.com/hpcloud/cf-plugin-usb/cmd"
-	"github.com/hpcloud/cf-plugin-usb/commands"
-	"github.com/hpcloud/cf-plugin-usb/config"
-	"github.com/hpcloud/cf-plugin-usb/lib"
-	usb "github.com/hpcloud/cf-plugin-usb/lib/plugin"
+	"github.com/SUSE/cf-usb-plugin/cmd"
+	"github.com/SUSE/cf-usb-plugin/commands"
+	"github.com/SUSE/cf-usb-plugin/config"
+	"github.com/SUSE/cf-usb-plugin/lib"
+	usb "github.com/SUSE/cf-usb-plugin/lib/plugin"
 )
 
 var target string
@@ -24,7 +22,6 @@ var target string
 //UsbPlugin struct
 type UsbPlugin struct {
 	argLength  int
-	ui         terminal.UI
 	token      string
 	httpClient lib.UsbClientInterface
 }
@@ -36,9 +33,6 @@ func main() {
 //Run method called before each command
 func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	c.argLength = len(args)
-
-	traceEnv := os.Getenv("CF_TRACE")
-	traceLogger := trace.NewLogger(commands.Writer, false, traceEnv, "")
 
 	config := config.NewConfig()
 	configFile, err := config.GetUsbConfigFile()
@@ -73,18 +67,16 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		file, err := os.OpenFile(configFile, os.O_RDWR|os.O_CREATE, 0755)
 		defer file.Close()
 		if err != nil {
-			commands.ShowFailed(fmt.Sprint("Cannot create config file. Error: %s", err.Error()))
+			commands.ShowFailed(fmt.Sprintf("Cannot create config file. Error: %s", err.Error()))
 		}
 
 		_, err = file.WriteString(fmt.Sprintf(`{"MgmtTarget":"%s"}`, usbEndpoint))
 
 		if err != nil {
-			commands.ShowFailed(fmt.Sprintf("Error writing configuration to usb config file", err.Error()))
+			commands.ShowFailed(fmt.Sprintf("Error writing configuration to usb config file: %s", err.Error()))
 		}
 
 	}
-
-	c.ui = terminal.NewUI(os.Stdin, commands.Writer, terminal.NewTeePrinter(commands.Writer), traceLogger)
 
 	bearer, err := commands.GetBearerToken(cliConnection)
 	if err != nil {
@@ -93,8 +85,13 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 
 	c.token = bearer
 
-	if c.argLength == 1 {
-		c.showCommandsWithHelpText()
+	if c.argLength < 2 {
+		if c.argLength > 0 && strings.HasPrefix(args[0], "CLI-MESSAGE-") {
+			// Internal CLI command (e.g. uninstall); don't show help text
+		} else {
+			c.showCommandsWithHelpText()
+		}
+		return
 	}
 
 	// except command to set target

@@ -5,9 +5,9 @@ import (
 	"sync"
 
 	"github.com/go-openapi/runtime"
-	"github.com/hpcloud/cf-plugin-usb/lib"
-	operations "github.com/hpcloud/cf-plugin-usb/lib/client/operations"
-	"github.com/hpcloud/cf-plugin-usb/lib/models"
+	"github.com/SUSE/cf-usb-plugin/lib"
+	operations "github.com/SUSE/cf-usb-plugin/lib/client/operations"
+	"github.com/SUSE/cf-usb-plugin/lib/models"
 )
 
 type FakeUsbClientInterface struct {

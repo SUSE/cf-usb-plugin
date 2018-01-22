@@ -1,7 +1,7 @@
 package config_test
 
 import (
-	"github.com/hpcloud/cf-plugin-usb/config/fakes"
+	"github.com/SUSE/cf-usb-plugin/config/fakes"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

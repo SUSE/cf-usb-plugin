@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hpcloud/cf-plugin-usb/commands"
-	usb "github.com/hpcloud/cf-plugin-usb/lib/plugin"
+	"github.com/SUSE/cf-usb-plugin/commands"
+	usb "github.com/SUSE/cf-usb-plugin/lib/plugin"
 
 	"github.com/spf13/cobra"
 )

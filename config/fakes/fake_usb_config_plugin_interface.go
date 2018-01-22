@@ -4,7 +4,7 @@ package fakes
 import (
 	"sync"
 
-	"github.com/hpcloud/cf-plugin-usb/config"
+	"github.com/SUSE/cf-usb-plugin/config"
 )
 
 type FakeUsbConfigPluginInterface struct {
