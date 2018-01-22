@@ -1,6 +1,9 @@
 # cf-plugin-usb
 
 Universal Service Broker plugin for Cloud Foundry CLI.
+
+It is part of the [CF-USB project](https://github.com/SUSE/cf-usb).
+
 To use the plugin you must have *Admin* Cloud Foundry privileges.
 
 ## Building
@@ -8,8 +11,9 @@ To use the plugin you must have *Admin* Cloud Foundry privileges.
 For your first build:
 
 ```bash
-mkdir -p $GOPATH/src/github.com/hpcloud
-cd $GOPATH/src/github.com/hpcloud
+mkdir -p $GOPATH/src/github.com/SUSE
+git clone https://github.com/SUSE/cf-usb-plugin $GOPATH/src/github.com/SUSE
+cd $GOPATH/src/github.com/SUSE/cf-usb-plugin
 make tools
 make
 ```
@@ -18,7 +22,7 @@ The build artifacts will be placed in *bin/{os}/{arch}/*
 
 ## Installing
 
-The cf cli usb plugin requires cf cli version 6.14 or grater
+The cf cli usb plugin requires cf cli version 6.14 or greater
 
 After building the plugin, you can install it using the following command:
 
@@ -37,7 +41,7 @@ cf uninstall-plugin usb
 To run the cf cli usb plugin tests, run the following command:
 
 ```bash
-cd $GOPATH/src/github.com/hpcloud/cf-plugin-usb
+cd $GOPATH/src/github.com/SUSE/cf-usb-plugin
 make test
 ```
 
