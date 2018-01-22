@@ -18,15 +18,15 @@
 		},
 		{
 			"ImportPath": "github.com/SUSE/termui",
-			"Rev": "92556107bd806bea5d53728326e7d45c7b03f43c"
+			"Rev": "7bc149231ea1e29ad1ba809f9a565212562992d9"
 		},
 		{
 			"ImportPath": "github.com/SUSE/termui/sigint",
-			"Rev": "92556107bd806bea5d53728326e7d45c7b03f43c"
+			"Rev": "7bc149231ea1e29ad1ba809f9a565212562992d9"
 		},
 		{
 			"ImportPath": "github.com/SUSE/termui/termpassword",
-			"Rev": "92556107bd806bea5d53728326e7d45c7b03f43c"
+			"Rev": "7bc149231ea1e29ad1ba809f9a565212562992d9"
 		},
 		{
 			"ImportPath": "github.com/asaskevich/govalidator",
