@@ -6,7 +6,7 @@ APP_VERSION=$(VERSION)-$(COMMIT_HASH)
 
 PKGSDIRS=$(shell go list -f '{{.ImportPath}}' ./... | grep -v /vendor/)
 
-IMAGE_NAME=helioncf/hcf-cf-usb-plugin
+IMAGE_NAME=splatform/cf-usb-plugin
 IMAGE_TAG=$(subst +,_,$(APP_VERSION))
 
 print_status = @printf "\033[32;01m==> $(1)\033[0m\n"
