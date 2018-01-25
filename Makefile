@@ -6,7 +6,7 @@ APP_VERSION=$(VERSION)-$(COMMIT_HASH)
 
 PKGSDIRS=$(shell go list -f '{{.ImportPath}}' ./... | grep -v /vendor/)
 
-IMAGE_NAME=helioncf/hcf-cf-plugin-usb
+IMAGE_NAME=helioncf/hcf-cf-usb-plugin
 IMAGE_TAG=$(subst +,_,$(APP_VERSION))
 
 print_status = @printf "\033[32;01m==> $(1)\033[0m\n"
@@ -16,10 +16,10 @@ all: clean format lint vet bindata test build
 
 clean:
 	$(call print_status, Cleaning)
-	rm -f cf-plugin-usb
-	rm -f cf-plugin-usb-*.tgz
-	rm -f cf-plugin-usb-*.tar
-	rm -f .cf-plugin-usb-docker-*.txt
+	rm -f cf-usb-plugin
+	rm -f cf-usb-plugin-*.tgz
+	rm -f cf-usb-plugin-*.tar
+	rm -f .cf-usb-plugin-docker-*.txt
 
 format:
 	$(call print_status, Checking format)
@@ -41,7 +41,7 @@ build:
 
 gobuild = GOARCH=$(2) GOOS=$(1) go build \
 		-ldflags="-X main.version=$(APP_VERSION)" \
-		-o="build/$(1)-$(2)/cf-plugin-usb$(3)" ./
+		-o="build/$(1)-$(2)/cf-usb-plugin$(3)" ./
 
 linux_dist: build
 	$(call print_status, Disting linux)
@@ -59,7 +59,7 @@ dist: linux_dist \
 	windows_dist \
 	darwin_dist
 
-godist = GOARCH=$(2) GOOS=$(1) tar czf cf-plugin-usb-$(APP_VERSION)-$(1)-$(2).tgz build/$(1)-$(2)/*
+godist = GOARCH=$(2) GOOS=$(1) tar czf cf-usb-plugin-$(APP_VERSION)-$(1)-$(2).tgz build/$(1)-$(2)/*
 
 tools:
 	$(call print_status, Installing Tools)
@@ -82,8 +82,8 @@ docker:
 # Used by ci
 docker-write-tag-files:
 	$(call print_status, Writing docker tag files)
-	echo $(IMAGE_TAG) > cf-plugin-usb-docker-version-tag.txt
-	echo $(BRANCH) > cf-plugin-usb-docker-branch-tag.txt
+	echo $(IMAGE_TAG) > cf-usb-plugin-docker-version-tag.txt
+	echo $(BRANCH) > cf-usb-plugin-docker-branch-tag.txt
 
 docker-push: docker
 	$(call print_status, Pushing docker image)
