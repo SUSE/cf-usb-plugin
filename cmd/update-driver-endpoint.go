@@ -19,18 +19,18 @@ var updateDriverEndpointCmd = &cobra.Command{
 
 		if len(args) == 1 {
 			instanceName := args[0]
-			targetUrl := target
+			targetURL := target
 			authKey := key
 
 			metadata := make(map[string]string)
-			rows := strings.Split(configJson, ";")
+			rows := strings.Split(configJSON, ";")
 			for _, row := range rows {
 				key := strings.Split(row, ":")[0]
 				value := strings.Split(row, ":")[1]
 				metadata[key] = value
 			}
 
-			updateInstanceName, err := commands.NewInstanceCommands(usb.UsbClient.HttpClient, usb.UsbClient.Token).Update(instanceName, targetUrl, authKey, metadata)
+			updateInstanceName, err := commands.NewInstanceCommands(usb.UsbClient.HttpClient, usb.UsbClient.Token).Update(instanceName, targetURL, authKey, metadata)
 			if err != nil {
 				commands.ShowFailed(fmt.Sprint("ERROR:", err))
 				return
@@ -45,7 +45,7 @@ var updateDriverEndpointCmd = &cobra.Command{
 }
 
 func init() {
-	updateDriverEndpointCmd.Flags().StringVarP(&configJson, "configuration", "c", "", "metadata configuration")
+	updateDriverEndpointCmd.Flags().StringVarP(&configJSON, "configuration", "c", "", "metadata configuration")
 	updateDriverEndpointCmd.Flags().StringVarP(&target, "target", "t", "", "driver endpoint target url")
 	updateDriverEndpointCmd.Flags().StringVarP(&key, "authkey", "k", "", "authorization key")
 
