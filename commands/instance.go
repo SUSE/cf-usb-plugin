@@ -77,7 +77,7 @@ func (c *InstanceCommands) Delete(instanceName string) (string, error) {
 }
 
 //Update - updates an existing driver instance
-func (c *InstanceCommands) Update(instanceName, targetUrl, authKey string, metadata map[string]string) (string, error) {
+func (c *InstanceCommands) Update(instanceName, targetURL, authKey string, metadata map[string]string) (string, error) {
 
 	oldInstance, err := c.httpClient.GetDriverEndpointByName(instanceName, c.token)
 	if err != nil {
@@ -95,8 +95,8 @@ func (c *InstanceCommands) Update(instanceName, targetUrl, authKey string, metad
 	} else {
 		params.DriverEndpoint.AuthenticationKey = oldInstance.AuthenticationKey
 	}
-	if targetUrl != "" {
-		params.DriverEndpoint.EndpointURL = targetUrl
+	if targetURL != "" {
+		params.DriverEndpoint.EndpointURL = targetURL
 	} else {
 		params.DriverEndpoint.EndpointURL = oldInstance.EndpointURL
 	}

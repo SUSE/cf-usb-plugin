@@ -10,7 +10,7 @@ import (
 
 var cfgFile string
 
-var configJson string
+var configJSON string
 var caCert string
 var skipSSL bool
 var target string

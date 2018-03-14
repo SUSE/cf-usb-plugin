@@ -54,12 +54,12 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 		}
 
 		usbEndpoint := strings.Replace(endpoint, "api.", "usb.", 1)
-		usbUrl, err := url.Parse(usbEndpoint)
+		usbURL, err := url.Parse(usbEndpoint)
 		if err != nil {
 			commands.ShowFailed(fmt.Sprintf("The endpoint %s is not a valid URL. Error: %s", usbEndpoint, err.Error()))
 		}
 
-		_, err = net.Dial("tcp", fmt.Sprintf("%s:http", usbUrl.Host))
+		_, err = net.Dial("tcp", fmt.Sprintf("%s:http", usbURL.Host))
 		if err != nil {
 			commands.ShowFailed(fmt.Sprintf("Cannot connect to usb endpoint %s on port 80. Error: %s", usbEndpoint, err.Error()))
 		}
