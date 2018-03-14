@@ -1,4 +1,4 @@
-# cf-plugin-usb
+# cf-usb-plugin
 
 Universal Service Broker plugin for Cloud Foundry CLI.
 

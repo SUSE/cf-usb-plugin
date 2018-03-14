@@ -18,7 +18,7 @@ var key string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "cf-plugin-usb",
+	Use:   "cf-usb-plugin",
 	Short: "CloudFoundry CLI USB plug-in",
 	Long:  `CloudFoundry CLI plug-in that allows management of the universal service broker drivers`,
 }
@@ -39,7 +39,7 @@ func init() {
 	// Cobra supports Persistent Flags, which, if defined here,
 	// will be global for your application.
 
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cf-plugin-usb.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cf-usb-plugin.yaml)")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -48,7 +48,7 @@ func initConfig() {
 		viper.SetConfigFile(cfgFile)
 	}
 
-	viper.SetConfigName(".cf-plugin-usb") // name of config file (without extension)
+	viper.SetConfigName(".cf-usb-plugin") // name of config file (without extension)
 	viper.AddConfigPath("$HOME")          // adding home directory as first search path
 	viper.AutomaticEnv()                  // read in environment variables that match
 

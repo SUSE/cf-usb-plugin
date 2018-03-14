@@ -128,7 +128,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 //GetMetadata returns metadata for cf cli
 func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 	return plugin.PluginMetadata{
-		Name: "cf-plugin-usb",
+		Name: "cf-usb-plugin",
 		Version: plugin.VersionType{
 			Major: 1,
 			Minor: 0,
