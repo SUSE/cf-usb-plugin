@@ -9,7 +9,7 @@ IMAGE_TAG=$(subst +,_,$(APP_VERSION))
 
 print_status = @printf "\033[32;01m==> $(1)\033[0m\n"
 
-.PHONY: all clean format lint vet bindata build test docker docker-write-tag-files docker-push
+.PHONY: all clean format lint vet bindata build test
 all: clean format lint vet bindata test build
 
 clean:
@@ -17,7 +17,6 @@ clean:
 	rm -f cf-usb-plugin
 	rm -f cf-usb-plugin-*.tgz
 	rm -f cf-usb-plugin-*.tar
-	rm -f .cf-usb-plugin-docker-*.txt
 
 format:
 	$(call print_status, Checking format)
@@ -71,19 +70,3 @@ tools:
 test:
 	$(call print_status, Testing)
 	go test -cover $(PKGSDIRS)
-
-docker:
-	$(call print_status, Creating docker image)
-	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
-	docker tag -f $(IMAGE_NAME):$(IMAGE_TAG) $(IMAGE_NAME):$(BRANCH)
-
-# Used by ci
-docker-write-tag-files:
-	$(call print_status, Writing docker tag files)
-	echo $(IMAGE_TAG) > cf-usb-plugin-docker-version-tag.txt
-	echo $(BRANCH) > cf-usb-plugin-docker-branch-tag.txt
-
-docker-push: docker
-	$(call print_status, Pushing docker image)
-	docker push $(IMAGE_NAME):$(IMAGE_TAG)
-	docker push $(IMAGE_NAME):$(BRANCH)
