@@ -1,8 +1,6 @@
 include version.mk
 
 ARCH:=$(shell go env GOOS).$(shell go env GOARCH)
-COMMIT_HASH=$(shell git log --pretty=format:'%h' -n 1)
-APP_VERSION=$(VERSION)-$(COMMIT_HASH)
 
 PKGSDIRS=$(shell go list -f '{{.ImportPath}}' ./... | grep -v /vendor/)
 
