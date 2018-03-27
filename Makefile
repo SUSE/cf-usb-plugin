@@ -23,7 +23,7 @@ clean:
 
 format:
 	$(call print_status, Checking format)
-    @echo $(PKGSDIRS) | tr ' ' '\n' | xargs -I '{p}' -n1 goimports -e -l {p} | sed "s/^/Failed: /"
+	@echo $(PKGSDIRS) | tr ' ' '\n' | xargs -I '{p}' -n1 goimports -e -l {p} | sed "s/^/Failed: /"
 
 lint:
 	$(call print_status, Linting)
