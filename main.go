@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"net/url"
 	"os"
@@ -18,6 +19,7 @@ import (
 )
 
 var target string
+var version string
 
 //UsbPlugin struct
 type UsbPlugin struct {
@@ -125,14 +127,47 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	cmd.Execute()
 }
 
+func getVersionInfo() [3]int {
+	var tuple [3]int
+
+	versionDigits := strings.SplitN(version, ".", 3)
+
+	if len(versionDigits) != 3 {
+		log.Fatal("Invalid version information")
+	}
+
+	var err error
+	tuple[0], err = strconv.Atoi(versionDigits[0])
+	if err != nil {
+		log.Fatal("Invalid major version value")
+	}
+
+	tuple[1], err = strconv.Atoi(versionDigits[1])
+	if err != nil {
+		log.Fatal("Invalid minor version value")
+	}
+
+	buildDigits := strings.Split(versionDigits[2], "+")
+
+	tuple[2], err = strconv.Atoi(buildDigits[0])
+
+	if err != nil {
+		log.Fatal("Invalid build version value")
+	}
+
+	return tuple
+}
+
 //GetMetadata returns metadata for cf cli
 func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
+	versionDigits := getVersionInfo()
+
 	return plugin.PluginMetadata{
 		Name: "cf-usb-plugin",
 		Version: plugin.VersionType{
-			Major: 1,
-			Minor: 0,
-			Build: 0,
+			Major: versionDigits[0],
+			Minor: versionDigits[1],
+			Build: versionDigits[2],
 		},
 		MinCliVersion: plugin.VersionType{
 			Major: 1,
