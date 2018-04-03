@@ -170,8 +170,8 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 			Build: versionDigits[2],
 		},
 		MinCliVersion: plugin.VersionType{
-			Major: 1,
-			Minor: 0,
+			Major: 6,
+			Minor: 14,
 			Build: 0,
 		},
 		Commands: []plugin.Command{
