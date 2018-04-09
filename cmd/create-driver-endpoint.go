@@ -12,7 +12,7 @@ import (
 
 // create-driver-endpointCmd represents the create-driver-endpoint command
 var createDriverEndpointCmd = &cobra.Command{
-	Use:   "create-driver-endpoint",
+	Use:   "usb-create-driver-endpoint",
 	Short: "Creates a new driver endpoint",
 	Long:  `Creates a new driver endpoint registration in the usb`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -40,7 +40,7 @@ var createDriverEndpointCmd = &cobra.Command{
 			}
 
 		} else {
-			commands.ShowIncorrectUsage("Requires name, endpoint and auth key as arguments\n", []string{"usb create-driver-endpoint"})
+			commands.ShowIncorrectUsage("Requires name, endpoint and auth key as arguments\n", []string{"usb-create-driver-endpoint"})
 		}
 	},
 }

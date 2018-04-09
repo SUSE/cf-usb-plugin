@@ -90,14 +90,12 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	if c.argLength < 2 {
 		if c.argLength > 0 && strings.HasPrefix(args[0], "CLI-MESSAGE-") {
 			// Internal CLI command (e.g. uninstall); don't show help text
-		} else {
-			c.showCommandsWithHelpText()
 		}
 		return
 	}
 
 	// except command to set target
-	if !(args[1] == "target" && c.argLength == 3) {
+	if !(args[0] == "usb-target" && c.argLength == 2) {
 		var err error
 
 		target, err = config.GetTarget()
@@ -123,7 +121,7 @@ func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	usb.UsbClient.HttpClient = c.httpClient
 	usb.UsbClient.Token = c.token
 	usb.UsbClient.Commands = c.GetMetadata().Commands
-	cmd.RootCmd.SetArgs(args[1:])
+	cmd.RootCmd.SetArgs(args)
 	cmd.Execute()
 }
 
@@ -175,32 +173,25 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 			Build: 0,
 		},
 		Commands: []plugin.Command{
-			{
-				Name:     "usb",
-				HelpText: "View command's help text",
-				UsageDetails: plugin.Usage{
-					Usage: "cf usb",
-				},
-			},
 			plugin.Command{
-				Name:     "usb target",
+				Name:     "usb-target",
 				HelpText: "Set or view target usb management endpoint api url",
 				UsageDetails: plugin.Usage{
-					Usage: "cf usb target [URL]",
+					Usage: "cf usb-target [URL]",
 				},
 			},
 			plugin.Command{
-				Name:     "usb info",
+				Name:     "usb-info",
 				HelpText: "Show usb plugin info",
 				UsageDetails: plugin.Usage{
-					Usage: "cf usb info",
+					Usage: "cf usb-info",
 				},
 			},
 			plugin.Command{
-				Name:     "usb create-driver-endpoint",
+				Name:     "usb-create-driver-endpoint",
 				HelpText: "Create a driver endpoint",
 				UsageDetails: plugin.Usage{
-					Usage: `cf usb create-driver-endpoint NAME ENDPOINT_URL AUTHENTICATION_KEY [-c METADATA]
+					Usage: `cf usb-create-driver-endpoint NAME ENDPOINT_URL AUTHENTICATION_KEY [-c METADATA]
 
     Optionally provide a file containing the driver endpoint metadata in the following format mkey1:mval1;mkey2:mval2.
     The path to the parameters file can be an absolute or relative path to a file:
@@ -216,17 +207,17 @@ OPTIONS:
 				},
 			},
 			plugin.Command{
-				Name:     "usb delete-driver-endpoint",
+				Name:     "usb-delete-driver-endpoint",
 				HelpText: "Delete a driver instance",
 				UsageDetails: plugin.Usage{
-					Usage: "cf usb delete-driver-endpoint NAME",
+					Usage: "cf usb-delete-driver-endpoint NAME",
 				},
 			},
 			plugin.Command{
-				Name:     "usb update-driver-endpoint",
+				Name:     "usb-update-driver-endpoint",
 				HelpText: "Update a driver instance",
 				UsageDetails: plugin.Usage{
-					Usage: `cf usb update-driver-endpoint NAME [-t ENDPOINT_URL] [-k AUTHENTICATION_KEY] [-c METADATA_AS_JSON]
+					Usage: `cf usb-update-driver-endpoint NAME [-t ENDPOINT_URL] [-k AUTHENTICATION_KEY] [-c METADATA_AS_JSON]
 
     Optionally provide a file containing the driver endpoint metadata in a valid JSON object.
     The path to the parameters file can be an absolute or relative path to a file:
@@ -242,20 +233,12 @@ OPTIONS:
 				},
 			},
 			plugin.Command{
-				Name:     "usb driver-endpoints",
+				Name:     "usb-driver-endpoints",
 				HelpText: "List existing driver endpoints",
 				UsageDetails: plugin.Usage{
-					Usage: "cf usb driver-endpoints",
+					Usage: "cf usb-driver-endpoints",
 				},
 			},
 		},
 	}
-}
-
-func (c *UsbPlugin) showCommandsWithHelpText() {
-	metadata := c.GetMetadata()
-	for _, command := range metadata.Commands {
-		fmt.Printf("%-25s %-50s\n", command.Name, command.HelpText)
-	}
-	return
 }

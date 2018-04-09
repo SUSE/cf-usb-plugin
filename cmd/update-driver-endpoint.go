@@ -12,7 +12,7 @@ import (
 
 // update-driver-endpointCmd represents the update-driver-endpoint command
 var updateDriverEndpointCmd = &cobra.Command{
-	Use:   "update-driver-endpoint",
+	Use:   "usb-update-driver-endpoint",
 	Short: "Update driver information",
 	Long:  `Updates the registered driver endpoint definitions in the usb`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -39,7 +39,7 @@ var updateDriverEndpointCmd = &cobra.Command{
 				commands.ShowOK(fmt.Sprint("Driver endpoint updated:" + updateInstanceName))
 			}
 		} else {
-			commands.ShowIncorrectUsage("Requires endpoint name as argument\n", []string{"usb update-driver-endpoint"})
+			commands.ShowIncorrectUsage("Requires endpoint name as argument\n", []string{"usb-update-driver-endpoint"})
 		}
 	},
 }
