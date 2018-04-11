@@ -36,11 +36,11 @@ func main() {
 func (c *UsbPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	c.argLength = len(args)
 
-	if c.argLength < 2 {
-		if c.argLength > 0 && strings.HasPrefix(args[0], "CLI-MESSAGE-") {
-			// Internal CLI command (e.g. uninstall); don't show help text
+	if c.argLength == 1 {
+		switch args[0] {
+		case "CLI-MESSAGE-UNINSTALL":
+			return
 		}
-		return
 	}
 
 	config := config.NewConfig()
