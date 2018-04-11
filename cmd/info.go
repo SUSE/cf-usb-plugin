@@ -10,7 +10,7 @@ import (
 
 // infoCmd represents the info command
 var infoCmd = &cobra.Command{
-	Use:   "info",
+	Use:   "usb-info",
 	Short: "Get broker api information",
 	Long:  `Get broker api version and api version information from the targeted usb broker`,
 	Run: func(cmd *cobra.Command, args []string) {

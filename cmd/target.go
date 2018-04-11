@@ -9,7 +9,7 @@ import (
 
 // targetCmd represents the target command
 var targetCmd = &cobra.Command{
-	Use:   "target",
+	Use:   "usb-target",
 	Short: "Gets or sets the target endpoint for the usb plugin",
 	Long:  `Shows the current target or sets a new usb management url as a target for the plugin`,
 	Run: func(cmd *cobra.Command, args []string) {

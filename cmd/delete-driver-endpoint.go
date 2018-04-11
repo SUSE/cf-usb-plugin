@@ -11,7 +11,7 @@ import (
 
 // delete-driver-endpointCmd represents the delete-driver-endpoint command
 var deleteDriverEndpointCmd = &cobra.Command{
-	Use:   "delete-driver-endpoint",
+	Use:   "usb-delete-driver-endpoint",
 	Short: "Deletes a driver endpoint",
 	Long:  `Removes a driver endpoint from the usb`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -29,7 +29,7 @@ var deleteDriverEndpointCmd = &cobra.Command{
 				}
 			}
 		} else {
-			commands.ShowIncorrectUsage("Requires endpoint name as argument\n", []string{"usb delete-driver-endpoint"})
+			commands.ShowIncorrectUsage("Requires endpoint name as argument\n", []string{"usb-delete-driver-endpoint"})
 		}
 	},
 }

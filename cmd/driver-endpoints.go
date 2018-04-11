@@ -11,7 +11,7 @@ import (
 
 // driver-endpointsCmd represents the driver-endpoints command
 var driverEndpointsCmd = &cobra.Command{
-	Use:   "driver-endpoints",
+	Use:   "usb-driver-endpoints",
 	Short: "Lists driver endpoints",
 	Long:  `Shows a list of all the available driver endpoints that were registered with the usb`,
 	Run: func(cmd *cobra.Command, args []string) {
