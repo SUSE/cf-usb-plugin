@@ -195,12 +195,12 @@ func (c *UsbPlugin) GetMetadata() plugin.PluginMetadata {
 
     Optionally provide a file containing the driver endpoint metadata in the following format mkey1:mval1;mkey2:mval2.
     The path to the parameters file can be an absolute or relative path to a file:
-    cf usb create-driver-endpoint NAME ENDPOINT_URL AUTHENTICATION_KEY -c PATH_TO_FILE	
-					
+    cf usb-create-driver-endpoint NAME ENDPOINT_URL AUTHENTICATION_KEY -c PATH_TO_FILE
+
 EXAMPLE:
-    cf usb create-driver-endpoint mydriver http://127.0.0.1:1234 authkey -c 'mkey1:mval1;mkey2:mval2'
-    cf usb create-driver-endpoint mydriver http://127.0.0.1:1234 authkey -c ~/workspace/tmp/driver_metadata.json
-	
+    cf usb-create-driver-endpoint mydriver http://127.0.0.1:1234 authkey -c 'mkey1:mval1;mkey2:mval2'
+    cf usb-create-driver-endpoint mydriver http://127.0.0.1:1234 authkey -c ~/workspace/tmp/driver_metadata.json
+
 OPTIONS:
     -c   Valid JSON object containing the driver endpoint metadata, provided in-line or in a file
 `,
@@ -221,12 +221,12 @@ OPTIONS:
 
     Optionally provide a file containing the driver endpoint metadata in a valid JSON object.
     The path to the parameters file can be an absolute or relative path to a file:
-    cf usb update-driver-endpoint NAME -t ENDPOINT_URL -k AUTHENTICATION_KEY -c PATH_TO_FILE	
-					
+    cf usb-update-driver-endpoint NAME -t ENDPOINT_URL -k AUTHENTICATION_KEY -c PATH_TO_FILE
+
 EXAMPLE:
-    cf usb update-driver-endpoint mydriver -c '{"display_name":"My Driver","image_url":"http://127.0.0.1:8080/image","long_description":"Long description","provider_display_name":"ProvidedName", "documentation_url":"http://127.0.0.1:8080/doc", "support_url":"http://127.0.0.1:8080/support"}'
-    cf usb update-driver-endpoint mydriver -c ~/workspace/tmp/driver_metadata.json
-	
+    cf usb-update-driver-endpoint mydriver -c '{"display_name":"My Driver","image_url":"http://127.0.0.1:8080/image","long_description":"Long description","provider_display_name":"ProvidedName", "documentation_url":"http://127.0.0.1:8080/doc", "support_url":"http://127.0.0.1:8080/support"}'
+    cf usb-update-driver-endpoint mydriver -c ~/workspace/tmp/driver_metadata.json
+
 OPTIONS:
     -c   Valid JSON object containing the driver endpoint metadata, provided in-line or in a file
 `,
