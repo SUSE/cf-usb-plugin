@@ -47,197 +47,91 @@ make test
 
 ## Commands
 
-### cf usb target
+### cf usb-target
 
 Before you can use the plugin, a usb management api must be set, to do this the following command must be executed:
 
 **Usage**:
 
 ```bash
-cf usb target {usb_management_endpoint}
+cf usb-target {usb_management_endpoint}
 ```
 
-### cf usb info
+### cf usb-info
 
 Displays the information about the broker API version and the Universal Service Broker version
 
 **Usage**:
 
 ```bash
-cf usb info
+cf usb-info
 ```
 
-### cf usb create-instance
+### cf usb-create-driver-endpoint
 
-Creates a drivers instance.
-
-**Arguments**:
-- driverName:
-  - Required: true
-  - Description: The type of the driver. Example: mysql, mssql, etc.
-- instanceName:
-  - Required: true
-  - Description: The name of the new driver instance. This will also be the default name of the Cloud Foundry Service
-- configFile:
-  - Required: false
-  - Description: a configuration file for the driver instance
-- configValue:
-  - Required: false
-  - Description: the configuration of the driver instance in JSON format
-
-If the <configFile> and <configValue> arguments are not specified, the plugin will generate a wizard based on the driver config schema.
-
-**Usage**:
-
-```bash
-cf usb create-instance <driverName> <instanceName> configValue/configFile <jsonValue/filePath>
-```
-
-### cf usb delete-instance
-
-Deletes a driver instance.
+Creates a driver endpoint
 
 **Arguments**
-- instanceName
+- Name
   - Required: true
-  - Description: The driver instance name.
+  - Description: The name of the driver endpoint
+- Endpoint URL
+  - Required: true
+  - Description: The URL 
+- Authentication Key
+  - Required: true
+  - Description: Path to the driver binaries with an option to provide a JSON file for the metadata in a format of 'mkey1:mval1;mkey2:mval2'
 
 **Usage**
 
 ```bash
-cf usb delete-instance <instanceName>
-```  
-
-### cf usb create-driver
-
-Creates a driver
-
-**Arguments**
-- driverType
-  - Required: true
-  - Description: The type of the driver
-- driverName
-  - Required: true
-  - Description: The name of the driver
-- driverPath
-  - Required: true
-  - Description: Path to the driver binaries
-
-**Usage**
-
-```bash
-cf usb create-driver <driverType> <driverName> <driverPath>
+cf usb-create-driver-endpoint NAME ENDPOINT_URL AUTHENTICATION_KEY [-c METADATA]
 ```
 
-### cf usb update-driver
-
-Updates the driver name.
-
-**Arguments**
-- oldDriverName
-  - Required: true
-  - Description: The name of the driver that is going to be update-driver
-- newDriverName
-  - Required: true
-  - Description: The new name of the driver
-
-```bash
-cf usb update-driver <oldDriverName> <newDriverName>
-```
-
-### cf usb update-instance
+### cf usb-update-driver-endpoint
 
 Updates the configuration for a driver instance.
 
 **Argument**
-- instanceName
+- Name
   - Required: true
   - Description: the name of the driver instance that is going to be updated
-  - configFile:
-    - Required: false
-    - Description: a configuration file for the driver instance
-  - configValue:
-    - Required: false
-    - Description: the configuration of the driver instance in JSON format
-
-If the <configFile> and <configValue> arguments are not specified, the plugin will generate a wizard based on the driver config schema.
-
-**Usage**
-
-```bash
-cf usb update-instance <instanceName> configValue/configFile <jsonValue/filePath>
-```
-
-### cf usb update-service
-
-Updates the catalog information for the exposed Cloud Foundry Service
-
-**Arguments**
-- instanceName
+- Endpoint URL
   - Required: true
-  - Description: the name of the Driver instance
+  - Description: The URL 
+- Authentication Key
+  - Required: true
+  - Description: Path to the driver binaries with an option to provide a file with the metadata as JSON
 
 **Usage**
 
 ```bash
-cf usb update-service <instanceName>
+cf usb-update-driver-endpoint NAME [-t ENDPOINT_URL] [-k AUTHENTICATION_KEY] [-c METADATA_AS_JSON]
 ```
 
-After executing a command, a wizard is displayed that allows the user to change the catalog information for a service
+### cf usb-delete-driver-endpoint
 
-### cf usb delete-driver
-
-Deletes and existing driver
+Deletes an existing driver
 
 **Arguments**
 
-- driverName
+- Name
   - Required: true
   - Description: the name of the driver that will be deleted
 
 **Usage**
 
 ```bash
-cf usb delete-driver <driverName>
+cf usb-delete-driver-endpoint <driverName>
 ```
 
-### cf usb drivers
+### cf usb-driver-endpoints
 
 Lists all the available drivers
 
 **Usage**
 
 ```bash
-cf usb drivers
+cf usb-driver-endpoints
 ```
 
-### cf usb instances
-
-Lists all the driver instances for a driver
-
-**Arguments**
-
-- driverName
-  - Required: true
-  - Description: the name of the driver
-
-**Usage**
-
-```bash
-cf usb instances <driverName>
-```
-
-### cf usb dials
-
-Lists the dials for a driver instance
-
-**Arguments**
-- instanceName
-  - Required: true
-  - Description: The name of the driver instance
-
-**Usage**
-
-```bash
-cf usb dials <driverInstance>
-```
