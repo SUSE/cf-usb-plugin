@@ -20,7 +20,7 @@ import (
 
 var target string
 var version string
-
+// another test change
 //UsbPlugin struct
 type UsbPlugin struct {
 	argLength  int
