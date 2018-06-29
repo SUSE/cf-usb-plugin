@@ -77,7 +77,7 @@ Creates a driver endpoint
   - Description: The name of the driver endpoint
 - Endpoint URL
   - Required: true
-  - Description: The URL 
+  - Description: The URL
 - Authentication Key
   - Required: true
   - Description: Path to the driver binaries with an option to provide a JSON file for the metadata in a format of 'mkey1:mval1;mkey2:mval2'
@@ -98,7 +98,7 @@ Updates the configuration for a driver instance.
   - Description: the name of the driver instance that is going to be updated
 - Endpoint URL
   - Required: true
-  - Description: The URL 
+  - Description: The URL
 - Authentication Key
   - Required: true
   - Description: Path to the driver binaries with an option to provide a file with the metadata as JSON
