@@ -65,7 +65,7 @@ tools:
 	esac
 	go get -u golang.org/x/tools/cmd/goimports
 	go get -u golang.org/x/tools/cmd/cover
-	go get -u github.com/golang/lint/golint
+	go get -u golang.org/x/lint/golint
 
 test:
 	$(call print_status, Testing)
